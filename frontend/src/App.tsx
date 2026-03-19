@@ -7,6 +7,7 @@ import Header from './components/Header'
 import Dashboard from './pages/dashboard'
 import Servers from './pages/Servers'
 
+
 type PageName =
   | 'dashboard' | 'servers'   | 'network'
   | 'endpoints' | 'software'  | 'cloudservices'
@@ -30,6 +31,7 @@ export default function App() {
     () => authService.getStoredUser()   // ← restores session on refresh
   )
   const [activePage, setActivePage] = useState<PageName>('dashboard')
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
 
   const handleLogout = async () => {

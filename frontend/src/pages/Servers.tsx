@@ -18,9 +18,10 @@ import {
   createColumnHelper,
   SortingState,
 } from '@tanstack/react-table'
+//import { SearchBar } from '../components/SearchBar'
 
 
-const statusColor: Record<Server['status'], string> = {
+const statusColor: Record<NonNullable<Server['status']>, string> = {
   Active:           'green',
   Decommissioned:   'gray',
   EOL:              'red',
@@ -29,7 +30,7 @@ const statusColor: Record<Server['status'], string> = {
   Maintenance:      'yellow',
 }
 
-const criticalityColor: Record<Server['criticality'], string> = {
+const criticalityColor: Record<NonNullable<Server['criticality']>, string> = {
   Critical: 'red',
   High:     'orange',
   Medium:   'yellow',
@@ -62,23 +63,26 @@ export default function Servers() {
   const [lastPage, setLastPage]   = useState(1)
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState('')
-  const [search, setSearch]       = useState('')
   const [filterStatus, setFilterStatus] = useState<string | null>(null)
+  const [search, setSearch]       = useState('')   
   const [sorting, setSorting]     = useState<SortingState>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [form, setForm]           = useState<ServerPayload>(emptyForm())
   const [saving, setSaving]       = useState(false)
 
-  const fetchServers = useCallback(async () => {
+  const sortBy  = sorting[0]?.id
+  const sortDir = (sorting[0]?.desc ? 'desc' : 'asc') as 'asc' | 'desc'
+
+const fetchServers = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
       const params = {
         page, per_page: 25,
-        search: search || undefined,
-        status: filterStatus || undefined,
-        sort_by:  sorting[0]?.id,
-        sort_dir: sorting[0]?.desc ? 'desc' : 'asc',
+        search:   search || undefined,
+        status:   filterStatus || undefined,
+        sort_by:  sortBy,
+        sort_dir: sortDir,
       }
       const result = await serverService.list(params)
       setServers(result.data)
@@ -89,7 +93,7 @@ export default function Servers() {
     } finally {
       setLoading(false)
     }
-  }, [page, search, filterStatus, sorting])
+  }, [page, search, filterStatus, sortBy, sortDir])
 
   useEffect(() => { fetchServers() }, [fetchServers])
 
@@ -210,6 +214,8 @@ export default function Servers() {
     getSortedRowModel: getSortedRowModel(),
   })
 
+  //const [search, setSearch] = useState('')
+
   return (
     <Box p="xl">
       {/* Toolbar */}
@@ -234,7 +240,7 @@ export default function Servers() {
           size="sm"
           leftSection={<IconPlus size={14} />}
           onClick={() => setModalOpen(true)}
-          style={{ backgroundColor: '#5375BF' }}
+          style={{ backgroundColor: '#2563EB', display: 'flex', justifyContent: 'flex-end'}}
         >
           Add Server
         </Button>

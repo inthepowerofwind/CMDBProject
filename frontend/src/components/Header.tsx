@@ -1,9 +1,12 @@
 import { Box, Text, ActionIcon } from '@mantine/core'
-import { IconMenu2, IconBell } from '@tabler/icons-react'
+import { IconMenu2, IconBell, IconLogout } from '@tabler/icons-react'
+import { authService, AuthUser } from '../api/authService'
 
 interface HeaderProps {
   activePage: string
   onToggleSidebar: () => void
+  user: AuthUser
+  onLogout: () => void
 }
 
 const pageTitles: Record<string, string> = {
@@ -19,7 +22,7 @@ const pageTitles: Record<string, string> = {
   reference:     'Reference',
 }
 
-export default function Header({ activePage, onToggleSidebar }: HeaderProps) {
+export default function Header({ activePage, onToggleSidebar, user, onLogout }: HeaderProps) {
   return (
     <Box
       style={{
@@ -60,13 +63,17 @@ export default function Header({ activePage, onToggleSidebar }: HeaderProps) {
           backgroundColor: '#DEE9FC',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Text size="xs" fw={700} c="#5375BF">CM</Text>
+          <Text size="xs" fw={700} c="#5375BF">
+            {user.name.split(' ').map((w) => w[0]).slice(0,2).join('').toUpperCase()}
+          </Text>
         </Box>
-
         <Box>
-          <Text size="sm" fw={600} c="#0F172A" style={{ lineHeight: 1.2 }}>Carlos M.</Text>
+          <Text size="sm" fw={600} c="#0F172A" style={{ lineHeight: 1.2 }}>{user.name}</Text>
           <Text size="xs" c="dimmed" style={{ lineHeight: 1.2 }}>Admin</Text>
         </Box>
+        <ActionIcon variant="subtle" color="gray" size="md" onClick={onLogout} title="Sign out">
+          <IconLogout size={17} />
+        </ActionIcon>
       </Box>
     </Box>
   )
