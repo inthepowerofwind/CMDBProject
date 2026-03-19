@@ -12,6 +12,7 @@ import {
   createColumnHelper,
   SortingState,
 } from '@tanstack/react-table'
+import { SearchBar } from '../components/SearchBar'
 
 interface Server {
   id: string
@@ -190,10 +191,13 @@ export default function Servers() {
     getSortedRowModel: getSortedRowModel(),
   })
 
+  const [search, setSearch] = useState('')
+
   return (
     <Box p="xl">
       {/* Toolbar */}
       <Group mb="lg">
+        <SearchBar placeholder="Search Servers..." value={search} onChange={setSearch} />
         <Button
           size="sm"
           leftSection={<IconPlus size={14} />}
