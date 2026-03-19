@@ -193,20 +193,12 @@ export default function Servers() {
   return (
     <Box p="xl">
       {/* Toolbar */}
-      <Group justify="space-between" mb="lg">
-        <Group gap={8}>
-          {(['Active', 'Decommissioned', 'EOL', 'In Procurement', 'In Deployment', 'Maintenance'] as Server['status'][]).map((s) => (
-            <Badge key={s} color={statusColor[s]} variant="light" size="sm">
-              {s}: {data.filter((r) => r.status === s).length}
-            </Badge>
-          ))}
-          <Text size="sm" c="dimmed">Total: {data.length}</Text>
-        </Group>
+      <Group mb="lg">
         <Button
           size="sm"
           leftSection={<IconPlus size={14} />}
           onClick={() => setModalOpen(true)}
-          style={{ backgroundColor: '#5375BF' }}
+          style={{ backgroundColor: '#2563EB', display: 'flex', justifyContent: 'flex-end'}}
         >
           Add Server
         </Button>

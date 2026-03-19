@@ -25,8 +25,8 @@ function getPage(activePage: PageName) {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn]       = useState<boolean>(false)
-  const [activePage, setActivePage]       = useState<PageName>('dashboard')
+  const [isLoggedIn, setIsLoggedIn]             = useState<boolean>(false)
+  const [activePage, setActivePage]             = useState<PageName>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
 
   if (!isLoggedIn) {
