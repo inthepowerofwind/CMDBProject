@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Box, Text } from '@mantine/core'
+import { authService, AuthUser } from './api/authService'
 import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -25,12 +26,19 @@ function getPage(activePage: PageName) {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn]       = useState<boolean>(false)
-  const [activePage, setActivePage]       = useState<PageName>('dashboard')
+  const [user, setUser] = useState<AuthUser | null>(
+    () => authService.getStoredUser()   // ← restores session on refresh
+  )
+  const [activePage, setActivePage] = useState<PageName>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
 
-  if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />
+  const handleLogout = async () => {
+    try { await authService.logout() } catch { }
+    setUser(null)
+  }
+
+  if (!user) {
+    return <Login onLogin={setUser} />
   }
 
   return (
@@ -44,6 +52,8 @@ export default function App() {
         <Header
           activePage={activePage}
           onToggleSidebar={() => setSidebarCollapsed((c) => !c)}
+          user={user}
+          onLogout={handleLogout}
         />
         <Box style={{ flex: 1, overflowY: 'auto' }}>
           {getPage(activePage)}

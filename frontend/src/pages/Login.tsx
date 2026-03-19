@@ -1,32 +1,38 @@
 import { useState } from 'react'
 import { Box, Card, TextInput, PasswordInput, Button, Text, Alert } from '@mantine/core'
-import { IconLock, IconUser, IconAlertCircle } from '@tabler/icons-react'
+import { IconLock, IconMail, IconAlertCircle } from '@tabler/icons-react'
+import { authService, AuthUser } from '../api/authService'
 
 interface LoginProps {
-  onLogin: () => void   
+  onLogin: (user: AuthUser) => void   
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const [username, setUsername] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [error, setError]       = useState<string>('')
   const [loading, setLoading]   = useState<boolean>(false)
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setError('')
-    if (!username || !password) {
-      setError('Please enter both username and password.')
+    if (!email || !password) {
+      setError('Please enter both email and password.')
       return
     }
     setLoading(true)
-    setTimeout(() => {
-      if (username === 'admin' && password === 'admin123') {
-        onLogin()
-      } else {
-        setError('Invalid username or password.')
-        setLoading(false)
-      }
-    }, 800)
+    try {
+      const { user } = await authService.login({ email, password })
+      onLogin(user)                        // passes real AuthUser object
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ??
+        err?.response?.data?.errors?.email?.[0] ??
+        err?.response?.data?.errors?.password?.[0] ??
+        'Login failed. Please try again.'
+      setError(typeof msg === 'string' ? msg : JSON.stringify(msg))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,10 +53,10 @@ export default function Login({ onLogin }: LoginProps) {
         )}
 
         <TextInput
-          label="Username" placeholder="Enter username"
-          leftSection={<IconUser size={16} />}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          label="Email" placeholder="Enter email"
+          leftSection={<IconMail size={16} />}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           mb="md"
         />

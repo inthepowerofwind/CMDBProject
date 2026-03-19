@@ -1,0 +1,192 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\CiRelationship;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+
+class CiRelationshipController extends Controller
+{
+     /**
+     * Auto-generate the next relationship_id (e.g. REL-001, REL-002...).
+     */
+    private function generateRelationshipId(): string
+    {
+        $last = CiRelationship::withTrashed()
+            ->where('relationship_id', 'like', 'REL-%')
+            ->orderByRaw('TRY_CAST(SUBSTRING(relationship_id, 5, LEN(relationship_id)) AS INT) DESC')
+            ->value('relationship_id');
+
+        if (!$last) {
+            return 'REL-001';
+        }
+
+        $number = (int) substr($last, 4);
+        return 'REL-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Display a listing of CI relationships.
+     */
+    public function index(Request $request)
+    {
+        try {
+            $query = CiRelationship::query();
+    
+            //search
+            if ($request->filled('search')) {
+                $s = $request->search;
+                $query->where(function ($q) use ($s) {
+                    $q->where('relationship_id', 'like', "%{$s}%")
+                      ->orWhere('source_ci_name', 'like', "%{$s}%")
+                      ->orWhere('target_ci_name', 'like', "%{$s}%")
+                      ->orWhere('relationship_type', 'like', "%{$s}%")
+                      ->orWhere('description', 'like', "%{$s}%");
+                });
+            }
+
+            // Filters
+            if ($request->filled('relationship_type')) $query->where('relationship_type', $request->relationship_type);
+            if ($request->filled('criticality'))        $query->where('criticality', $request->criticality);
+            if ($request->filled('source_ci_table'))    $query->where('source_ci_table', $request->source_ci_table);
+            if ($request->filled('target_ci_table'))    $query->where('target_ci_table', $request->target_ci_table);
+
+            // Filter by source or target CI
+            if ($request->filled('ci_id')) {
+                $ciId = $request->ci_id;
+                $query->where(function ($q) use ($ciId) {
+                    $q->where('source_ci_id', $ciId)->orWhere('target_ci_id', $ciId);
+                });
+            }
+
+            // Sort
+            $sortBy  = $request->get('sort_by', 'relationship_id');
+            $sortDir = $request->get('sort_dir', 'asc');
+            $query->orderBy($sortBy, $sortDir);
+
+            return response()->json($query->paginate($request->get('per_page', 25)));
+
+            } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+
+    // Store a newly created CI relationship.
+    // relationship_id is auto-generated.
+    public function store(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'source_ci_id'      => 'required|string',
+                'source_ci_name'    => 'required|string|max:255',
+                'source_ci_table'   => 'required|string|max:100',
+                'relationship_type' => 'required|string|max:100',
+                'target_ci_id'      => 'required|string',
+                'target_ci_name'    => 'required|string|max:255',
+                'target_ci_table'   => 'required|string|max:100',
+                'description'       => 'nullable|string',
+                'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
+            ]);
+ 
+            $data['relationship_id'] = $this->generateRelationshipId();
+            return response()->json(CiRelationship::create($data), 201);
+ 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => $e->errors()], 422);
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+
+    //Display a specific CI relationship by relationship_id.
+    
+    public function show(CiRelationship $ciRelationship)
+    {
+        try {
+            return response()->json($ciRelationship);
+ 
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+
+    // Update an existing CI relationship.
+    // relationship_id cannot be changed.
+    public function update(Request $request, CiRelationship $ciRelationship)
+    {
+                try {
+            $data = $request->validate([
+                'source_ci_id'      => 'sometimes|required|string|max:100',
+                'source_ci_name'    => 'sometimes|required|string|max:255',
+                'source_ci_table'   => 'sometimes|required|string|max:100',
+                'relationship_type' => 'sometimes|required|string|max:100',
+                'target_ci_id'      => 'sometimes|required|string|max:100',
+                'target_ci_name'    => 'sometimes|required|string|max:255',
+                'target_ci_table'   => 'sometimes|required|string|max:100',
+                'description'       => 'nullable|string',
+                'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
+            ]);
+ 
+            $ciRelationship->update($data);
+            return response()->json($ciRelationship);
+ 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => $e->errors()], 422);
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+
+    //Soft-delete a CI relationship.
+    
+    public function destroy(CiRelationship $ciRelationship)
+    {
+        try {
+            $ciRelationship->delete();
+            return response()->json(['message' => 'Deleted'], 204);
+ 
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+
+    //Restore a soft-deleted CI relationship.
+    
+    public function restore(string $relationshipId)
+    {
+        try {
+            $relationship = CiRelationship::withTrashed()->where('relationship_id', $relationshipId)->firstOrFail();
+            $relationship->restore();
+            return response()->json($relationship);
+ 
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'CI relationship not found.'], 404);
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+
+    //Permanently delete a CI relationship.
+    public function forceDelete(string $relationshipId)
+    {
+        try {
+            CiRelationship::withTrashed()->where('relationship_id', $relationshipId)->firstOrFail()->forceDelete();
+            return response()->json(['message' => 'Permanently Deleted'], 204);
+ 
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'CI relationship not found.'], 404);
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
+}

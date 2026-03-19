@@ -1,9 +1,15 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { notifications } from '@mantine/notifications'
+import { serverService, Server, ServerPayload } from '../api/serverService'
 import {
-  Box, Text, Badge, ScrollArea, Button, Modal,
-  TextInput, Select, Group, SimpleGrid
+  Box, Text, Badge, ScrollArea, Button, Modal, Loader,
+  TextInput, Select, Group, SimpleGrid, Alert,
+  ActionIcon, Pagination, Tooltip,
 } from '@mantine/core'
-import { IconPlus, IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
+import {
+  IconPlus, IconChevronUp, IconChevronDown, IconSelector,
+  IconTrash, IconRefresh, IconAlertCircle,
+} from '@tabler/icons-react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -13,39 +19,6 @@ import {
   SortingState,
 } from '@tanstack/react-table'
 
-interface Server {
-  id: string
-  name: string
-  status: 'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  ciType: string
-  environment: 'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
-  hostname: string
-  os: string
-  osVersion: string
-  patchLevel: string
-  cpuCore: string
-  ram: string
-  storage: string
-  virtualized: 'Yes' | 'No'
-  location: string
-  rack: string
-  criticality: 'Critical' | 'High' | 'Medium' | 'Low'
-  service: string
-  assignedOwner: string
-  department: string
-  manufacturer: string
-  model: string
-  serialNumber: string
-  assetTag: string
-  purchaseDate: string
-  warrantyExpiry: string
-  eolDate: string
-  lastConfigReview: string
-  baselineApplied: 'Yes' | 'No'
-  backupEnabled: 'Yes' | 'No'
-  monitoring: 'Yes' | 'No'
-  notes: string
-}
 
 const statusColor: Record<Server['status'], string> = {
   Active:           'green',
@@ -63,79 +36,106 @@ const criticalityColor: Record<Server['criticality'], string> = {
   Low:      'blue',
 }
 
-const initialData: Server[] = [
-  {
-    id: 'SRV-001', name: 'web-prod-01', status: 'Active', ciType: 'Physical',
-    environment: 'Production', hostname: '192.168.1.10', os: 'Ubuntu', osVersion: '22.04',
-    patchLevel: 'Latest', cpuCore: '16', ram: '32 GB', storage: '1 TB',
-    virtualized: 'No', location: 'Manila', rack: 'R-12', criticality: 'Critical',
-    service: 'Web Hosting', assignedOwner: 'Carlos M.', department: 'IT',
-    manufacturer: 'Dell', model: 'PowerEdge R740', serialNumber: 'SN-ABC123',
-    assetTag: 'AT-001', purchaseDate: '2022-01-15', warrantyExpiry: '2025-01-15',
-    eolDate: '2027-01-15', lastConfigReview: '2026-01-10', baselineApplied: 'Yes',
-    backupEnabled: 'Yes', monitoring: 'Yes', notes: 'Primary web server',
-  },
-  {
-    id: 'SRV-002', name: 'db-prod-01', status: 'Active', ciType: 'Physical',
-    environment: 'Production', hostname: '192.168.1.11', os: 'RHEL', osVersion: '9.0',
-    patchLevel: 'Latest', cpuCore: '32', ram: '64 GB', storage: '4 TB',
-    virtualized: 'No', location: 'Manila', rack: 'R-13', criticality: 'Critical',
-    service: 'Database', assignedOwner: 'Ana R.', department: 'IT',
-    manufacturer: 'HP', model: 'ProLiant DL380', serialNumber: 'SN-DEF456',
-    assetTag: 'AT-002', purchaseDate: '2022-03-10', warrantyExpiry: '2025-03-10',
-    eolDate: '2027-03-10', lastConfigReview: '2026-02-01', baselineApplied: 'Yes',
-    backupEnabled: 'Yes', monitoring: 'Yes', notes: 'Primary DB',
-  },
-  {
-    id: 'SRV-003', name: 'app-staging-01', status: 'Maintenance', ciType: 'Virtual',
-    environment: 'Staging', hostname: '192.168.1.12', os: 'Ubuntu', osVersion: '20.04',
-    patchLevel: 'Pending', cpuCore: '8', ram: '16 GB', storage: '500 GB',
-    virtualized: 'Yes', location: 'Cebu', rack: 'R-05', criticality: 'Medium',
-    service: 'App Server', assignedOwner: 'Ben T.', department: 'IT',
-    manufacturer: 'Dell', model: 'PowerEdge R640', serialNumber: 'SN-GHI789',
-    assetTag: 'AT-003', purchaseDate: '2021-06-20', warrantyExpiry: '2024-06-20',
-    eolDate: '2026-06-20', lastConfigReview: '2025-12-01', baselineApplied: 'No',
-    backupEnabled: 'Yes', monitoring: 'Yes', notes: 'Staging env',
-  },
-]
-
-const emptyForm = (): Omit<Server, 'id'> => ({
-  name: '', status: 'Active', ciType: '', environment: 'Production',
-  hostname: '', os: '', osVersion: '', patchLevel: '', cpuCore: '',
-  ram: '', storage: '', virtualized: 'No', location: '', rack: '',
-  criticality: 'Medium', service: '', assignedOwner: '', department: '',
-  manufacturer: '', model: '', serialNumber: '', assetTag: '',
-  purchaseDate: '', warrantyExpiry: '', eolDate: '', lastConfigReview: '',
-  baselineApplied: 'No', backupEnabled: 'No', monitoring: 'No', notes: '',
+const emptyForm = (): ServerPayload => ({
+  ci_name: '', status: 'Active', ci_type: null,
+  environment: 'Production', hostname: null,
+  operating_system: null, os_version: null,
+  patch_level: null, cpu_cores: null,
+  ram_gb: null, storage_tb: null,
+  virtualized: false, location: null, rack_slot: null,
+  criticality: 'Medium', business_service: null,
+  assigned_owner: null, department: null,
+  manufacturer: null, model: null,
+  serial_number: null, asset_tag: null,
+  purchase_date: null, warranty_expiry: null,
+  eol_date: null, last_config_review: null,
+  baseline_applied: false, backup_enabled: false,
+  monitoring_siem: false, notes: null,
 })
 
 const columnHelper = createColumnHelper<Server>()
 
 export default function Servers() {
-  const [data, setData]           = useState<Server[]>(initialData)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [form, setForm]           = useState<Omit<Server, 'id'>>(emptyForm())
+  const [servers, setServers]     = useState<Server[]>([])
+  const [total, setTotal]         = useState(0)
+  const [page, setPage]           = useState(1)
+  const [lastPage, setLastPage]   = useState(1)
+  const [loading, setLoading]     = useState(true)
+  const [error, setError]         = useState('')
+  const [search, setSearch]       = useState('')
+  const [filterStatus, setFilterStatus] = useState<string | null>(null)
   const [sorting, setSorting]     = useState<SortingState>([])
+  const [modalOpen, setModalOpen] = useState(false)
+  const [form, setForm]           = useState<ServerPayload>(emptyForm())
+  const [saving, setSaving]       = useState(false)
 
-  const set = (key: keyof Omit<Server, 'id'>, value: string) =>
-    setForm((f) => ({ ...f, [key]: value }))
+  const fetchServers = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const params = {
+        page, per_page: 25,
+        search: search || undefined,
+        status: filterStatus || undefined,
+        sort_by:  sorting[0]?.id,
+        sort_dir: sorting[0]?.desc ? 'desc' : 'asc',
+      }
+      const result = await serverService.list(params)
+      setServers(result.data)
+      setTotal(result.total)
+      setLastPage(result.last_page)
+    } catch {
+      setError('Failed to load servers.')
+    } finally {
+      setLoading(false)
+    }
+  }, [page, search, filterStatus, sorting])
 
-  const handleAdd = () => {
-    const newId = `SRV-${String(data.length + 1).padStart(3, '0')}`
-    setData((prev) => [...prev, { id: newId, ...form }])
-    setForm(emptyForm())
-    setModalOpen(false)
+  useEffect(() => { fetchServers() }, [fetchServers])
+
+  const setField = (key: keyof ServerPayload, value: unknown) =>
+  setForm((f: ServerPayload) => ({ ...f, [key]: value } as ServerPayload))
+
+  const handleAdd = async () => {
+    setSaving(true)
+    try {
+      const created = await serverService.create(form)
+      setServers((prev) => [created, ...prev])
+      setTotal((t) => t + 1)
+      setForm(emptyForm())
+      setModalOpen(false)
+      notifications.show({ color: 'green', message: `${created.ci_id} added.` })
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to add server.' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDelete = async (ciId: string) => {
+    try {
+      await serverService.delete(ciId)
+      setServers((prev) => prev.filter((s) => s.ci_id !== ciId))
+      setTotal((t) => t - 1)
+      notifications.show({ color: 'orange', message: `${ciId} deleted.` })
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to delete.' })
+    }
+  }
+
+  const handleRestore = async (ciId: string) => {
+    try {
+      const restored = await serverService.restore(ciId)
+      setServers((prev) => prev.map((s) => s.ci_id === ciId ? restored : s))
+      notifications.show({ color: 'green', message: `${ciId} restored.` })
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to restore.' })
+    }
   }
 
   const columns = useMemo(() => [
-    columnHelper.accessor('id', {
-      header: 'ID',
-      cell: (i) => <Text size="sm" fw={600} c="#5375BF" ff="monospace">{i.getValue()}</Text>,
-    }),
-    columnHelper.accessor('name', {
-      header: 'Name',
-      cell: (i) => <Text size="sm" fw={500} c="#0F172A">{i.getValue()}</Text>,
-    }),
+    columnHelper.accessor('ci_id',             { header: 'ID', cell : (i) => <Text size="sm" c="dimmed">{i.getValue()}</Text> }),
+    columnHelper.accessor('ci_name',          { header: 'Name', cell: (i) => <Text fw={500}>{i.getValue()}</Text> }),
     columnHelper.accessor('status', {
       header: 'Status',
       cell: (i) => (
@@ -144,45 +144,65 @@ export default function Servers() {
         </Badge>
       ),
     }),
-    columnHelper.accessor('ciType',           { header: 'CI Type'                   }),
+    columnHelper.accessor('ci_type',          { header: 'CI Type'  }),
     columnHelper.accessor('environment',      { header: 'Environment'               }),
     columnHelper.accessor('hostname',         { header: 'Hostname'                  }),
-    columnHelper.accessor('os',               { header: 'OS'                        }),
-    columnHelper.accessor('osVersion',        { header: 'OS Version'                }),
-    columnHelper.accessor('patchLevel',       { header: 'Patch Level'               }),
-    columnHelper.accessor('cpuCore',          { header: 'CPU Core'                  }),
-    columnHelper.accessor('ram',              { header: 'RAM'                       }),
-    columnHelper.accessor('storage',          { header: 'Storage'                   }),
+    columnHelper.accessor('operating_system', { header: 'OS'                        }),
+    columnHelper.accessor('os_version',       { header: 'OS Version'                }),
+    columnHelper.accessor('patch_level',      { header: 'Patch Level'               }),
+    columnHelper.accessor('cpu_cores',         { header: 'CPU Core'                  }),
+    columnHelper.accessor('ram_gb',           { header: 'RAM'                       }),
+    columnHelper.accessor('storage_tb',       { header: 'Storage'                   }),
     columnHelper.accessor('virtualized',      { header: 'Virtualized'               }),
     columnHelper.accessor('location',         { header: 'Location'                  }),
-    columnHelper.accessor('rack',             { header: 'Rack'                      }),
+    columnHelper.accessor('rack_slot',        { header: 'Rack'                      }),
     columnHelper.accessor('criticality', {
       header: 'Criticality',
-      cell: (i) => (
-        <Badge color={criticalityColor[i.getValue()]} variant="light" size="sm">
+      cell: (i) => i.getValue() ? (
+        <Badge color={criticalityColor[i.getValue()!] ?? 'gray'} variant="light" size="sm">
           {i.getValue()}
         </Badge>
-      ),
+      ) : '—',
     }),
-    columnHelper.accessor('service',          { header: 'Service'                   }),
-    columnHelper.accessor('assignedOwner',    { header: 'Assigned Owner'            }),
+    columnHelper.accessor('business_service', { header: 'Service'                   }),
+    columnHelper.accessor('assigned_owner',   { header: 'Assigned Owner'            }),
     columnHelper.accessor('department',       { header: 'Department'                }),
     columnHelper.accessor('manufacturer',     { header: 'Manufacturer'              }),
     columnHelper.accessor('model',            { header: 'Model'                     }),
-    columnHelper.accessor('serialNumber',     { header: 'Serial Number'             }),
-    columnHelper.accessor('assetTag',         { header: 'Asset Tag'                 }),
-    columnHelper.accessor('purchaseDate',     { header: 'Purchase Date'             }),
-    columnHelper.accessor('warrantyExpiry',   { header: 'Warranty Expiry'           }),
-    columnHelper.accessor('eolDate',          { header: 'EOL Date'                  }),
-    columnHelper.accessor('lastConfigReview', { header: 'Last Configuration Review' }),
-    columnHelper.accessor('baselineApplied',  { header: 'Baseline Applied'          }),
-    columnHelper.accessor('backupEnabled',    { header: 'Backup Enabled'            }),
-    columnHelper.accessor('monitoring',       { header: 'Monitoring'                }),
-    columnHelper.accessor('notes',            { header: 'Notes'                     }),
+    columnHelper.accessor('serial_number',    { header: 'Serial Number'             }),
+    columnHelper.accessor('asset_tag',        { header: 'Asset Tag'                 }),
+    columnHelper.accessor('purchase_date',    { header: 'Purchase Date'             }),
+    columnHelper.accessor('warranty_expiry',  { header: 'Warranty Expiry'           }),
+    columnHelper.accessor('eol_date',         { header: 'EOL Date'                  }),
+    columnHelper.accessor('last_config_review',{ header: 'Last Configuration Review' }),
+    columnHelper.accessor('baseline_applied', { header: 'Baseline Applied'          }),
+    columnHelper.accessor('backup_enabled',   { header: 'Backup Enabled'            }),
+    columnHelper.accessor('monitoring_siem',  { header: 'Monitoring'                }),
+    columnHelper.accessor('notes', { header: 'Notes' }),
+    columnHelper.display({
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <Group gap={4} wrap="nowrap">
+          <Tooltip label="Delete" withArrow>
+            <ActionIcon size="sm" variant="subtle" color="red"
+              onClick={() => handleDelete(row.original.ci_id)}>
+              <IconTrash size={14} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Restore" withArrow>
+            <ActionIcon size="sm" variant="subtle" color="green"
+              onClick={() => handleRestore(row.original.ci_id)}>
+              <IconRefresh size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      ),
+    }),
   ], [])
 
   const table = useReactTable({
-    data,
+    data: servers,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -195,12 +215,20 @@ export default function Servers() {
       {/* Toolbar */}
       <Group justify="space-between" mb="lg">
         <Group gap={8}>
-          {(['Active', 'Decommissioned', 'EOL', 'In Procurement', 'In Deployment', 'Maintenance'] as Server['status'][]).map((s) => (
-            <Badge key={s} color={statusColor[s]} variant="light" size="sm">
-              {s}: {data.filter((r) => r.status === s).length}
-            </Badge>
-          ))}
-          <Text size="sm" c="dimmed">Total: {data.length}</Text>
+          <TextInput
+            placeholder="Search by ID, name, OS..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            size="sm" style={{ width: 240 }}
+          />
+          <Select
+            placeholder="Filter by status"
+            value={filterStatus}
+            onChange={(v) => { setFilterStatus(v); setPage(1) }}
+            data={['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']}
+            clearable size="sm" style={{ width: 180 }}
+          />
+          <Text size="sm" c="dimmed">Total: {total}</Text>
         </Group>
         <Button
           size="sm"
@@ -213,12 +241,13 @@ export default function Servers() {
       </Group>
 
       {/* Table */}
-      <Box style={{
-        backgroundColor: 'white',
-        borderRadius: 8,
-        border: '1px solid #E3E8EF',
-        overflow: 'hidden',
-      }}>
+      {loading ? (
+        <Box style={{ display:'flex', justifyContent:'center', padding: 60 }}>
+          <Loader color="#5375BF" />
+        </Box>
+      ) : error ? (
+        <Alert icon={<IconAlertCircle size={16}/>} color="red" m="md">{error}</Alert>
+      ) : (
         <ScrollArea scrollbarSize={8}>
           <table style={{ minWidth: 3600, width: '100%', borderCollapse: 'collapse' }}>
             <thead>
@@ -277,7 +306,12 @@ export default function Servers() {
             </tbody>
           </table>
         </ScrollArea>
-      </Box>
+      )}
+      {lastPage > 1 && (
+        <Group justify="center" mt="md">
+          <Pagination value={page} onChange={setPage} total={lastPage} color="#5375BF" size="sm" />
+        </Group>
+      )}
 
       {/* Add Server Modal */}
       <Modal
@@ -288,74 +322,74 @@ export default function Servers() {
         scrollAreaComponent={ScrollArea.Autosize}
       >
         <SimpleGrid cols={2} spacing="sm">
-          <TextInput label="Name"                   value={form.name}             onChange={(e) => set('name', e.target.value)}             placeholder="web-prod-03"     />
-          <TextInput label="CI Type"                value={form.ciType}           onChange={(e) => set('ciType', e.target.value)}           placeholder="Physical"        />
+          <TextInput label="Name"                   value={form.ci_name}             onChange={(e) => setField('ci_name', e.target.value)}             placeholder="web-prod-03"     />
+          <TextInput label="CI Type"                value={form.ci_type ?? ''}           onChange={(e) => setField('ci_type', e.target.value || null)}           placeholder="Physical"        />
           <Select
             label="Status"
             value={form.status}
-            onChange={(v) => set('status', v ?? 'Active')}
+            onChange={(v) => setField('status', v ?? 'Active')}
             data={['Active', 'Decommissioned', 'EOL', 'In Procurement', 'In Deployment', 'Maintenance']}
           />
           <Select
             label="Environment"
             value={form.environment}
-            onChange={(v) => set('environment', v ?? 'Production')}
+            onChange={(v) => setField('environment', v ?? 'Production')}
             data={['Production', 'Staging', 'Testing / QA', 'Development', 'DR / Failover']}
           />
-          <TextInput label="Hostname / IP"          value={form.hostname}         onChange={(e) => set('hostname', e.target.value)}         placeholder="192.168.1.x"     />
-          <TextInput label="OS"                     value={form.os}               onChange={(e) => set('os', e.target.value)}               placeholder="Ubuntu"          />
-          <TextInput label="OS Version"             value={form.osVersion}        onChange={(e) => set('osVersion', e.target.value)}        placeholder="22.04"           />
-          <TextInput label="Patch Level"            value={form.patchLevel}       onChange={(e) => set('patchLevel', e.target.value)}       placeholder="Latest"          />
-          <TextInput label="CPU Core"               value={form.cpuCore}          onChange={(e) => set('cpuCore', e.target.value)}          placeholder="16"              />
-          <TextInput label="RAM"                    value={form.ram}              onChange={(e) => set('ram', e.target.value)}              placeholder="32 GB"           />
-          <TextInput label="Storage"                value={form.storage}          onChange={(e) => set('storage', e.target.value)}          placeholder="1 TB"            />
+          <TextInput label="Hostname / IP"          value={form.hostname ?? ''}         onChange={(e) => setField('hostname', e.target.value || null)}         placeholder="192.168.1.x"     />
+          <TextInput label="OS"                     value={form.operating_system ?? ''}  onChange={(e) => setField('operating_system', e.target.value || null)}               placeholder="Ubuntu"          />
+          <TextInput label="OS Version"             value={form.os_version ?? ''}        onChange={(e) => setField('os_version', e.target.value || null)}        placeholder="22.04"           />
+          <TextInput label="Patch Level"            value={form.patch_level ?? ''}       onChange={(e) => setField('patch_level', e.target.value || null)}       placeholder="Latest"          />
+          <TextInput label="CPU Core"               value={form.cpu_cores?.toString() ?? ''}    type="number"     onChange={(e) => setField('cpu_cores', e.target.value ? parseInt(e.target.value) : null)}          placeholder="16"              />
+          <TextInput label="RAM"                    value={form.ram_gb?.toString() ?? ''}    type="number"        onChange={(e) => setField('ram_gb', e.target.value ? parseInt(e.target.value) : null)}              placeholder="32"           />
+          <TextInput label="Storage"                value={form.storage_tb?.toString() ?? ''}    type="number"    onChange={(e) => setField('storage_tb', e.target.value ? parseFloat(e.target.value) : null)}          placeholder="1"            />
           <Select
             label="Virtualized"
-            value={form.virtualized}
-            onChange={(v) => set('virtualized', v ?? 'No')}
+            value={form.virtualized ? 'Yes' : 'No'}
+            onChange={(v) => setField('virtualized', v === 'Yes')}
             data={['Yes', 'No']}
           />
-          <TextInput label="Location"               value={form.location}         onChange={(e) => set('location', e.target.value)}         placeholder="Manila"          />
-          <TextInput label="Rack"                   value={form.rack}             onChange={(e) => set('rack', e.target.value)}             placeholder="R-12"            />
+          <TextInput label="Location"               value={form.location ?? ''}         onChange={(e) => setField('location', e.target.value || null)}         placeholder="Manila"          />
+          <TextInput label="Rack"                   value={form.rack_slot ?? ''}             onChange={(e) => setField('rack_slot', e.target.value || null)}             placeholder="R-12"            />
           <Select
             label="Criticality"
             value={form.criticality}
-            onChange={(v) => set('criticality', v ?? 'Medium')}
+            onChange={(v) => setField('criticality', v ?? 'Medium')}
             data={['Critical', 'High', 'Medium', 'Low']}
           />
-          <TextInput label="Service"                value={form.service}          onChange={(e) => set('service', e.target.value)}          placeholder="Web Hosting"     />
-          <TextInput label="Assigned Owner"         value={form.assignedOwner}    onChange={(e) => set('assignedOwner', e.target.value)}    placeholder="Carlos M."       />
-          <TextInput label="Department"             value={form.department}       onChange={(e) => set('department', e.target.value)}       placeholder="IT"              />
-          <TextInput label="Manufacturer"           value={form.manufacturer}     onChange={(e) => set('manufacturer', e.target.value)}     placeholder="Dell"            />
-          <TextInput label="Model"                  value={form.model}            onChange={(e) => set('model', e.target.value)}            placeholder="PowerEdge R740"  />
-          <TextInput label="Serial Number"          value={form.serialNumber}     onChange={(e) => set('serialNumber', e.target.value)}     placeholder="SN-XXXXXX"       />
-          <TextInput label="Asset Tag"              value={form.assetTag}         onChange={(e) => set('assetTag', e.target.value)}         placeholder="AT-001"          />
-          <TextInput label="Purchase Date"          value={form.purchaseDate}     onChange={(e) => set('purchaseDate', e.target.value)}     placeholder="2024-01-01"      />
-          <TextInput label="Warranty Expiry"        value={form.warrantyExpiry}   onChange={(e) => set('warrantyExpiry', e.target.value)}   placeholder="2027-01-01"      />
-          <TextInput label="EOL Date"               value={form.eolDate}          onChange={(e) => set('eolDate', e.target.value)}          placeholder="2028-01-01"      />
-          <TextInput label="Last Config Review"     value={form.lastConfigReview} onChange={(e) => set('lastConfigReview', e.target.value)} placeholder="2026-01-01"      />
+          <TextInput label="Service"                value={form.business_service ?? ''}          onChange={(e) => setField('business_service', e.target.value || null)}          placeholder="Web Hosting"     />
+          <TextInput label="Assigned Owner"         value={form.assigned_owner ?? ''}    onChange={(e) => setField('assigned_owner', e.target.value || null)}    placeholder="Carlos M."       />
+          <TextInput label="Department"             value={form.department ?? ''}       onChange={(e) => setField('department', e.target.value || null)}       placeholder="IT"              />
+          <TextInput label="Manufacturer"           value={form.manufacturer ?? ''}     onChange={(e) => setField('manufacturer', e.target.value || null)}     placeholder="Dell"            />
+          <TextInput label="Model"                  value={form.model ?? ''}            onChange={(e) => setField('model', e.target.value || null)}            placeholder="PowerEdge R740"  />
+          <TextInput label="Serial Number"          value={form.serial_number ?? ''}     onChange={(e) => setField('serial_number', e.target.value || null)}     placeholder="SN-XXXXXX"       />
+          <TextInput label="Asset Tag"              value={form.asset_tag ?? ''}         onChange={(e) => setField('asset_tag', e.target.value || null)}         placeholder="AT-001"          />
+          <TextInput label="Purchase Date"          value={form.purchase_date ?? ''}     onChange={(e) => setField('purchase_date', e.target.value || null)}     placeholder="2024-01-01"      />
+          <TextInput label="Warranty Expiry"        value={form.warranty_expiry ?? ''}   onChange={(e) => setField('warranty_expiry', e.target.value || null)}   placeholder="2027-01-01"      />
+          <TextInput label="EOL Date"               value={form.eol_date ?? ''}          onChange={(e) => setField('eol_date', e.target.value || null)}          placeholder="2028-01-01"      />
+          <TextInput label="Last Config Review"     value={form.last_config_review ?? ''} onChange={(e) => setField('last_config_review', e.target.value || null)} placeholder="2026-01-01"      />
           <Select
             label="Baseline Applied"
-            value={form.baselineApplied}
-            onChange={(v) => set('baselineApplied', v ?? 'No')}
+            value={form.baseline_applied ? 'Yes' : 'No'}
+            onChange={(v) => setField('baseline_applied', v === 'Yes')}
             data={['Yes', 'No']}
           />
           <Select
             label="Backup Enabled"
-            value={form.backupEnabled}
-            onChange={(v) => set('backupEnabled', v ?? 'No')}
+            value={form.backup_enabled ? 'Yes' : 'No'}
+            onChange={(v) => setField('backup_enabled', v === 'Yes')}
             data={['Yes', 'No']}
           />
           <Select
             label="Monitoring"
-            value={form.monitoring}
-            onChange={(v) => set('monitoring', v ?? 'No')}
+            value={form.monitoring_siem ? 'Yes' : 'No'}
+            onChange={(v) => setField('monitoring_siem', v === 'Yes')}
             data={['Yes', 'No']}
           />
           <TextInput
             label="Notes"
-            value={form.notes}
-            onChange={(e) => set('notes', e.target.value)}
+            value={form.notes ?? ''}
+            onChange={(e) => setField('notes', e.target.value || null)}
             placeholder="Any additional notes"
             style={{ gridColumn: 'span 2' }}
           />
@@ -365,7 +399,8 @@ export default function Servers() {
           <Button variant="default" onClick={() => setModalOpen(false)}>Cancel</Button>
           <Button
             onClick={handleAdd}
-            disabled={!form.name || !form.hostname}
+            loading={saving}
+            disabled={!form.ci_name}
             style={{ backgroundColor: '#5375BF' }}
           >
             Add Server
