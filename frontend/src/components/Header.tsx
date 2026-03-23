@@ -1,6 +1,6 @@
 import { Box, Text, ActionIcon } from '@mantine/core'
-import { IconMenu2, IconBell, IconLogout } from '@tabler/icons-react'
-import { authService, AuthUser } from '../api/authService'
+import { IconMenu2, IconLogout } from '@tabler/icons-react'
+import { AuthUser } from '../api/authService'
 
 interface HeaderProps {
   activePage: string

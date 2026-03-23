@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import Dashboard from './pages/dashboard'
 import Servers from './pages/Servers'
+// import Network from './pages/Network'
 
 
 type PageName =
@@ -17,6 +18,14 @@ function getPage(activePage: PageName) {
   switch (activePage) {
     case 'dashboard': return <Dashboard />
     case 'servers':   return <Servers />
+    // case 'network':   return <Network/>
+    case 'endpoints':
+    case 'software':
+    case 'cloudservices':
+    case 'databases':
+    case 'relationships':
+    case 'changelog':
+    case 'reference':
     default:
       return (
         <Box p="xl">
@@ -28,7 +37,7 @@ function getPage(activePage: PageName) {
 
 export default function App() {
   const [user, setUser] = useState<AuthUser | null>(
-    () => authService.getStoredUser()   // ← restores session on refresh
+    () => authService.getStoredUser()   // restores session on refresh
   )
   const [activePage, setActivePage] = useState<PageName>('dashboard')
 

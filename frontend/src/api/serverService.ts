@@ -1,7 +1,5 @@
 import api from './axios'
- 
-// ── Types ─────────────────────────────────────────────────────────────────────
- 
+  
 export interface Server {
   ci_id: string
   ci_name: string
@@ -59,7 +57,7 @@ export interface PaginatedServers {
   total: number
 }
  
-// ── Service ───────────────────────────────────────────────────────────────────
+// Service
  
 export const serverService = {
   async list(params?: ServerListParams): Promise<PaginatedServers> {

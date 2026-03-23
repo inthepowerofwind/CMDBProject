@@ -18,7 +18,7 @@ import {
   SortingState,
 } from '@tanstack/react-table'
 
-const PER_PAGE = 10
+const PER_PAGE = 15
 
 const statusColor: Record<NonNullable<Server['status']>, string> = {
   Active:           'green',
@@ -53,16 +53,9 @@ const emptyForm = (): ServerPayload => ({
   monitoring_siem: false, notes: null,
 })
 
-const formatDate = (value: unknown): string => {
-  if (!value) return '—'
-  return String(value).split('T')[0]
-}
-
 const columnHelper = createColumnHelper<Server>()
 
 // Inline cell editor
-// - Text/number/date: local state buffers keystrokes, pushes to parent onBlur
-// - Select: fully self-contained with its own state, syncs to parent on change
 function EditableCell({
   value,
   field,
@@ -80,15 +73,16 @@ function EditableCell({
   onChange: (field: string, value: unknown, rerender?: boolean) => void
   minWidth?: number
 }) {
-  const toStr = (v: unknown) =>
-    typeof v === 'boolean' ? (v ? 'Yes' : 'No') : String(v ?? '').split('T')[0]
+  const toStr = (v: unknown) => {
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+    const s = String(v ?? '')
+    return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
 
-  // Local state for text inputs — prevents focus loss on every keystroke
+  }
+
   const [localValue, setLocalValue] = useState<string>(toStr(value))
-  // Local state for selects — fully controls the dropdown display
   const [selectValue, setSelectValue] = useState<string>(toStr(value))
 
-  // Only re-sync when first entering edit mode
   const wasEditing = useRef(false)
   useEffect(() => {
     if (isEditing && !wasEditing.current) {
@@ -111,9 +105,7 @@ function EditableCell({
         value={selectValue}
         onChange={(v) => {
           const next = v ?? ''
-          // Update local state immediately so the dropdown shows the selected value
           setSelectValue(next)
-          // Push to parent — boolean fields convert Yes/No to true/false
           if (['virtualized','baseline_applied','backup_enabled','monitoring_siem'].includes(field)) {
             onChange(field, next === 'Yes', true)
           } else {
@@ -159,7 +151,7 @@ export default function Servers() {
   const [newForm, setNewForm]       = useState<ServerPayload>(emptyForm())
   const [saving, setSaving]         = useState(false)
 
-  // Grid edit state — isGridEditing = ALL rows editable at once
+  // Grid edit state
   const [isGridEditing, setIsGridEditing] = useState(false)
   const [editForms, setEditForms]   = useState<Record<string, Partial<ServerPayload>>>({})
   const editFormsRef = useRef<Record<string, Partial<ServerPayload>>>({})
@@ -201,9 +193,6 @@ export default function Servers() {
   const setNewField = (key: keyof ServerPayload, value: unknown) =>
     setNewForm((f) => ({ ...f, [key]: value } as ServerPayload))
 
-  // Update one field on one row in grid edit mode.
-  // Write to ref immediately (no re-render) so text inputs keep focus.
-  // Only trigger a re-render for Select fields so the chosen value shows.
   const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
     editFormsRef.current = {
       ...editFormsRef.current,
@@ -215,12 +204,12 @@ export default function Servers() {
     }
   }
 
-  // ── Add ──────────────────────────────────────────────────────
+  // Add 
   const handleAdd = async () => {
     setSaving(true)
     try {
       const created = await serverService.create(newForm)
-      setServers((prev) => [...prev, created])   // append to bottom
+      setServers((prev) => [...prev, created])
       setTotal((t) => t + 1)
       setNewForm(emptyForm())
       setIsAdding(false)
@@ -232,7 +221,7 @@ export default function Servers() {
     }
   }
 
-  // ── Grid Edit ─────────────────────────────────────────────────
+  // Grid Edit
   const handleStartGridEdit = () => {
     const initial: Record<string, Partial<ServerPayload>> = {}
     servers.forEach((s) => { initial[s.ci_id] = { ...s } })
@@ -272,7 +261,7 @@ export default function Servers() {
     editFormsRef.current = {}
   }
 
-  // ── Delete ────────────────────────────────────────────────────
+  // Delete
   const handleDeleteSelected = async () => {
     const ids = Array.from(selectedIds)
     try {
@@ -287,9 +276,9 @@ export default function Servers() {
     }
   }
 
-  // ── Row selection ─────────────────────────────────────────────
+  // Row selection
   const handleRowClick = (ciId: string) => {
-    if (isGridEditing) return   // no selection changes while grid editing
+    if (isGridEditing) return
     setShowCheckboxes(true)
     setSelectedIds((prev) => {
       const next = new Set(prev)
@@ -315,9 +304,8 @@ export default function Servers() {
     }
   }
 
-  // ── Column definitions ────────────────────────────────────────
   const columns = useMemo(() => [
-    // Checkbox column — only visible when showCheckboxes (and not in grid edit)
+    // Checkbox column
     columnHelper.display({
       id: 'select',
       header: () => showCheckboxes && !isGridEditing ? (
@@ -345,8 +333,6 @@ export default function Servers() {
       cell: (i) => <Text size="sm" c="dimmed">{i.getValue()}</Text>,
     }),
 
-    // Helper: renders EditableCell using the per-row editForm in grid mode
-    // For non-grid mode it just shows the value as text
     columnHelper.accessor('ci_name', {
       header: 'CI Name',
       cell: ({ row }) => {
@@ -682,7 +668,7 @@ export default function Servers() {
 
   return (
     <Box p="xl">
-      {/* ── Toolbar ── */}
+      {/* Toolbar */}
       <Group justify="space-between" mb="lg">
         <Group gap={8}>
           <TextInput
@@ -703,7 +689,7 @@ export default function Servers() {
         </Group>
 
         <Group gap={8}>
-          {/* ── Grid Edit mode buttons ── */}
+          {/* Grid Edit mode */}
           {isGridEditing ? (
             <>
               <Button
@@ -725,8 +711,10 @@ export default function Servers() {
                 Save Changes
               </Button>
             </>
+            
           ) : isAdding ? (
-            /* ── Add row mode buttons ── */
+            
+            /* Add row mode */
             <>
               <Button
                 size="sm"
@@ -736,6 +724,7 @@ export default function Servers() {
               >
                 Cancel
               </Button>
+
               <Button
                 size="sm"
                 leftSection={<IconDeviceFloppy size={14} />}
@@ -748,22 +737,8 @@ export default function Servers() {
               </Button>
             </>
           ) : (
-            /* ── Default toolbar buttons ── */
             <>
-              {/* Delete — only when rows are selected */}
-              {hasSelection && (
-                <Button
-                  size="sm"
-                  color="red"
-                  variant="light"
-                  leftSection={<IconTrash size={14} />}
-                  onClick={handleDeleteSelected}
-                >
-                  Delete ({selectedIds.size})
-                </Button>
-              )}
-
-              {/* Cancel selection */}
+              {/* Cancel button */}
               {hasSelection && (
                 <Button
                   size="sm"
@@ -779,7 +754,20 @@ export default function Servers() {
                 </Button>
               )}
 
-              {/* Edit — always visible, enables grid edit for all rows */}
+              {/* Delete button */}
+              {hasSelection && (
+                <Button
+                  size="sm"
+                  color="red"
+                  variant="light"
+                  leftSection={<IconTrash size={14} />}
+                  onClick={handleDeleteSelected}
+                >
+                  Delete ({selectedIds.size})
+                </Button>
+              )}
+
+              {/* Edit button */}
               <Button
                 size="sm"
                 variant="light"
@@ -790,7 +778,7 @@ export default function Servers() {
                 Edit
               </Button>
 
-              {/* Add Server — always visible */}
+              {/* Add Server button */}
               <Button
                 size="sm"
                 leftSection={<IconPlus size={14} />}
@@ -804,7 +792,7 @@ export default function Servers() {
         </Group>
       </Group>
 
-      {/* ── Table ── */}
+      {/* Table */}
       {loading ? (
         <Box style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
           <Loader color="#5375BF" />
@@ -844,7 +832,7 @@ export default function Servers() {
               ))}
             </thead>
             <tbody>
-              {/* ── Data rows ── */}
+              {/* Data rows */}
               {table.getRowModel().rows.map((row, i) => {
                 const isSelected   = selectedIds.has(row.original.ci_id)
                 const isRowEditing = isGridEditing
@@ -891,7 +879,7 @@ export default function Servers() {
                 )
               })}
 
-              {/* ── Inline Add Row — at the BOTTOM ── */}
+              {/* Inline Add Row */}
               {isAdding && (
                 <tr style={{ backgroundColor: '#EFF6FF', borderLeft: '3px solid #2563EB' }}>
                   <td style={{ padding: '8px 16px' }} />
