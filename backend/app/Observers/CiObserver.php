@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CiObserver
 {
-    /**
-     * Handle events after all transactions are committed.
-     */
+    //Handle events after all transactions are committed.
     public $afterCommit = true;
 
     private array $excludedFields = [
