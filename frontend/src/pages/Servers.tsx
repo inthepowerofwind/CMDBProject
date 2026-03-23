@@ -78,8 +78,11 @@ function EditableCell({
   onChange: (field: string, value: unknown, rerender?: boolean) => void
   minWidth?: number
 }) {
-  const toStr = (v: unknown) =>
-    typeof v === 'boolean' ? (v ? 'Yes' : 'No') : String(v ?? '').split('T')[0]
+  const toStr = (v: unknown): string => {
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+    const s = String(v ?? '')
+    return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
+  }
 
   // Local state for text inputs — prevents focus loss on every keystroke
   const [localValue, setLocalValue] = useState<string>(toStr(value))
@@ -223,6 +226,7 @@ export default function Servers() {
       setNewForm(emptyForm())
       setIsAdding(false)
       notifications.show({ color: 'green', message: `${created.ci_id} added.` })
+      await fetchServers()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add server.' })
     } finally {
@@ -257,6 +261,7 @@ export default function Servers() {
       setIsGridEditing(false)
       setEditForms({})
       notifications.show({ color: 'green', message: 'Changes saved.' })
+      await fetchServers()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to save changes.' })
     } finally {
@@ -280,6 +285,7 @@ export default function Servers() {
       setSelectedIds(new Set())
       setShowCheckboxes(false)
       notifications.show({ color: 'orange', message: `${ids.length} server(s) deleted.` })
+      await fetchServers()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to delete.' })
     }
