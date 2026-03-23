@@ -68,7 +68,7 @@ export default function Dashboard() {
 
   return (
     <Box p="xl">
-      <Text mb="lg" fw={400} color='gray'>Welcome back, Carlos! Here's what's happening with your business today.</Text>
+      <Text mb="lg" fw={400} color='gray'>Welcome back! Here's what's happening with your business today.</Text>
       <Grid mb="xl">
         <Grid.Col span={3}>
           <StatCard title="Total CIs"       value={totalCIs}      color="black" iconColor='blue'   icon={IconServer}       />
