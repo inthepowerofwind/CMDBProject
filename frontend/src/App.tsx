@@ -6,7 +6,7 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import Dashboard from './pages/dashboard'
 import Servers from './pages/Servers'
-// import Network from './pages/Network'
+import ChangeLog from './pages/ChangeLog'
 
 
 type PageName =
@@ -26,6 +26,7 @@ function getPage(activePage: PageName) {
     case 'relationships':
     case 'changelog':
     case 'reference':
+    case 'changelog': return <ChangeLog />
     default:
       return (
         <Box p="xl">

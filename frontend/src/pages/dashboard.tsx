@@ -1,8 +1,14 @@
 import { Grid, Card, Text, Group, Box, ThemeIcon, Table, TableData } from '@mantine/core'
 import { IconServer, IconCircleCheck, IconCircleX, IconAlertTriangle } from '@tabler/icons-react'
+import { Grid, Card, Text, Group, Box, ThemeIcon, Table, TableData, Alert, Loader } from '@mantine/core'
+import { IconServer, IconCircleCheck, IconCircleX, IconAlertTriangle, IconAlertCircle } from '@tabler/icons-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { ComponentType } from 'react'
 import { ciSummary } from '../data/mockData'
+import { ComponentType, useEffect, useState } from 'react'
+import { dashboardService, DashboardData } from '../api/dashboardService'
+
+
 
 interface StatCardProps {
   title: string
@@ -65,31 +71,76 @@ export default function Dashboard() {
   const totalActive = ciSummary.reduce((sum, r) => sum + r.active, 0)
   const totalDecomm = ciSummary.reduce((sum, r) => sum + r.decommissioned, 0)
   const totalEol    = ciSummary.reduce((sum, r) => sum + r.eolAtRisk, 0)
+  const [dashData, setDashData] = useState<DashboardData | null>(null)
+  const [loading, setLoading]   = useState(true)   // true = show spinner
+  const [error, setError]       = useState('')
+  
+  // ... fetch goes here (step 3)
+  useEffect(() => {
+  dashboardService.get()
+    .then((data) => setDashData(data))   // ← save to state
+    .catch(() => setError('Failed to load dashboard data.'))
+    .finally(() => setLoading(false))    // ← always turn off spinner
+  }, [])  // ← empty array = run once on mount only
+
+  if (loading) {
+    return (
+      <Box p="xl" style={{ display:'flex', justifyContent:'center', paddingTop: 80 }}>
+        <Loader color="#5375BF" />
+      </Box>
+    )
+  }
+
+  if (error || !dashData) {
+    return (
+      <Box p="xl">
+        <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
+          {error || 'No data available.'}
+        </Alert>
+      </Box>
+    )
+  }
+
+// ← only reaches here when data is ready
+
+  
+  // total_cis is a direct field
+  const totalCIs = dashData.total_cis
+
+  // ci_per_status is an array like:
+  // [ { label: "Active", total: 9 }, { label: "EOL", total: 1 }, ... ]
+  const totalActive = dashData.ci_per_status
+    .find((s) => s.label === 'Active')?.total ?? 0
+
+  const totalDecomm = dashData.ci_per_status
+    .find((s) => s.label === 'Decommissioned')?.total ?? 0
+
+  const totalEol = dashData.ci_per_status
+    .find((s) => s.label === 'EOL')?.total ?? 0
 
   return (
     <Box p="xl">
-      <Text mb="lg" fw={400} color='gray'>Welcome back! Here's what's happening with your business today.</Text>
       <Grid mb="xl">
         <Grid.Col span={3}>
-          <StatCard title="Total CIs"       value={totalCIs}      color="black" iconColor='blue'   icon={IconServer}       />
         </Grid.Col>
         <Grid.Col span={3}>
-          <StatCard title="Active"          value={totalActive}   color="black" iconColor="green"  icon={IconCircleCheck}   />
         </Grid.Col>
         <Grid.Col span={3}>
-          <StatCard title="Decommissioned"  value={totalDecomm}   color="black" iconColor="gray"   icon={IconCircleX}       />
         </Grid.Col>
         <Grid.Col span={3}>
-          <StatCard title="EOL / At Risk"   value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
         </Grid.Col>
       </Grid>
-
-      <Grid mb="xl">
+      <Grid mt="lg">
         <Grid.Col span={7}>
           <Card shadow="sm" radius="md" withBorder h="100%">
             <Text fw={600} mb="md" c="#1a2b4a">CI Category Summary</Text>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={ciSummary} margin={{ left: -20 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={dashData.ci_per_category}
+                margin={{ left: -20, bottom: 5 }}
+              >
                 <XAxis dataKey="category" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip />
@@ -97,10 +148,21 @@ export default function Dashboard() {
                 <Bar dataKey="active"         name="Active"         fill="#55B685" radius={[4,4,0,0]} />
                 <Bar dataKey="decommissioned" name="Decommissioned" fill="#969fab" radius={[4,4,0,0]} />
                 <Bar dataKey="eolAtRisk"      name="EOL / At Risk"  fill="#AA2E26" radius={[4,4,0,0]} />
+                <Bar dataKey="active"         name="Active"         fill="#40c057" radius={[4,4,0,0]} />
+                <Bar dataKey="decommissioned" name="Decommissioned" fill="#adb5bd" radius={[4,4,0,0]} />
+                <Bar dataKey="eol"            name="EOL / At Risk"  fill="#e53e3e" radius={[4,4,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
         </Grid.Col>
+            </Grid.Col>
+          <Grid.Col span={5}>
+            <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
+              <Text fw={600} mb="md" c="#1a2b4a">CMDB Overview</Text>
+              <Table.ScrollContainer minWidth={500} maxHeight={300}>
+                  <Table striped highlightOnHover withTableBorder withColumnBorders data={tableData}/>
+              </Table.ScrollContainer>
+            </Card>
 
         <Grid.Col span={5}>
           <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
@@ -118,6 +180,14 @@ export default function Dashboard() {
           </Card>
         </Grid.Col>
       </Grid>
+            <Card shadow="sm" radius="md" withBorder h="230">
+              <Text fw={600} mb="md" c="#1a2b4a">Workbook Navigation</Text>
+              <Table.ScrollContainer minWidth={500} maxHeight={300}>
+                  <Table striped highlightOnHover withTableBorder withColumnBorders data={tableWorkbook}/>
+              </Table.ScrollContainer>
+            </Card>
+          </Grid.Col>
+      </Grid>  
     </Box>
   )
 }

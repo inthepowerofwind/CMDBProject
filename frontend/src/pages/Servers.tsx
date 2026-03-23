@@ -2,12 +2,14 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { notifications } from '@mantine/notifications'
 import { serverService, Server, ServerPayload } from '../api/serverService'
 import {
+
   Box, Text, Badge, ScrollArea, Button, Loader,
   TextInput, Select, Group, Alert, Tooltip, Checkbox, Pagination,
 } from '@mantine/core'
 import {
   IconPlus, IconChevronUp, IconChevronDown, IconSelector,
   IconTrash, IconEdit, IconDeviceFloppy, IconAlertCircle, IconX,
+
 } from '@tabler/icons-react'
 import {
   useReactTable,
@@ -34,6 +36,10 @@ const criticalityColor: Record<NonNullable<Server['criticality']>, string> = {
   High:     'orange',
   Medium:   'yellow',
   Low:      'blue',
+  Critical:         'red',
+  High:             'orange',
+  Medium:           'yellow',
+  Low:              'blue',
 }
 
 const emptyForm = (): ServerPayload => ({
@@ -51,6 +57,16 @@ const emptyForm = (): ServerPayload => ({
   eol_date: null, last_config_review: null,
   baseline_applied: false, backup_enabled: false,
   monitoring_siem: false, notes: null,
+  ci_name:          '',           status:             'Active',   ci_type:          null,
+  environment:      'Production', hostname:           null,       operating_system: null, 
+  os_version:       null,         patch_level:        null,       cpu_cores:        null,
+  ram_gb:           null,         storage_tb:         null,       virtualized:      false,  
+  location:         null,         rack_slot:          null,       criticality:      'Medium', 
+  business_service: null,         assigned_owner:     null,       department:       null,
+  manufacturer:     null,         model:              null,       serial_number:    null, 
+  asset_tag:        null,         purchase_date:      null,       warranty_expiry:  null,
+  eol_date:         null,         last_config_review: null,       baseline_applied: false, 
+  backup_enabled:   false,        monitoring_siem:    false,      notes:            null,
 })
 
 const columnHelper = createColumnHelper<Server>()
@@ -73,11 +89,18 @@ function EditableCell({
   onChange: (field: string, value: unknown, rerender?: boolean) => void
   minWidth?: number
 }) {
+<<<<<<< HEAD
   const toStr = (v: unknown) => {
     if (typeof v === 'boolean') return v ? 'Yes' : 'No'
     const s = String(v ?? '')
     return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
 
+=======
+  const toStr = (v: unknown): string => {
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+    const s = String(v ?? '')
+    return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
+>>>>>>> f9dc3515ae0aede561427f765855732080cd1a24
   }
 
   const [localValue, setLocalValue] = useState<string>(toStr(value))
@@ -159,6 +182,8 @@ export default function Servers() {
 
   const sortBy  = sorting[0]?.id
   const sortDir = (sorting[0]?.desc ? 'desc' : 'asc') as 'asc' | 'desc'
+  const sortBy         = sorting[0]?.id
+  const sortDir        = (sorting[0]?.desc ? 'desc' : 'asc') as 'asc' | 'desc'
 
   const fetchServers = useCallback(async () => {
     setLoading(true)
@@ -214,6 +239,7 @@ export default function Servers() {
       setNewForm(emptyForm())
       setIsAdding(false)
       notifications.show({ color: 'green', message: `${created.ci_id} added.` })
+      await fetchServers()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add server.' })
     } finally {
@@ -248,6 +274,7 @@ export default function Servers() {
       setIsGridEditing(false)
       setEditForms({})
       notifications.show({ color: 'green', message: 'Changes saved.' })
+      await fetchServers()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to save changes.' })
     } finally {
@@ -271,6 +298,7 @@ export default function Servers() {
       setSelectedIds(new Set())
       setShowCheckboxes(false)
       notifications.show({ color: 'orange', message: `${ids.length} server(s) deleted.` })
+      await fetchServers()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to delete.' })
     }
@@ -661,6 +689,8 @@ export default function Servers() {
     state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange:   setSorting,
+    getCoreRowModel:   getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
 

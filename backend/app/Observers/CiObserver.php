@@ -319,6 +319,7 @@ class CiObserver
             'change_type'        => $changeType,
             'change_description' => $description,
             'change_by'          => auth()->user()->name ?? 'System',
+            'change_by' => optional(request()->user())->name ?? 'System',
             'previous_values'    => $prevSummary ?: null,
             'new_values'         => $nextSummary ?: null,
         ]);
