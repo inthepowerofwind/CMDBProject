@@ -54,9 +54,6 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout }: 
       </Text>
 
       <Box style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <ActionIcon variant="subtle" color="gray" size="md">
-          <IconBell size={17} />
-        </ActionIcon>
 
         <Box style={{
           width: 32, height: 32, borderRadius: '50%',

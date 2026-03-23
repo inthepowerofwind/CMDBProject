@@ -179,7 +179,8 @@ export default function ChangeLog() {
       setLogs(result.data)
       setTotal(result.total)
       setLastPage(result.last_page)
-    } catch {
+    } catch (err: any) {
+      console.error('Change log error:', err?.response?.status, err?.response?.data)
       setError('Failed to load change logs.')
     } finally {
       setLoading(false)
@@ -284,8 +285,7 @@ export default function ChangeLog() {
           <TextInput label="Changed By *"   value={form.change_by} onChange={(e)                => setField('change_by', e.target.value)}             placeholder="Carlos M." />
           <TextInput label="RFS Reference"  value={form.rfs_reference ?? ''} onChange={(e)      => setField('rfs_reference', e.target.value || null)} placeholder="RFS-2026-001" />
           <TextInput label="Approved By"    value={form.approved_by ?? ''} onChange={(e)        => setField('approved_by', e.target.value || null)}   placeholder="Ana R." />
-          <TextInput label="Description"    value={form.change_description ?? ''} onChange={(e) => setField('change_description', e.target.value || null)}
-            placeholder="Planned downtime for patching" style={{ gridColumn: 'span 2' }} />
+          <TextInput label="Description"    value={form.change_description ?? ''} onChange={(e) => setField('change_description', e.target.value || null)}  placeholder="Planned downtime for patching" style={{ gridColumn: 'span 2' }} />
         </SimpleGrid>
         <Group justify="flex-end" mt="lg">
           <Button variant="default" onClick={() => setModalOpen(false)}>Cancel</Button>
