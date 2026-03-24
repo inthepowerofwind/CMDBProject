@@ -1,4 +1,3 @@
-// Define the "shape" of each data type first
 export interface CISummaryRow {
   category: string
   total: number
