@@ -118,19 +118,13 @@ class CiRelationshipController extends Controller
     {
                 try {
             $data = $request->validate([
-<<<<<<< HEAD
-                'source_ci_id'      => 'required|string|max:100',
-                'source_ci_name'    => 'required|string|max:255',
-                'relationship_type' => 'required|string|max:100',
-                'target_ci_id'      => 'required|string|max:100',
-                'target_ci_name'    => 'required|string|max:255',
-=======
+                
                 'source_ci_id'      => 'sometimes|required|string|max:100',
                 'source_ci_name'    => 'sometimes|required|string|max:255',
                 'relationship_type' => 'sometimes|required|string|max:100',
                 'target_ci_id'      => 'sometimes|required|string|max:100',
                 'target_ci_name'    => 'sometimes|required|string|max:255',
->>>>>>> ed2f79f317ec69106cca1897d5609e6b57114ab8
+
                 'description'       => 'nullable|string',
                 'criticality'       => 'string|in:Critical,High,Medium,Low',
             ]);
