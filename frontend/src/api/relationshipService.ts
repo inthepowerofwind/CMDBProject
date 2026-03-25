@@ -5,10 +5,12 @@ export interface Relationships {
   relationship_id:    string
   source_ci_id:       string
   source_ci_name:     string
-  relationship_type:  string | null
-  version:            string | null
-  target_ci_id:       string | null
-  target_ci_name:     string | null
+  source_ci_table:    string
+  target_ci_table:    string
+  relationship_type:  string
+  version:            string
+  target_ci_id:       string
+  target_ci_name:     string
   description:        string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
   created_at:         string

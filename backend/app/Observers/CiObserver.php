@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CiObserver
 {
-    //Handle events after all transactions are committed.
+
     public $afterCommit = true;
 
     private array $excludedFields = [
@@ -15,8 +15,7 @@ class CiObserver
     ];
 
     private array $fieldLabels = [
-
-        // Common CI Fields
+        
         'ci_id'                             => 'CI ID',
         'ci_name'                           => 'CI Name',
         'ci_type'                           => 'CI Type',
@@ -25,15 +24,11 @@ class CiObserver
         'notes'                             => 'Notes',
         'environment'                       => 'Environment',
         'department'                        => 'Department',
-
-        // Ownership
         'assigned_owner'                    => 'Assigned Owner',
         'assigned_user'                     => 'Assigned User',
         'business_owner'                    => 'Business Owner',
         'it_owner'                          => 'IT Owner',
         'employee_id'                       => 'Employee ID',
-
-        // Infrastructure / Server
         'hostname'                          => 'Hostname',
         'ip_address'                        => 'IP Address',
         'operating_system'                  => 'Operating System',
@@ -45,8 +40,6 @@ class CiObserver
         'storage_gb'                        => 'Storage (GB)',
         'storage_tb'                        => 'Storage (TB)',
         'virtualized'                       => 'Virtualized',
-
-        // Hardware / Asset
         'manufacturer'                      => 'Manufacturer',
         'model'                             => 'Model',
         'serial_number'                     => 'Serial Number',
@@ -54,19 +47,13 @@ class CiObserver
         'purchase_date'                     => 'Purchase Date',
         'warranty_expiry'                   => 'Warranty Expiry',
         'eol_date'                          => 'EOL Date',
-
-        // Location
         'location'                          => 'Location',
         'location_floor'                    => 'Location/Floor',
         'rack_slot'                         => 'Rack Slot',
         'rack_position'                     => 'Rack Position',
-
-        // Network
         'mac_address'                       => 'MAC Address',
         'vlan_segment'                      => 'VLAN/Segment',
         'ports_interfaces'                  => 'Ports/Interfaces',
-
-        // Security & Monitoring
         'baseline_applied'                  => 'Baseline Applied',
         'backup_enabled'                    => 'Backup Enabled',
         'monitoring_siem'                   => 'SIEM Monitoring',
@@ -75,8 +62,6 @@ class CiObserver
         'edr_agent'                         => 'EDR Agent',
         'antivirus'                         => 'Antivirus',
         'last_login'                        => 'Last Login',
-
-        // Cloud Services
         'service_name'                      => 'Service Name',
         'service_type'                      => 'Service Type',
         'cloud_model'                       => 'Cloud Model',
@@ -97,8 +82,6 @@ class CiObserver
         'contact_expiry'                    => 'Contact Expiry',
         'shared_responsibility_documented'  => 'Shared Responsibility Documented',
         'last_security_review'              => 'Last Security Review',
-
-        // Software
         'software_name'                     => 'Software Name',
         'software_type'                     => 'Software Type',
         'version'                           => 'Version',
@@ -116,8 +99,6 @@ class CiObserver
         'procurement_date'                  => 'Procurement Date',
         'license_expiry'                    => 'License Expiry',
         'last_review'                       => 'Last Review',
-
-        // Database
         'database_name'                     => 'Database Name',
         'db_type'                           => 'DB Type',
         'host_server_ci'                    => 'Host Server CI',
@@ -129,8 +110,6 @@ class CiObserver
         'access_control'                    => 'Access Control',
         'monitoring'                        => 'Monitoring',
         'db_owner'                          => 'DB Owner',
-
-        // Relationships
         'relationship_id'                   => 'Relationship ID',
         'source_ci_id'                      => 'Source CI',
         'target_ci_id'                      => 'Target CI',
@@ -140,43 +119,31 @@ class CiObserver
     ];
 
     private array $changeTypeHints = [
-
-        // Updates
         'patch_level'                       => 'Patch Update',
         'firmware_version'                  => 'Firmware Update',
         'version'                           => 'Version Update',
         'os_version'                        => 'OS Update',
         'operating_system'                  => 'OS Update',
-
-        // Changes
         'status'                            => 'Status Change',
         'criticality'                       => 'Criticality Change',
         'data_classification'               => 'Classification Change',
         'environment'                       => 'Environment Change',
         'location'                          => 'Location Change',
         'service_tier'                      => 'Tier Change',
-
-        // Ownership
         'assigned_owner'                    => 'Ownership Change',
         'assigned_user'                     => 'Ownership Change',
         'business_owner'                    => 'Ownership Change',
         'it_owner'                          => 'Ownership Change',
-
-        // Financial / License
         'monthly_cost'                      => 'Cost Update',
         'license_count'                     => 'License Update',
         'licenses_deployed'                 => 'License Update',
         'license_expiry'                    => 'License Update',
         'compliance_status'                 => 'Compliance Update',
-
-        // SLA / Reviews
         'sla_uptime'                        => 'SLA Update',
         'last_security_review'              => 'Security Review Update',
         'last_config_review'                => 'Config Review Update',
         'warranty_expiry'                   => 'Warranty Update',
         'eol_date'                          => 'EOL Update',
-
-        // Rename
         'ci_name'                           => 'Rename',
         'service_name'                      => 'Rename',
         'software_name'                     => 'Rename',
@@ -229,13 +196,11 @@ class CiObserver
     private function resolveChangeType(array $changedFields): string
     {
         $matched = [];
-
         foreach ($this->changeTypeHints as $field => $label) {
             if (array_key_exists($field, $changedFields) && !in_array($label, $matched, true)) {
                 $matched[] = $label;
             }
         }
-
         return !empty($matched) ? implode(', ', $matched) : 'Updated';
     }
 
@@ -303,11 +268,13 @@ class CiObserver
                 $last = CiChangeLog::withTrashed()
                     ->where('change_log_id', 'like', 'CHG-LOG-%')
                     ->lockForUpdate()
-                    ->orderByRaw("TRY_CAST(SUBSTRING(change_log_id, 10, LEN(change_log_id)) AS INT) DESC")
+                    ->orderByRaw("TRY_CAST(SUBSTRING(change_log_id, 9, LEN(change_log_id)) AS INT) DESC")
                     ->value('change_log_id');
 
                 $number = $last ? (int) substr($last, 8) : 0;
-                $newId  = 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
+
+                $newId = 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
+
 
                 CiChangeLog::create([
                     'change_log_id'      => $newId,
@@ -321,21 +288,18 @@ class CiObserver
                     'new_values'         => $nextSummary ?: null,
                 ]);
             });
-
-        } catch (\Throwable $th) {
-            \Log::error("Failed to log CI change: " . $th->getMessage(),[
-                'ci_id' => $ciId,
-                'ci_name' => $ciName,
-                'table' => $table,
+        } catch (\Throwable $e) {
+            \Log::error('Failed to create change log: ' . $e->getMessage(), [
+                'ci_id'       => $ciId,
+                'change_type' => $changeType,
+                'table'       => $table,
             ]);
-            return;
         }
-        
     }
 
     public function created(Model $m): void
     {
-        //dd($m->toArray());
+
         $this->log($m, 'Created', [], $m->toArray());
     }
 
@@ -354,5 +318,5 @@ class CiObserver
         $this->log($m, 'Restored', [], $m->toArray());
     }
 
-    
+
 }

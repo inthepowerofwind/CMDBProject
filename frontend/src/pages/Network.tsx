@@ -4,11 +4,18 @@ import { CIColumnDef } from '../components/CITable/CITable.types'
 import { networkService, NetworkDevice, NetworkPayload } from '../api/networkService'
 
 const STATUS_COLOR: Record<string, string> = {
-  Active: 'green', Decommissioned: 'gray', EOL: 'red',
-  'In Procurement': 'orange', 'In Deployment': 'blue', Maintenance: 'yellow',
+  Active: 'green', 
+  Decommissioned: 'gray', 
+  EOL: 'red',
+  'In Procurement': 'orange', 
+  'In Deployment': 'blue', 
+  Maintenance: 'yellow',
 }
 const CRIT_COLOR: Record<string, string> = {
-  Critical: 'red', High: 'orange', Medium: 'yellow', Low: 'blue',
+  Critical: 'red', 
+  High: 'orange', 
+  Medium: 'yellow', 
+  Low: 'blue',
 }
 const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
 
@@ -28,7 +35,7 @@ const COLUMNS: CIColumnDef<NetworkDevice>[] = [
   { key: 'mac_address',       header: 'MAC Address',                type: 'text',   width: 140 },
   { key: 'vlan_segment',      header: 'VLAN / Segment',             type: 'text' },
   { key: 'ports_interfaces',  header: 'Ports / Interfaces',         type: 'text' },
-  { key: 'firmware_ver',      header: 'Firmware Version',           type: 'text' },
+  { key: 'firmware_version',  header: 'Firmware Version',           type: 'text' },
   { key: 'patch_level',       header: 'Patch Level',                type: 'text' },
   { key: 'location',          header: 'Location',                   type: 'text',   width: 160 },
   { key: 'rack_position',     header: 'Rack / Position',            type: 'text' },

@@ -39,4 +39,6 @@ export interface CITableProps<
   booleanFields?:     string[]
   addLabel?:          string
   searchPlaceholder?: string
+  requiredFields?:    (keyof P & string)[]
+  
 }

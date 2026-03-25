@@ -11,13 +11,13 @@ export interface NetworkDevice {
   mac_address:        string | null
   vlan_segment:       string | null
   ports_interfaces:   string | null
-  firmware_ver:       string | null
+  firmware_version:   string | null
   patch_level:        string | null
   location:           string | null
   rack_position:      string | null
-  redundancy:         string | null
+  redundancy:         string | null // waley sa CIObserver
   criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
-  business_service:   string | null
+  business_service:   string | null // waley sa CIObserver
   assigned_owner:     string | null
   department:         string | null
   manufacturer:       string | null

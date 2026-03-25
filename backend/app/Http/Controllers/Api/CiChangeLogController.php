@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class CiChangeLogController extends Controller
 {
-
     public function index(Request $request)
     {
         try {

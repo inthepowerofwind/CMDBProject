@@ -53,8 +53,10 @@ const environmentValues: TableData = {
 
 const dataClassification: TableData = {
   head: [
-    ['Relationship Type'],
-    ['Description'], 
+    ['Classification'],
+    ['Description'],
+    ['Encryption Required'],
+    ['External Sharing'],
   ],
   
   body: [
@@ -62,6 +64,25 @@ const dataClassification: TableData = {
     ['Internal',          'For internal use only – not for external sharing',       'Recommended',       'No'],
     ['Confidential',      'Sensitive business or personal data',                    'Yes',               'Restricted / Approved only'],
     ['Restricted',        'Highest sensitivity – regulatory or legal data',         'Mandatory',         'Never'],
+  ],
+};
+
+const relationshipType: TableData = {
+  head: [
+    ['Relationship Type'],
+    ['Description'],
+  ],
+  
+  body: [
+    ['Runs On / Hosted By',     'Software or service that runs on a hardware CI', ],
+    ['Uses / Depends On',       'CI that requires another CI to function', ],
+    ['Hosts / Virtualizes',     'Physical CI that hosts virtual CIs', ],
+    ['Backed Up By',            'CI whose data is backed up to another CI', ],
+    ['Replicates To',           'CI that replicates data to another CI', ],
+    ['HA Pair',                 'Two CIs configured in High Availability mode', ],
+    ['Protects / Fronts',       'Security CI protecting another CI', ],
+    ['Load Balances',           'CI distributing traffic to multiple target CIs', ],
+    ['Contains PII For',        'HCI that stores or processes data for another system', ],
   ],
 };
 
@@ -93,7 +114,7 @@ export default function Reference() {
 
           <Card mb="lg" shadow="sm" radius="md" withBorder>
             <Text fw={600} mb="md" c="#1a2b4a">Relationship Types</Text>
-              <Table striped highlightOnHover withTableBorder withColumnBorders data={dataClassification}/>
+              <Table striped highlightOnHover withTableBorder withColumnBorders data={relationshipType}/>
           </Card>
 
         </Grid.Col>

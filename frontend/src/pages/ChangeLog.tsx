@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react'
-//import { notifications } from '@mantine/notifications'
 import {
   Box, Text, Badge, ScrollArea, Loader,
   TextInput, Select, Group, Alert, Pagination, Table, ActionIcon,
@@ -165,15 +164,13 @@ export default function ChangeLog() {
   const [search, setSearch]           = useState('')
   const [filterType, setFilterType]   = useState<string | null>(null)
   const [filterTable, setFilterTable] = useState<string | null>(null)
-  // const [form, setForm]               = useState<ChangeLogPayload>(emptyForm())
-  // const [, setSaving]           = useState(false)
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
       const params: ChangeLogListParams = {
-        page, per_page: 25,
+        page, per_page: 14,
         search:      search || undefined,
         change_type: filterType  || undefined,
         ci_table:    filterTable || undefined,
@@ -192,21 +189,6 @@ export default function ChangeLog() {
   }, [page, search, filterType, filterTable])
 
   useEffect(() => { fetchLogs() }, [fetchLogs])
-
-  // const handleAdd = async () => {
-  //   setSaving(true)
-  //   try {
-  //     const created = await changeLogService.create(form)
-  //     setLogs((prev) => [created, ...prev])
-  //     setTotal((t) => t + 1)
-  //     setForm(emptyForm())
-  //     notifications.show({ color: 'green', message: `${created.change_log_id} created.` })
-  //   } catch {
-  //     notifications.show({ color: 'red', message: 'Failed to create log entry.' })
-  //   } finally {
-  //     setSaving(false)
-  //   }
-  // }
 
   return (
     <Box p="xl">

@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //relationships and change logs
         Route::apiResource('ci-relationships', CiRelationshipController::class);
         Route::get('/change-logs', [CiChangeLogController::class, 'index']);*/
+        
     // Servers
     Route::apiResource('servers', ServerController::class);
     Route::post('/servers/{ciId}/restore', [ServerController::class, 'restore']);

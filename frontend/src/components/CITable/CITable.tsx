@@ -285,6 +285,7 @@ export default function CITable<
   booleanFields = [],
   addLabel = 'Add Item',
   searchPlaceholder = 'Search...',
+  requiredFields = [],
 }: CITableProps<T, P>) {
 
   // View state
@@ -404,7 +405,7 @@ export default function CITable<
       setRows((prev) => [...prev, created])
       setTotal((t) => t + 1)
       setNewForm(emptyForm())
-      setIsAdding(false)
+      setIsAdding(true)
       notifications.show({ color: 'green', message: `${String((created as Indexable<T>)[idField])} added.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add.' })
@@ -569,7 +570,17 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" onClick={() => { setIsAdding(false); setNewForm(emptyForm()) }}>
               Cancel
             </Button>
-            <Button size="sm" leftSection={<IconDeviceFloppy size={14} />} onClick={handleAdd} loading={saving} style={{ backgroundColor: '#2563EB' }}>
+
+            <Button
+              size="sm"
+              leftSection={<IconDeviceFloppy size={14} />}
+              onClick={handleAdd}
+              loading={saving}
+              disabled={requiredFields.some(
+                (f) => !(newForm as Record<string, unknown>)[f]
+              )}
+              style={{ backgroundColor: '#2563EB' }}
+            >
               Save
             </Button>
           </>
