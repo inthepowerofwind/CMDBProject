@@ -18,7 +18,7 @@ export interface Server {
   location:           string | null
   rack_slot:          string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
-  business_service:   string | null
+  business_service:   string | null //waley sa CIObserver
   assigned_owner:     string | null
   department:         string | null
   manufacturer:       string | null
