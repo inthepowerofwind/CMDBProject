@@ -66,7 +66,7 @@ const emptyDatabaseForm = (): DatabasesPayload => ({
   data_classification: 'Confidential', 
   size: null,
   backup_enabled: true,
-  backup_frequency: true,
+  backup_frequency: null,
   last_backup: null,
   encryption_at_rest: true,
   tde_enabled: true,

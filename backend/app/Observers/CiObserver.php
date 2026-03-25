@@ -183,10 +183,6 @@ class CiObserver
         'database_name'                     => 'Rename',
         'hostname'                          => 'Rename',
     ];
-<<<<<<< HEAD
-    
-=======
->>>>>>> f7f492dde65267fba34b38d660822ae8fa3cd781
 
     private function formatValue(mixed $value): string
     {
@@ -301,21 +297,40 @@ class CiObserver
             $description = $this->buildDescription($type, $table);
         }
 
-        CiChangeLog::create([
-            'change_log_id'      => CiChangeLog::generateChangeLogId(),
-            'ci_id'              => $ciId,
-            'ci_name'            => $ciName,
-            'ci_table'           => $table,
-            'change_type'        => $changeType,
-            'change_description' => $description,
-<<<<<<< HEAD
-            'change_by' => optional(request()->user())->name ?? 'System',
-=======
-            'change_by'          => optional(request()->user())-> name ?? 'System',
->>>>>>> f7f492dde65267fba34b38d660822ae8fa3cd781
-            'previous_values'    => $prevSummary ?: null,
-            'new_values'         => $nextSummary ?: null,
-        ]);
+        try {
+            \DB::transaction(function () use ($ciId, $ciName, $table, $changeType, $description, $prevSummary, $nextSummary) {
+
+                $last = CiChangeLog::withTrashed()
+                    ->where('change_log_id', 'like', 'CHG-LOG-%')
+                    ->lockForUpdate()
+                    ->orderByRaw("TRY_CAST(SUBSTRING(change_log_id, 10, LEN(change_log_id)) AS INT) DESC")
+                    ->value('change_log_id');
+
+                $number = $last ? (int) substr($last, 8) : 0;
+                $newId  = 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
+
+                CiChangeLog::create([
+                    'change_log_id'      => $newId,
+                    'ci_id'              => $ciId,
+                    'ci_name'            => $ciName,
+                    'ci_table'           => $table,
+                    'change_type'        => $changeType,
+                    'change_description' => $description,
+                    'change_by'          => optional(request()->user())->name ?? 'System',
+                    'previous_values'    => $prevSummary ?: null,
+                    'new_values'         => $nextSummary ?: null,
+                ]);
+            });
+
+        } catch (\Throwable $th) {
+            \Log::error("Failed to log CI change: " . $th->getMessage(),[
+                'ci_id' => $ciId,
+                'ci_name' => $ciName,
+                'table' => $table,
+            ]);
+            return;
+        }
+        
     }
 
     public function created(Model $m): void

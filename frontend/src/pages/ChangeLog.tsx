@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { notifications } from '@mantine/notifications'
+//import { notifications } from '@mantine/notifications'
 import {
   Box, Text, Badge, ScrollArea, Loader,
   TextInput, Select, Group, Alert, Pagination, Table, ActionIcon,
@@ -10,7 +10,7 @@ import {
 import {
   changeLogService,
   ChangeLog as ChangeLogEntry,
-  ChangeLogPayload,
+  // ChangeLogPayload,
   ChangeLogListParams,
 } from '../api/changeLogService'
 
@@ -42,18 +42,18 @@ const CI_TABLES = [
   'software', 'cloud_services', 'databases',
 ]
 
-const emptyForm = (): ChangeLogPayload => ({
-  ci_id: '', 
-  ci_name: '', 
-  ci_table: 'servers',
-  change_type: 'Updated', 
-  change_description: null,
-  change_by: '', 
-  //rfs_reference: null,
-  //approved_by: null, 
-  previous_values: null, 
-  new_values: null,
-})
+// const emptyForm = (): ChangeLogPayload => ({
+//   ci_id: '', 
+//   ci_name: '', 
+//   ci_table: 'servers',
+//   change_type: 'Updated', 
+//   change_description: null,
+//   change_by: '', 
+//   //rfs_reference: null,
+//   //approved_by: null, 
+//   previous_values: null, 
+//   new_values: null,
+// })
 
 function DiffTable({ prev, next }: {
   prev: Record<string, unknown> | null
@@ -165,8 +165,8 @@ export default function ChangeLog() {
   const [search, setSearch]           = useState('')
   const [filterType, setFilterType]   = useState<string | null>(null)
   const [filterTable, setFilterTable] = useState<string | null>(null)
-  const [form, setForm]               = useState<ChangeLogPayload>(emptyForm())
-  const [, setSaving]           = useState(false)
+  // const [form, setForm]               = useState<ChangeLogPayload>(emptyForm())
+  // const [, setSaving]           = useState(false)
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
@@ -193,20 +193,20 @@ export default function ChangeLog() {
 
   useEffect(() => { fetchLogs() }, [fetchLogs])
 
-  const handleAdd = async () => {
-    setSaving(true)
-    try {
-      const created = await changeLogService.create(form)
-      setLogs((prev) => [created, ...prev])
-      setTotal((t) => t + 1)
-      setForm(emptyForm())
-      notifications.show({ color: 'green', message: `${created.change_log_id} created.` })
-    } catch {
-      notifications.show({ color: 'red', message: 'Failed to create log entry.' })
-    } finally {
-      setSaving(false)
-    }
-  }
+  // const handleAdd = async () => {
+  //   setSaving(true)
+  //   try {
+  //     const created = await changeLogService.create(form)
+  //     setLogs((prev) => [created, ...prev])
+  //     setTotal((t) => t + 1)
+  //     setForm(emptyForm())
+  //     notifications.show({ color: 'green', message: `${created.change_log_id} created.` })
+  //   } catch {
+  //     notifications.show({ color: 'red', message: 'Failed to create log entry.' })
+  //   } finally {
+  //     setSaving(false)
+  //   }
+  // }
 
   return (
     <Box p="xl">
