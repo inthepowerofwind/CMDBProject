@@ -44,10 +44,16 @@ const CI_TABLES = [
 ]
 
 const emptyForm = (): ChangeLogPayload => ({
-  ci_id: '', ci_name: '', ci_table: 'servers',
-  change_type: 'Updated', change_description: null,
-  change_by: '', rfs_reference: null,
-  approved_by: null, previous_values: null, new_values: null,
+  ci_id: '', 
+  ci_name: '', 
+  ci_table: 'servers',
+  change_type: 'Updated', 
+  change_description: null,
+  change_by: '', 
+  //rfs_reference: null,
+  //approved_by: null, 
+  previous_values: null, 
+  new_values: null,
 })
 
 function DiffTable({ prev, next }: {
@@ -130,8 +136,8 @@ function LogRow({ log, index }: { log: ChangeLogEntry; index: number }) {
           </Text>
         </td>
         <td style={tdStyle}><Text size="xs">{log.change_by}</Text></td>
-        <td style={tdStyle}><Text size="xs" c="dimmed">{log.rfs_reference ?? '—'}</Text></td>
-        <td style={tdStyle}><Text size="xs" c="dimmed">{log.approved_by ?? '—'}</Text></td>
+        {/* <td style={tdStyle}><Text size="xs" c="dimmed">{log.rfs_reference ?? '—'}</Text></td>
+        <td style={tdStyle}><Text size="xs" c="dimmed">{log.approved_by ?? '—'}</Text></td> */}
         <td style={tdStyle}>
           <Text size="xs" c="dimmed">{new Date(log.created_at).toLocaleString()}</Text>
         </td>
@@ -231,10 +237,10 @@ export default function ChangeLog() {
           />
           <Text size="sm" c="dimmed">Total: {total}</Text>
         </Group>
-        <Button size="sm" leftSection={<IconPlus size={14} />}
+        {/* <Button size="sm" leftSection={<IconPlus size={14} />}
           onClick={() => setModalOpen(true)} style={{ backgroundColor: '#5375BF' }}>
           Manual Entry
-        </Button>
+        </Button> */}
       </Group>
 
       {loading ? (
@@ -249,7 +255,7 @@ export default function ChangeLog() {
             <table style={{ minWidth: 1400, width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: '#F8FAFC' }}>
-                  {['Log ID','CI ID','CI Name','CI Table','Change Type','Description','Changed By','RFS Reference','Approved By','Date & Time'].map((h) => (
+                  {['Log ID','CI ID','CI Name','CI Table','Change Type','Description','Changed By'/*,'RFS Reference','Approved By'*/,'Date & Time'].map((h) => (
                     <th key={h} style={{ padding: '10px 16px', textAlign: 'left', whiteSpace: 'nowrap', borderBottom: '1px solid #E3E8EF' }}>
                       <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>{h}</Text>
                     </th>
@@ -274,7 +280,7 @@ export default function ChangeLog() {
         </Group>
       )}
 
-      <Modal opened={modalOpen} onClose={() => setModalOpen(false)}
+      {/* <Modal opened={modalOpen} onClose={() => setModalOpen(false)}
         title={<Text fw={700} size="md">Manual Log Entry</Text>}
         size="lg" scrollAreaComponent={ScrollArea.Autosize}>
         <SimpleGrid cols={2} spacing="sm">
@@ -293,7 +299,7 @@ export default function ChangeLog() {
             disabled={!form.ci_id || !form.ci_name || !form.change_by}
             style={{ backgroundColor: '#5375BF' }}>Save Entry</Button>
         </Group>
-      </Modal>
+      </Modal> */}
     </Box>
   )
 }
