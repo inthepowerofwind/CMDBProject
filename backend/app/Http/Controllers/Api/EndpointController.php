@@ -26,7 +26,9 @@ class EndpointController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Endpoint::query();
+            $query = $request->boolean('archived')
+                ? Endpoint::onlyTrashed()
+                : Endpoint::query();
             //search
             if ($request->filled('search')) {
                 $s = $request->search;

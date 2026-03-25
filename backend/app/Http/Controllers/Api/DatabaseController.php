@@ -25,7 +25,9 @@ class DatabaseController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = CmdbDatabase::query();
+            $query = $request->boolean('archived')
+                ? CmdbDatabase::onlyTrashed()
+                : CmdbDatabase::query();
             //search
             if ($request->filled('search')) {
                 $s = $request->search;

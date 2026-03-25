@@ -472,16 +472,11 @@ export default function CITable<
     setDeleteModalOpen(false)
     const ids = Array.from(selectedIds)
     try {
-      if (service.archive) {
-        await Promise.all(ids.map((id) => service.archive!(id)))
-        notifications.show({ color: 'orange', message: `${ids.length} item(s) moved to archive.` })
-      } else {
-        await Promise.all(ids.map((id) => service.delete(id)))
-        notifications.show({ color: 'red', message: `${ids.length} item(s) deleted.` })
-      }
+      await Promise.all(ids.map((id) => service.delete(id)))
       setRows((prev) => prev.filter((r) => !selectedIds.has(String((r as Indexable<T>)[idField]))))
       setTotal((t) => t - ids.length)
       setSelectedIds(new Set())
+      notifications.show({ color: 'orange', message: `${ids.length} item(s) moved to archive.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to delete.' })
     }
@@ -531,7 +526,7 @@ export default function CITable<
   }
 
   const hasSelection = selectedIds.size > 0
-  const hasArchive   = !!service.archive || !!service.restore
+  const hasArchive   = !!service.restore
 
   // Toolbar for main view
   const mainToolbar = (
@@ -662,7 +657,7 @@ export default function CITable<
         <Group justify="flex-end" gap={8}>
           <Button variant="default" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
           <Button variant="filled" color="red" onClick={handleDeleteConfirm}>
-            {hasArchive ? 'Delete' : 'Delete'}
+            Delete
           </Button>
         </Group>
       </Modal>

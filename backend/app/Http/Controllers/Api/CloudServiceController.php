@@ -26,7 +26,9 @@ class CloudServiceController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = CloudService::query();
+            $query = $request->boolean('archived')
+                ? CloudService::onlyTrashed()
+                : CloudService::query();
             //search
             if ($request->filled('search')) {
                 $s = $request->search;

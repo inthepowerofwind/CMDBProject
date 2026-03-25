@@ -34,7 +34,9 @@ class CiRelationshipController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = CiRelationship::query();
+            $query = $request->boolean('archived')
+                ? CiRelationship::onlyTrashed()
+                : CiRelationship::query();
     
             //search
             if ($request->filled('search')) {

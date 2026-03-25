@@ -25,7 +25,9 @@ class SoftwareController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Software::query();
+            $query = $request->boolean('archived')
+                ? Software::onlyTrashed()
+                : Software::query();
             //search
             if ($request->filled('search')) {
                 $s = $request->search;

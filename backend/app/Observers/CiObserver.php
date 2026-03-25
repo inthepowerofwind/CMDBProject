@@ -204,8 +204,17 @@ class CiObserver
         return !empty($matched) ? implode(', ', $matched) : 'Updated';
     }
 
+    private function formatTableName(string $table): string
+    {
+        return str_replace('Ci ', '', ucwords(str_replace('_', ' ', $table)));
+    }
+
+
+
     private function buildDescription(string $type, string $table, array $changedFields = []): string
     {
+        $table = $this->formatTableName($table);
+
         if ($type === 'Created')  return "New CI record created in {$table}";
         if ($type === 'Deleted')  return "CI record removed from {$table}";
         if ($type === 'Restored') return "CI record restored in {$table}";
@@ -305,6 +314,13 @@ class CiObserver
 
     public function updated(Model $m): void
     {
+        // Skip the updated event if this is a restore operation
+        // (deleted_at changing from a value to null = restore)
+        $changes = $m->getChanges();
+        if (array_key_exists('deleted_at', $changes) && is_null($changes['deleted_at'])) {
+            return;
+        }
+
         $this->log($m, 'Updated', $m->getOriginal(), $m->getChanges());
     }
 
