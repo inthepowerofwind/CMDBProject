@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { notifications } from '@mantine/notifications'
 import {
-  Box, Text, Badge, ScrollArea, Button, Modal, Loader,
-  TextInput, Select, Group, Alert, Pagination,
-  SimpleGrid, Table, ActionIcon,
+  Box, Text, Badge, ScrollArea, Loader,
+  TextInput, Select, Group, Alert, Pagination, Table, ActionIcon,
 } from '@mantine/core'
 import {
-  IconAlertCircle, IconPlus, IconChevronDown, IconChevronRight,
+  IconAlertCircle, IconChevronDown, IconChevronRight,
 } from '@tabler/icons-react'
 import {
   changeLogService,
@@ -166,9 +165,8 @@ export default function ChangeLog() {
   const [search, setSearch]           = useState('')
   const [filterType, setFilterType]   = useState<string | null>(null)
   const [filterTable, setFilterTable] = useState<string | null>(null)
-  const [modalOpen, setModalOpen]     = useState(false)
   const [form, setForm]               = useState<ChangeLogPayload>(emptyForm())
-  const [saving, setSaving]           = useState(false)
+  const [, setSaving]           = useState(false)
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
@@ -195,9 +193,6 @@ export default function ChangeLog() {
 
   useEffect(() => { fetchLogs() }, [fetchLogs])
 
-  const setField = (key: keyof ChangeLogPayload, value: unknown) =>
-    setForm((f: ChangeLogPayload) => ({ ...f, [key]: value } as ChangeLogPayload))
-
   const handleAdd = async () => {
     setSaving(true)
     try {
@@ -205,7 +200,6 @@ export default function ChangeLog() {
       setLogs((prev) => [created, ...prev])
       setTotal((t) => t + 1)
       setForm(emptyForm())
-      setModalOpen(false)
       notifications.show({ color: 'green', message: `${created.change_log_id} created.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to create log entry.' })
@@ -237,10 +231,6 @@ export default function ChangeLog() {
           />
           <Text size="sm" c="dimmed">Total: {total}</Text>
         </Group>
-        {/* <Button size="sm" leftSection={<IconPlus size={14} />}
-          onClick={() => setModalOpen(true)} style={{ backgroundColor: '#5375BF' }}>
-          Manual Entry
-        </Button> */}
       </Group>
 
       {loading ? (
@@ -279,27 +269,6 @@ export default function ChangeLog() {
           <Pagination value={page} onChange={setPage} total={lastPage} color="#5375BF" size="sm" />
         </Group>
       )}
-
-      {/* <Modal opened={modalOpen} onClose={() => setModalOpen(false)}
-        title={<Text fw={700} size="md">Manual Log Entry</Text>}
-        size="lg" scrollAreaComponent={ScrollArea.Autosize}>
-        <SimpleGrid cols={2} spacing="sm">
-          <TextInput label="CI ID *"        value={form.ci_id} onChange={(e)                    => setField('ci_id', e.target.value)}                 placeholder="SRV-001" />
-          <TextInput label="CI Name *"      value={form.ci_name} onChange={(e)                  => setField('ci_name', e.target.value)}               placeholder="DC01-PROD" />
-          <Select    label="CI Table *"     value={form.ci_table} onChange={(v)                 => setField('ci_table', v ?? 'servers')}              data={CI_TABLES} />
-          <TextInput label="Change Type *"  value={form.change_type} onChange={(e)              => setField('change_type', e.target.value)}           placeholder="Planned Maintenance" />
-          <TextInput label="Changed By *"   value={form.change_by} onChange={(e)                => setField('change_by', e.target.value)}             placeholder="Carlos M." />
-          <TextInput label="RFS Reference"  value={form.rfs_reference ?? ''} onChange={(e)      => setField('rfs_reference', e.target.value || null)} placeholder="RFS-2026-001" />
-          <TextInput label="Approved By"    value={form.approved_by ?? ''} onChange={(e)        => setField('approved_by', e.target.value || null)}   placeholder="Ana R." />
-          <TextInput label="Description"    value={form.change_description ?? ''} onChange={(e) => setField('change_description', e.target.value || null)}  placeholder="Planned downtime for patching" style={{ gridColumn: 'span 2' }} />
-        </SimpleGrid>
-        <Group justify="flex-end" mt="lg">
-          <Button variant="default" onClick={() => setModalOpen(false)}>Cancel</Button>
-          <Button onClick={handleAdd} loading={saving}
-            disabled={!form.ci_id || !form.ci_name || !form.change_by}
-            style={{ backgroundColor: '#5375BF' }}>Save Entry</Button>
-        </Group>
-      </Modal> */}
     </Box>
   )
 }

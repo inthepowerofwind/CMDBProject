@@ -7,7 +7,10 @@ import Header from './components/Header'
 import Dashboard from './pages/dashboard'
 import Servers from './pages/Servers'
 import ChangeLog from './pages/ChangeLog'
-
+import Network  from './pages/Network'
+import Endpoints from './pages/Endpoints'
+import Software from './pages/Software'
+import CloudServices from './pages/CloudServices'
 
 type PageName =
   | 'dashboard' | 'servers'   | 'network'
@@ -18,6 +21,14 @@ function getPage(activePage: PageName) {
   switch (activePage) {
     case 'dashboard': return <Dashboard />
     case 'servers':   return <Servers />
+    case 'network':   return <Network/>
+    case 'endpoints': return <Endpoints/>
+    case 'software':  return <Software/>
+    case 'cloudservices': return <CloudServices/>
+    // case 'databases':
+    // case 'relationships':
+    // case 'changelog':
+    // case 'reference':
     case 'changelog': return <ChangeLog />
     default:
       return (
@@ -30,7 +41,7 @@ function getPage(activePage: PageName) {
 
 export default function App() {
   const [user, setUser] = useState<AuthUser | null>(
-    () => authService.getStoredUser()   // ← restores session on refresh
+    () => authService.getStoredUser()   // restores session on refresh
   )
   const [activePage, setActivePage] = useState<PageName>('dashboard')
 

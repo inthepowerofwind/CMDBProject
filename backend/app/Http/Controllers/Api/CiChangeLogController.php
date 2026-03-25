@@ -8,18 +8,6 @@ use Illuminate\Http\Request;
 
 class CiChangeLogController extends Controller
 {
-    private function generateChangeLogId(): string
-    {
-        $last = CiChangeLog::withTrashed()
-            ->where('change_log_id', 'like', 'CHG-LOG-%')
-            ->orderByRaw('TRY_CAST(SUBSTRING(change_log_id, 10, LEN(change_log_id)) AS INT) DESC')
-            ->value('change_log_id');
-
-        if (!$last) return 'CHG-LOG-001';
-
-        $number = (int) substr($last, 9);
-        return 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
-    }
 
     public function index(Request $request)
     {
@@ -73,7 +61,7 @@ class CiChangeLogController extends Controller
                 'new_values'         => 'nullable|array',
             ]);
  
-            $data['change_log_id'] = $this->generateChangeLogId();
+            $data['change_log_id'] = CiChangeLog::generateChangeLogId();
             return response()->json(CiChangeLog::create($data), 201);
  
         } catch (\Illuminate\Validation\ValidationException $e) {

@@ -1,10 +1,8 @@
 import { Grid, Card, Text, Group, Box, ThemeIcon, Table, TableData, Alert, Loader } from '@mantine/core'
-import { IconServer, IconCircleCheck, IconCircleX, IconAlertTriangle, IconAlertCircle } from '@tabler/icons-react'
+import { IconServer, IconCircleCheck, IconCircleX, IconAlertTriangle, IconAlertCircle, IconArchive } from '@tabler/icons-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { ComponentType, useEffect, useState } from 'react'
 import { dashboardService, DashboardData } from '../api/dashboardService'
-
-
 
 interface StatCardProps {
   title: string
@@ -48,7 +46,7 @@ const tableWorkbook: TableData = {
 
 function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps) {
   return (
-    <Card shadow="sm" radius="md" withBorder h={90}>
+    <Card shadow="sm" radius="md" withBorder h={100}>
       <Group justify="space-between">
         <Box>
           <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={4}>{title}</Text>
@@ -64,16 +62,15 @@ function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps)
 
 export default function Dashboard() {
   const [dashData, setDashData] = useState<DashboardData | null>(null)
-  const [loading, setLoading]   = useState(true)   // true = show spinner
+  const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState('')
   
-  // ... fetch goes here (step 3)
   useEffect(() => {
-  dashboardService.get()
-    .then((data) => setDashData(data))   // ← save to state
-    .catch(() => setError('Failed to load dashboard data.'))
-    .finally(() => setLoading(false))    // ← always turn off spinner
-  }, [])  // ← empty array = run once on mount only
+    dashboardService.get()
+      .then((data) => setDashData(data))  
+      .catch(() => setError('Failed to load dashboard data.'))
+      .finally(() => setLoading(false)) 
+  }, [])  
 
   if (loading) {
     return (
@@ -93,39 +90,21 @@ export default function Dashboard() {
     )
   }
 
-// ← only reaches here when data is ready
-
-  
-  // total_cis is a direct field
   const totalCIs = dashData.total_cis
-
-  // ci_per_status is an array like:
-  // [ { label: "Active", total: 9 }, { label: "EOL", total: 1 }, ... ]
-  const totalActive = dashData.ci_per_status
-    .find((s) => s.label === 'Active')?.total ?? 0
-
-  const totalDecomm = dashData.ci_per_status
-    .find((s) => s.label === 'Decommissioned')?.total ?? 0
-
-  const totalEol = dashData.ci_per_status
-    .find((s) => s.label === 'EOL')?.total ?? 0
+  const totalActive = dashData.ci_per_status.find((s) => s.label === 'Active')?.total ?? 0
+  const totalDecomm = dashData.ci_per_status.find((s) => s.label === 'Decommissioned')?.total ?? 0
+  const totalEol = dashData.ci_per_status.find((s) => s.label === 'EOL')?.total ?? 0
 
   return (
-    <Box p="xl">
-      <Grid mb="xl">
-        <Grid.Col span={3}>
-          <StatCard title="Total CIs"      value={totalCIs}    color="blue"  icon={IconServer}      />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <StatCard title="Active"         value={totalActive} color="green" icon={IconCircleCheck} />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <StatCard title="Decommissioned" value={totalDecomm} color="gray"  icon={IconCircleX}     />
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <StatCard title="EOL / At Risk"  value={totalEol}    color="red"   icon={IconAlertTriangle}/>
-        </Grid.Col>
-      </Grid>
+    <Box p="xl" mt="xl">
+      <Group grow mb="xl">
+        <StatCard title="Total CIs"      value={totalCIs}   color="black" iconColor="blue"   icon={IconServer} />
+        <StatCard title="Active"         value={totalActive} color="black" iconColor="green" icon={IconCircleCheck} />
+        <StatCard title="Decommissioned" value={totalDecomm} color="black" iconColor="gray"  icon={IconCircleX} />
+        <StatCard title="EOL / At Risk"  value={totalEol}    color="black" iconColor="red"   icon={IconAlertTriangle} />
+        <StatCard title="Archive"        value={totalEol}    color="black" iconColor="yellow" icon={IconArchive} />
+      </Group>
+
       <Grid mt="lg">
         <Grid.Col span={7}>
           <Card shadow="sm" radius="md" withBorder h="100%">
@@ -145,22 +124,23 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           </Card>
-            </Grid.Col>
-          <Grid.Col span={5}>
-            <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
-              <Text fw={600} mb="md" c="#1a2b4a">CMDB Overview</Text>
-              <Table.ScrollContainer minWidth={500} maxHeight={300}>
-                  <Table striped highlightOnHover withTableBorder withColumnBorders data={tableData}/>
-              </Table.ScrollContainer>
-            </Card>
+        </Grid.Col>
 
-            <Card shadow="sm" radius="md" withBorder h="230">
-              <Text fw={600} mb="md" c="#1a2b4a">Workbook Navigation</Text>
-              <Table.ScrollContainer minWidth={500} maxHeight={300}>
-                  <Table striped highlightOnHover withTableBorder withColumnBorders data={tableWorkbook}/>
-              </Table.ScrollContainer>
-            </Card>
-          </Grid.Col>
+        <Grid.Col span={5}>
+          <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
+            <Text fw={600} mb="md" c="#1a2b4a">CMDB Overview</Text>
+            <Table.ScrollContainer minWidth={500} maxHeight={300}>
+              <Table striped highlightOnHover withTableBorder withColumnBorders data={tableData}/>
+            </Table.ScrollContainer>
+          </Card>
+
+          <Card shadow="sm" radius="md" withBorder h="230">
+            <Text fw={600} mb="md" c="#1a2b4a">Workbook Navigation</Text>
+            <Table.ScrollContainer minWidth={500} maxHeight={300}>
+              <Table striped highlightOnHover withTableBorder withColumnBorders data={tableWorkbook}/>
+            </Table.ScrollContainer>
+          </Card>
+        </Grid.Col>
       </Grid>  
     </Box>
   )

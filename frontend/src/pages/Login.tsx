@@ -22,7 +22,7 @@ export default function Login({ onLogin }: LoginProps) {
     setLoading(true)
     try {
       const { user } = await authService.login({ email, password })
-      onLogin(user)                        // passes real AuthUser object
+      onLogin(user)
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ??

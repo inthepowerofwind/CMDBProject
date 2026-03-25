@@ -1,7 +1,5 @@
 import api from './axios'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
 export interface ChangeLog {
   change_log_id:      string
   ci_id:              string
