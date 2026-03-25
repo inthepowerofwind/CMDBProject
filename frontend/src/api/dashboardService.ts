@@ -6,6 +6,7 @@ export interface CiPerCategory {
   active:         number
   decommissioned: number
   eol:            number
+  archived:       number
 }
 
 export interface StatusCount {

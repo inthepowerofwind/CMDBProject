@@ -111,7 +111,18 @@ class DashboardController extends Controller
             ])
             ->values()
             ->toArray();
- 
+
+        // Archived = soft deleted records
+        $archivedTotal = collect([
+            Server::class,
+            NetworkDevice::class,
+            Endpoint::class,
+            Software::class,
+            CloudService::class,
+            CmdbDatabase::class,
+        ])->sum(fn($model) => $model::onlyTrashed()->count());
+
+        $statusCounts[] = ['label' => 'Archived', 'total' => $archivedTotal];
         // ── Response ──────────────────────────────────────────────────────────
         return response()->json([
             'success' => true,
