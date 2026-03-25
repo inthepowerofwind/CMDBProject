@@ -25,7 +25,9 @@ class NetworkDeviceController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = NetworkDevice::query();
+            $query = $request->boolean('archived')
+                ? NetworkDevice::onlyTrashed()
+                : NetworkDevice::query();
             //search
             if ($request->filled('search')) {
                 $s = $request->search;

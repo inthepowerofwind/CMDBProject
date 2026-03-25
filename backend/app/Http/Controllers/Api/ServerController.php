@@ -26,7 +26,10 @@ class ServerController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Server::query();
+            $query = $request->boolean('archived')
+                ? Server::onlyTrashed()
+                : Server::query();
+
             //search
             if ($request->filled('search')) {
                 $s = $request->search;
@@ -39,7 +42,7 @@ class ServerController extends Controller
             }
 
             //filter
-            if ($request->filled('status')) $query->where('status', $request->status);
+            if ($request->filled('status'))      $query->where('status', $request->status);
             if ($request->filled('environment')) $query->where('environment', $request->environment);
             if ($request->filled('criticality')) $query->where('criticality', $request->criticality);
             
