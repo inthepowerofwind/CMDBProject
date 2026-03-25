@@ -3,7 +3,7 @@ import api from './axios'
 export interface Software {
   [key: string]:      unknown
   ci_id:              string
-  ci_name:            string
+  software_name:      string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
   software_type:      string | null
   version:            string | null

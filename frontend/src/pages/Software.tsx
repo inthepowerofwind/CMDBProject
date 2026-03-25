@@ -26,7 +26,7 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
 
 const COLUMNS: CIColumnDef<Software>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
-  { key: 'ci_name',           header: 'CI Name',                    type: 'text',   width: 140 },
+  { key: 'software_name',     header: 'Software Name',              type: 'text',   width: 140 },
   { key: 'status',            header: 'Status',                     type: 'select', width: 180, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'software_type',     header: 'Software Type',              type: 'text' },
   { key: 'version',           header: 'Version',                    type: 'text' },
@@ -52,7 +52,7 @@ const COLUMNS: CIColumnDef<Software>[] = [
 ]
 
 const emptySoftwareForm = (): SoftwarePayload => ({
-  ci_name: '', 
+  software_name: '', 
   status: 'Active', 
   ci_type: null, 
   environment: 'Production',

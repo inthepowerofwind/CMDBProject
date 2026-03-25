@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CiObserver
 {
-    /**
-     * Handle events after all transactions are committed.
-     */
+    //Handle events after all transactions are committed.
     public $afterCommit = true;
 
     private array $excludedFields = [
@@ -185,18 +183,7 @@ class CiObserver
         'database_name'                     => 'Rename',
         'hostname'                          => 'Rename',
     ];
-    private function generateChangeLogId(): string
-    {
-        $last = CiChangeLog::withTrashed()
-            ->where('change_log_id', 'like', 'CHG-LOG-%')
-            ->orderByRaw('TRY_CAST(SUBSTRING(change_log_id, 10, LEN(change_log_id)) AS INT) DESC')
-            ->value('change_log_id');
-
-        if (!$last) return 'CHG-LOG-001';
-
-        $number = (int) substr($last, 9);
-        return 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
-    }
+    
 
     private function formatValue(mixed $value): string
     {
@@ -312,13 +299,12 @@ class CiObserver
         }
 
         CiChangeLog::create([
-            'change_log_id'      => $this->generateChangeLogId(),
+            'change_log_id'      => CiChangeLog::generateChangeLogId(),
             'ci_id'              => $ciId,
             'ci_name'            => $ciName,
             'ci_table'           => $table,
             'change_type'        => $changeType,
             'change_description' => $description,
-            'change_by'          => auth()->user()->name ?? 'System',
             'change_by' => optional(request()->user())->name ?? 'System',
             'previous_values'    => $prevSummary ?: null,
             'new_values'         => $nextSummary ?: null,

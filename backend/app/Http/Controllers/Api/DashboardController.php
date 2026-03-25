@@ -19,12 +19,6 @@ class DashboardController extends Controller
     {
         // ── 1. CIs per Category ───────────────────────────────────────────────
         $ciPerCategory = [
-            ['category' => 'Server',         'total' => Server::count()],
-            ['category' => 'Network Device', 'total' => NetworkDevice::count()],
-            ['category' => 'Endpoint',       'total' => Endpoint::count()],
-            ['category' => 'Software',       'total' => Software::count()],
-            ['category' => 'Cloud Service',  'total' => CloudService::count()],
-            ['category' => 'Database',       'total' => CmdbDatabase::count()],
             ['category' => 'Server',
                 'total'          => Server::count(),
                 'active'         => Server::where('status', 'Active')->count(),

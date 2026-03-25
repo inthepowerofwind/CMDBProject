@@ -11,6 +11,9 @@ import Network  from './pages/Network'
 import Endpoints from './pages/Endpoints'
 import Software from './pages/Software'
 import CloudServices from './pages/CloudServices'
+import Databases from './pages/Databases'
+import Relationships from './pages/Relationships'
+import References from './pages/Reference'
 
 type PageName =
   | 'dashboard' | 'servers'   | 'network'
@@ -25,11 +28,10 @@ function getPage(activePage: PageName) {
     case 'endpoints': return <Endpoints/>
     case 'software':  return <Software/>
     case 'cloudservices': return <CloudServices/>
-    // case 'databases':
-    // case 'relationships':
-    // case 'changelog':
-    // case 'reference':
+    case 'databases': return <Databases/>
+    case 'relationships': return <Relationships/>
     case 'changelog': return <ChangeLog />
+    case 'reference': return <References/>
     default:
       return (
         <Box p="xl">

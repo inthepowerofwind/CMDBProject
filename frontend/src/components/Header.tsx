@@ -17,9 +17,9 @@ const pageTitles: Record<string, string> = {
   software:      'Software',
   cloudservices: 'Cloud Services',
   databases:     'Databases',
-  relationships: 'Relationships',
-  changelog:     'Change Log',
-  reference:     'Reference',
+  relationships: 'CI Relationships Register',
+  changelog:     'CI Change Log',
+  reference:     'Reference / Lookup Tables',
 }
 
 export default function Header({ activePage, onToggleSidebar, user, onLogout }: HeaderProps) {
