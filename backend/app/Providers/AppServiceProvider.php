@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\{CloudService, CmdbDatabase, Endpoint, Server, NetworkDevice, Software};
+use App\Models\{CloudService, CmdbDatabase, Endpoint, Server, NetworkDevice, Software, CiRelationship};
 use App\Observers\CiObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
         Software::observe(CiObserver::class);
         CloudService::observe(CiObserver::class);
         CmdbDatabase::observe(CiObserver::class);
+        CiRelationship::observe(CiObserver::class);
     }
 }

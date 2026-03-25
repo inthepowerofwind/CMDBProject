@@ -17,7 +17,7 @@ class CiRelationshipController extends Controller
     {
         $last = CiRelationship::withTrashed()
             ->where('relationship_id', 'like', 'REL-%')
-            ->orderByRaw('TRY_CAST(SUBSTRING(relationship_id, 5, LEN(relationship_id)) AS INT) DESC')
+            ->orderByRaw('TRY_CAST(SUBSTRING(relationship_id, 4, LEN(relationship_id)) AS INT) DESC')
             ->value('relationship_id');
 
         if (!$last) {
@@ -51,8 +51,6 @@ class CiRelationshipController extends Controller
             // Filters
             if ($request->filled('relationship_type')) $query->where('relationship_type', $request->relationship_type);
             if ($request->filled('criticality'))        $query->where('criticality', $request->criticality);
-            if ($request->filled('source_ci_table'))    $query->where('source_ci_table', $request->source_ci_table);
-            if ($request->filled('target_ci_table'))    $query->where('target_ci_table', $request->target_ci_table);
 
             // Filter by source or target CI
             if ($request->filled('ci_id')) {
@@ -83,13 +81,11 @@ class CiRelationshipController extends Controller
             $data = $request->validate([
                 'source_ci_id'      => 'required|string',
                 'source_ci_name'    => 'required|string|max:255',
-                'source_ci_table'   => 'required|string|max:100',
                 'relationship_type' => 'required|string|max:100',
                 'target_ci_id'      => 'required|string',
                 'target_ci_name'    => 'required|string|max:255',
-                'target_ci_table'   => 'required|string|max:100',
                 'description'       => 'nullable|string',
-                'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
+                'criticality'       => 'string|in:Critical,High,Medium,Low',
             ]);
  
             $data['relationship_id'] = $this->generateRelationshipId();
@@ -122,15 +118,21 @@ class CiRelationshipController extends Controller
     {
                 try {
             $data = $request->validate([
+<<<<<<< HEAD
+                'source_ci_id'      => 'required|string|max:100',
+                'source_ci_name'    => 'required|string|max:255',
+                'relationship_type' => 'required|string|max:100',
+                'target_ci_id'      => 'required|string|max:100',
+                'target_ci_name'    => 'required|string|max:255',
+=======
                 'source_ci_id'      => 'sometimes|required|string|max:100',
                 'source_ci_name'    => 'sometimes|required|string|max:255',
-                'source_ci_table'   => 'sometimes|required|string|max:100',
                 'relationship_type' => 'sometimes|required|string|max:100',
                 'target_ci_id'      => 'sometimes|required|string|max:100',
                 'target_ci_name'    => 'sometimes|required|string|max:255',
-                'target_ci_table'   => 'sometimes|required|string|max:100',
+>>>>>>> ed2f79f317ec69106cca1897d5609e6b57114ab8
                 'description'       => 'nullable|string',
-                'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
+                'criticality'       => 'string|in:Critical,High,Medium,Low',
             ]);
  
             $ciRelationship->update($data);

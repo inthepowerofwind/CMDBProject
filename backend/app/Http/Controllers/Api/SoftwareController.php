@@ -78,7 +78,7 @@ class SoftwareController extends Controller
                 'sast_dast_tested'     => 'boolean',
                 'license_key_location' => 'nullable|string',
                 'procurement_date'     => 'nullable|string',
-                'licene_expiry'       => 'nullable|string',
+                'license_expiry'       => 'nullable|string',
                 'eol_date'             => 'nullable|date',
                 'last_review'          => 'nullable|date',
                 'notes'                => 'nullable|string',

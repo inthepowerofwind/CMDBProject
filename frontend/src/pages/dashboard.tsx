@@ -141,6 +141,16 @@ export default function Dashboard() {
             </Table.ScrollContainer>
           </Card>
         </Grid.Col>
+
+        <Grid.Col>
+          <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
+            <Text fw={600} mb="md" c="#1a2b4a">Recent Changes</Text>
+            <Table.ScrollContainer minWidth={500} maxHeight={300}>
+              <Table striped highlightOnHover withTableBorder withColumnBorders data={tableData}/>
+            </Table.ScrollContainer>
+          </Card>
+        </Grid.Col>
+
       </Grid>  
     </Box>
   )

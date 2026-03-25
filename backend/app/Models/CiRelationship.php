@@ -16,11 +16,9 @@ class CiRelationship extends Model
      'relationship_id',
      'source_ci_id',
      'source_ci_name',
-     'source_ci_table',
      'relationship_type',
      'target_ci_id',
      'target_ci_name',
-     'target_ci_table',
      'description',
      'criticality',
         

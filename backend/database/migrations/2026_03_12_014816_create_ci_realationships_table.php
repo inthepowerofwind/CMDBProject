@@ -16,11 +16,17 @@ return new class extends Migration
             $table->string('relationship_id', 50)->unique();
             $table->string('source_ci_id', 50);
             $table->string('source_ci_name');
-            $table->string('source_ci_table');
+<<<<<<< HEAD
+            // $table->string('source_ci_table');
             $table->string('relationship_type');
             $table->string('target_ci_id', 50);
             $table->string('target_ci_name');
-            $table->string('target_ci_table');
+            // $table->string('target_ci_table');
+=======
+            $table->string('relationship_type');
+            $table->string('target_ci_id', 50);
+            $table->string('target_ci_name');
+>>>>>>> ed2f79f317ec69106cca1897d5609e6b57114ab8
             $table->text('description')->nullable();
             $table->text('criticality')->nullable();
             $table->timestamps();

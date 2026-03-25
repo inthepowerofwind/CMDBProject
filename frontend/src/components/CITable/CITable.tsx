@@ -86,7 +86,7 @@ function TableView<T extends object, P extends object>({
   const columnHelper = createColumnHelper<T>()
 
   const columns = useMemo<ColumnDef<T, any>[]>(() => {
-    const cols: ColumnDef<T, any>[] = []
+  const cols: ColumnDef<T, any>[] = []
 
     // checkbox column
     cols.push(columnHelper.display({
@@ -405,7 +405,7 @@ export default function CITable<
       setRows((prev) => [...prev, created])
       setTotal((t) => t + 1)
       setNewForm(emptyForm())
-      setIsAdding(true)
+      setIsAdding(false)
       notifications.show({ color: 'green', message: `${String((created as Indexable<T>)[idField])} added.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add.' })
@@ -561,17 +561,22 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={handleCancelEdit}>
               Cancel
             </Button>
-            <Button size="sm" leftSection={<IconDeviceFloppy size={14} />} onClick={handleSaveEdit} loading={editSaving} style={{ backgroundColor: '#2563EB' }}>
+            <Button 
+            size="sm" 
+            leftSection={<IconDeviceFloppy size={14} />} 
+            onClick={handleSaveEdit} loading={editSaving}
+            
+            style={{ backgroundColor: '#2563EB' }}>
               Save Changes
             </Button>
           </>
         ) : isAdding ? (
           <>
-            <Button size="sm" variant="subtle" color="gray" onClick={() => { setIsAdding(false); setNewForm(emptyForm()) }}>
+            {/* <Button size="sm" variant="subtle" color="gray" onClick={() => { setIsAdding(false); setNewForm(emptyForm()) }}>
               Cancel
-            </Button>
+            </Button> */}
 
-            <Button
+            {/* <Button
               size="sm"
               leftSection={<IconDeviceFloppy size={14} />}
               onClick={handleAdd}
@@ -582,7 +587,7 @@ export default function CITable<
               style={{ backgroundColor: '#2563EB' }}
             >
               Save
-            </Button>
+            </Button> */}
           </>
         ) : (
           <>

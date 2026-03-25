@@ -9,7 +9,7 @@ import {
 import {
   changeLogService,
   ChangeLog as ChangeLogEntry,
-  ChangeLogPayload,
+  // ChangeLogPayload,
   ChangeLogListParams,
 } from '../api/changeLogService'
 
@@ -41,18 +41,18 @@ const CI_TABLES = [
   'software', 'cloud_services', 'databases',
 ]
 
-const emptyForm = (): ChangeLogPayload => ({
-  ci_id: '', 
-  ci_name: '', 
-  ci_table: 'servers',
-  change_type: 'Updated', 
-  change_description: null,
-  change_by: '', 
-  //rfs_reference: null,
-  //approved_by: null, 
-  previous_values: null, 
-  new_values: null,
-})
+// const emptyForm = (): ChangeLogPayload => ({
+//   ci_id: '', 
+//   ci_name: '', 
+//   ci_table: 'servers',
+//   change_type: 'Updated', 
+//   change_description: null,
+//   change_by: '', 
+//   //rfs_reference: null,
+//   //approved_by: null, 
+//   previous_values: null, 
+//   new_values: null,
+// })
 
 function DiffTable({ prev, next }: {
   prev: Record<string, unknown> | null

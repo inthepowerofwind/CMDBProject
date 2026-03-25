@@ -16,9 +16,11 @@ class DatabaseController extends Controller
             ->orderByRaw('TRY_CAST(SUBSTRING(ci_id, 4, LEN(ci_id)) AS INT) DESC')
             ->value('ci_id');
 
-        if (!$last) return 'DB-001';
+        if (!$last) {
+            return 'DB-001';
+        }
 
-        $number = (int) substr($last, 3);
+        $number = (int) substr($last, 4);
         return 'DB-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
     }
     //Display a listing of the resource.

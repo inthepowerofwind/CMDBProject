@@ -275,6 +275,7 @@ class CiObserver
 
                 $newId = 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
 
+
                 CiChangeLog::create([
                     'change_log_id'      => $newId,
                     'ci_id'              => $ciId,

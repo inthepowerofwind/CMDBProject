@@ -20,8 +20,6 @@ const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'relationship_id',   header: 'Relationship ID',            readOnly: true },
   { key: 'source_ci_id',      header: 'Source CI ID',               type: 'text',   width: 140 },
   { key: 'source_ci_name',    header: 'Source CI Name',             type: 'text',   width: 140 },
-  { key: 'source_ci_table',   header: 'Source CI Table',            type: 'text',   width: 140 },
-  { key: 'target_ci_table',   header: 'Target CI Table',            type: 'text',   width: 140 },
   { key: 'relationship_type', header: 'Relationship Type',          type: 'text',   width: 140 },
   { key: 'target_ci_id',      header: 'Target CI ID',               type: 'text',   width: 140 },
   { key: 'target_ci_name',    header: 'Target CI Name',             type: 'text',   width: 140 },
@@ -35,8 +33,6 @@ const emptyRelationshipForm = (): RelationshipsPayload => ({
   relationship_type: '',
   target_ci_id: '',
   target_ci_name: '',
-  source_ci_table: '',
-  target_ci_table: '',
   description: '', 
   criticality: 'Critical',
 })
@@ -53,11 +49,9 @@ export default function CIRelationships() {
       requiredFields={[
         'source_ci_id',
         'source_ci_name',
-        'source_ci_table',
         'relationship_type',
         'target_ci_id',
         'target_ci_name',
-        'target_ci_table',
       ]}
     />
   )

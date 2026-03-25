@@ -28,6 +28,20 @@ class CiChangeLog extends Model
         'previous_values' => 'array',
         'new_values'      => 'array',
     ];
-    
-    
+
+    // public static function generateChangeLogId(): string
+    // {
+    //     return \DB::transaction(function () {
+    //         $last = self::withTrashed()
+    //             ->where('change_log_id', 'like', 'CHG-LOG-%')
+    //             ->lockForUpdate()
+    //             ->orderByRaw("TRY_CAST(SUBSTRING(change_log_id, 10, LEN(change_log_id)) AS INT) DESC")
+    //             ->value('change_log_id');
+
+    //         if (!$last) return 'CHG-LOG-001';
+
+    //         $number = (int) substr($last, 9);
+    //         return 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
+    //     });
+    // }
 }

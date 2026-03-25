@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class CiChangeLogController extends Controller
 {
-    
     public function index(Request $request)
     {
         try {
@@ -34,7 +33,7 @@ class CiChangeLogController extends Controller
             $sortDir = $request->get('sort_dir', 'desc');
             $query->orderBy($sortBy, $sortDir);
  
-            return response()->json($query->paginate($request->get('per_page', 25)));
+            return response()->json($query->paginate($request->get('per_page', 15)));
  
         } catch (\Throwable $th) {
             \Log::error($th->getMessage());
@@ -45,32 +44,32 @@ class CiChangeLogController extends Controller
     // Store a manually created change log entry.
     // Note: change logs are usually auto-created by the CiObserver.
     // This is for manual entries only (e.g. planned changes, RFS records).
-    public function store(Request $request)
-    {
-        try {
-            $data = $request->validate([
-                'ci_id'              => 'required|string|max:50',
-                'ci_name'            => 'required|string|max:255',
-                'ci_table'           => 'required|string|max:100',
-                'change_type'        => 'required|string|max:100',
-                'change_description' => 'nullable|string',
-                'change_by'          => 'required|string|max:255',
-                'rfs_reference'      => 'nullable|string|max:100',
-                'approved_by'        => 'nullable|string|max:255',
-                'previous_values'    => 'nullable|array',
-                'new_values'         => 'nullable|array',
-            ]);
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $data = $request->validate([
+    //             'ci_id'              => 'required|string|max:50',
+    //             'ci_name'            => 'required|string|max:255',
+    //             'ci_table'           => 'required|string|max:100',
+    //             'change_type'        => 'required|string|max:100',
+    //             'change_description' => 'nullable|string',
+    //             'change_by'          => 'required|string|max:255',
+    //             'rfs_reference'      => 'nullable|string|max:100',
+    //             'approved_by'        => 'nullable|string|max:255',
+    //             'previous_values'    => 'nullable|array',
+    //             'new_values'         => 'nullable|array',
+    //         ]);
  
-            $data['change_log_id'] = CiChangeLog::generateChangeLogId();
-            return response()->json(CiChangeLog::create($data), 201);
+    //         $data['change_log_id'] = CiChangeLog::generateChangeLogId();
+    //         return response()->json(CiChangeLog::create($data), 201);
  
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => $e->errors()], 422);
-        } catch (\Throwable $th) {
-            \Log::error($th->getMessage());
-            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
-        }
-    }
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         return response()->json(['message' => $e->errors()], 422);
+    //     } catch (\Throwable $th) {
+    //         \Log::error($th->getMessage());
+    //         return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+    //     }
+    // }
 
     // Display a specific change log entry by change_log_id (e.g. CHG-LOG-001).
      
