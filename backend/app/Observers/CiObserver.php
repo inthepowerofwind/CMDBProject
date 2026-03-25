@@ -183,7 +183,10 @@ class CiObserver
         'database_name'                     => 'Rename',
         'hostname'                          => 'Rename',
     ];
+<<<<<<< HEAD
     
+=======
+>>>>>>> f7f492dde65267fba34b38d660822ae8fa3cd781
 
     private function formatValue(mixed $value): string
     {
@@ -305,7 +308,11 @@ class CiObserver
             'ci_table'           => $table,
             'change_type'        => $changeType,
             'change_description' => $description,
+<<<<<<< HEAD
             'change_by' => optional(request()->user())->name ?? 'System',
+=======
+            'change_by'          => optional(request()->user())-> name ?? 'System',
+>>>>>>> f7f492dde65267fba34b38d660822ae8fa3cd781
             'previous_values'    => $prevSummary ?: null,
             'new_values'         => $nextSummary ?: null,
         ]);

@@ -8,8 +8,8 @@ export interface ChangeLog {
   change_type:        'Created' | 'Updated' | 'Deleted' | 'Restored'
   change_description: string | null
   change_by:          string
-  rfs_reference:      string | null
-  approved_by:        string | null
+  //rfs_reference:      string | null
+  //approved_by:        string | null
   previous_values:    Record<string, unknown> | null
   new_values:         Record<string, unknown> | null
   created_at:         string
@@ -23,8 +23,8 @@ export type ChangeLogPayload = {
   change_type:        string
   change_description: string | null
   change_by:          string
-  rfs_reference:      string | null
-  approved_by:        string | null
+ // rfs_reference:      string | null
+ // approved_by:        string | null
   previous_values:    Record<string, unknown> | null
   new_values:         Record<string, unknown> | null
 }
