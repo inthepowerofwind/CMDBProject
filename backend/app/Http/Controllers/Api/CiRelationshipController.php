@@ -51,8 +51,6 @@ class CiRelationshipController extends Controller
             // Filters
             if ($request->filled('relationship_type')) $query->where('relationship_type', $request->relationship_type);
             if ($request->filled('criticality'))        $query->where('criticality', $request->criticality);
-            if ($request->filled('source_ci_table'))    $query->where('source_ci_table', $request->source_ci_table);
-            if ($request->filled('target_ci_table'))    $query->where('target_ci_table', $request->target_ci_table);
 
             // Filter by source or target CI
             if ($request->filled('ci_id')) {
@@ -83,11 +81,9 @@ class CiRelationshipController extends Controller
             $data = $request->validate([
                 'source_ci_id'      => 'required|string',
                 'source_ci_name'    => 'required|string|max:255',
-                'source_ci_table'   => 'required|string|max:100',
                 'relationship_type' => 'required|string|max:100',
                 'target_ci_id'      => 'required|string',
                 'target_ci_name'    => 'required|string|max:255',
-                'target_ci_table'   => 'required|string|max:100',
                 'description'       => 'nullable|string',
                 'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
             ]);
@@ -124,11 +120,9 @@ class CiRelationshipController extends Controller
             $data = $request->validate([
                 'source_ci_id'      => 'sometimes|required|string|max:100',
                 'source_ci_name'    => 'sometimes|required|string|max:255',
-                'source_ci_table'   => 'sometimes|required|string|max:100',
                 'relationship_type' => 'sometimes|required|string|max:100',
                 'target_ci_id'      => 'sometimes|required|string|max:100',
                 'target_ci_name'    => 'sometimes|required|string|max:255',
-                'target_ci_table'   => 'sometimes|required|string|max:100',
                 'description'       => 'nullable|string',
                 'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
             ]);

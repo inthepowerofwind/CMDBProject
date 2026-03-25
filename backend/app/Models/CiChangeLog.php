@@ -28,7 +28,6 @@ class CiChangeLog extends Model
         'previous_values' => 'array',
         'new_values'      => 'array',
     ];
-<<<<<<< HEAD
 
     // public static function generateChangeLogId(): string
     // {
@@ -45,8 +44,4 @@ class CiChangeLog extends Model
     //         return 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
     //     });
     // }
-=======
-    
-    
->>>>>>> 04fd3bd99b7d1f3dffacf95332b64454c0e6e08d
 }

@@ -16,11 +16,9 @@ return new class extends Migration
             $table->string('relationship_id', 50)->unique();
             $table->string('source_ci_id', 50);
             $table->string('source_ci_name');
-            $table->string('source_ci_table');
             $table->string('relationship_type');
             $table->string('target_ci_id', 50);
             $table->string('target_ci_name');
-            $table->string('target_ci_table');
             $table->text('description')->nullable();
             $table->text('criticality')->nullable();
             $table->timestamps();

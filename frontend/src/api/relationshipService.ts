@@ -5,8 +5,6 @@ export interface Relationships {
   relationship_id:    string
   source_ci_id:       string
   source_ci_name:     string
-  source_ci_table:    string
-  target_ci_table:    string
   relationship_type:  string
   version:            string
   target_ci_id:       string
