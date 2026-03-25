@@ -94,6 +94,7 @@ export default function Dashboard() {
   const totalActive = dashData.ci_per_status.find((s) => s.label === 'Active')?.total ?? 0
   const totalDecomm = dashData.ci_per_status.find((s) => s.label === 'Decommissioned')?.total ?? 0
   const totalEol = dashData.ci_per_status.find((s) => s.label === 'EOL')?.total ?? 0
+  const totalArchived = dashData.ci_per_status.find((s) => s.label === 'Archived')?.total ?? 0
 
   return (
     <Box p="xl" mt="xl">
@@ -102,7 +103,7 @@ export default function Dashboard() {
         <StatCard title="Active"         value={totalActive} color="black" iconColor="green" icon={IconCircleCheck} />
         <StatCard title="Decommissioned" value={totalDecomm} color="black" iconColor="gray"  icon={IconCircleX} />
         <StatCard title="EOL / At Risk"  value={totalEol}    color="black" iconColor="red"   icon={IconAlertTriangle} />
-        <StatCard title="Archive"        value={totalEol}    color="black" iconColor="yellow" icon={IconArchive} />
+        <StatCard title="Archived"       value={totalArchived} color="black" iconColor="yellow" icon={IconArchive} />
       </Group>
 
       <Grid mt="lg">
