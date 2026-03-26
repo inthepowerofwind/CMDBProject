@@ -185,4 +185,29 @@ class CiRelationshipController extends Controller
             return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
         }
     }
+
+    // Lookup CI name by CI ID across all CI types.
+    public function lookupCi(string $ciId)
+    {
+        $models = [
+            \App\Models\Server::class         => 'ci_name',
+            \App\Models\NetworkDevice::class  => 'ci_name',
+            \App\Models\Endpoint::class       => 'ci_name',
+            \App\Models\Software::class       => 'software_name',
+            \App\Models\CloudService::class   => 'service_name',
+            \App\Models\CmdbDatabase::class   => 'database_name',
+        ];
+
+        foreach ($models as $model => $nameColumn) {
+            $ci = $model::where('ci_id', $ciId)->first(['ci_id', $nameColumn]);
+            if ($ci) {
+                return response()->json([
+                    'ci_id'   => $ci->ci_id,
+                    'ci_name' => $ci->{$nameColumn},
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'CI not found.'], 404);
+    }
 }

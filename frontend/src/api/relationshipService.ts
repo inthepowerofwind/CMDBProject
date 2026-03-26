@@ -59,4 +59,12 @@ export const relationshipService = {
     const { data } = await api.post<Relationships>(`/ci-relationships/${ciId}/restore`)
     return data
   },
+  async lookupCi(ciId: string): Promise<{ ci_id: string; ci_name: string } | null> {
+    try {
+      const { data } = await api.get<{ ci_id: string; ci_name: string }>(`/ci-lookup/${ciId}`)
+      return data
+    } catch {
+      return null
+    }
+  },
 }

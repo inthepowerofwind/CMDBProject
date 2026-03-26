@@ -73,6 +73,8 @@ interface TableViewProps<T extends object, P extends object> {
 
   // toolbar buttons
   toolbar: React.ReactNode
+
+  setNewForm: React.Dispatch<React.SetStateAction<P>>
 }
 
 function TableView<T extends object, P extends object>({
@@ -80,7 +82,7 @@ function TableView<T extends object, P extends object>({
   idField, colDefs, addLabel, isArchiveView,
   selectedIds, allSelected, someSelected, onSelectAll, onRowClick,
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
-  isAdding, newForm, setNewField,
+  isAdding, newForm, setNewField,setNewForm,
   onPageChange, toolbar,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
@@ -144,6 +146,7 @@ function TableView<T extends object, P extends object>({
                 onChange={(f, v, r) => setGridField(rowId, f, v, r)}
                 booleanFields={booleanFields}
                 width={col.width}
+                disabled={col.disabled}
               />
             )
           },
@@ -235,8 +238,18 @@ function TableView<T extends object, P extends object>({
                       options={col.type === 'boolean' ? ['Yes', 'No'] : col.options}
                       isEditing
                       onChange={(f, v) => setNewField(f, v)}
+                      onBlur={col.onBlur
+                        ? (value) => col.onBlur!(value, newForm as Partial<T>, (updater) => {
+                            const next = typeof updater === 'function'
+                              ? (updater as (prev: Partial<T>) => Partial<T>)(newForm as Partial<T>)
+                              : updater
+                            setNewForm((prev) => ({ ...prev, ...next } as P))
+                          })
+                        : undefined
+                      }
                       booleanFields={booleanFields}
                       width={col.width}
+                      disabled={col.disabled}
                     />
                   )}
                 </td>
@@ -387,7 +400,11 @@ export default function CITable<
 
   // Form helpers
   const setNewField = (key: string, value: unknown) =>
-    setNewForm((f) => ({ ...f, [key]: value } as P))
+    setNewForm((f) => {
+      const current = (f as Record<string, unknown>)[key]
+      if ((value === '' || value === null) && current) return f
+      return { ...f, [key]: value } as P
+    })
 
   const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
     editFormsRef.current = {
@@ -565,7 +582,7 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" onClick={() => { setIsAdding(false); setNewForm(emptyForm()) }}>
               Cancel
             </Button>
-
+            {/* <pre style={{ fontSize: 10 }}>{JSON.stringify(newForm, null, 2)}</pre> */}
             <Button
               size="sm"
               leftSection={<IconDeviceFloppy size={14} />}
@@ -688,6 +705,7 @@ export default function CITable<
           isAdding={false}
           newForm={newForm}
           setNewField={setNewField}
+          setNewForm={setNewForm}
           onPageChange={setArchivePage}
           toolbar={archiveToolbar}
         />
@@ -717,6 +735,7 @@ export default function CITable<
           isAdding={isAdding}
           newForm={newForm}
           setNewField={setNewField}
+          setNewForm={setNewForm}
           onPageChange={setPage}
           toolbar={mainToolbar}
         />

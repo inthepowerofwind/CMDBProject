@@ -10,6 +10,8 @@ interface EditableCellProps {
   onChange:      (field: string, value: unknown, rerender?: boolean) => void
   booleanFields?: string[]
   width?:        number
+  onBlur?: (value: unknown) => void
+  disabled?: boolean
 }
 
 export function EditableCell({
@@ -21,6 +23,8 @@ export function EditableCell({
   onChange,
   booleanFields = [],
   width,
+  onBlur,
+  disabled = false
 }: EditableCellProps) {
   const toStr = (v: unknown): string => {
     if (typeof v === 'boolean') return v ? 'Yes' : 'No'
@@ -31,15 +35,13 @@ export function EditableCell({
   const [localValue, setLocalValue]   = useState<string>(toStr(value))
   const [selectValue, setSelectValue] = useState<string>(toStr(value))
 
-  const wasEditing = useRef(false)
+  const isFocused = useRef(false)
   useEffect(() => {
-    if (isEditing && !wasEditing.current) {
-      setLocalValue(toStr(value))
-      setSelectValue(toStr(value))
-    }
-    wasEditing.current = isEditing
-  }, [isEditing])
-
+    if (isEditing && !isFocused.current) {
+    setLocalValue(toStr(value))
+    setSelectValue(toStr(value))
+  }
+}, [value])
   if (!isEditing) {
     if (typeof value === 'boolean') return <Text size="sm">{value ? 'Yes' : 'No'}</Text>
     const display = toStr(value)
@@ -62,6 +64,11 @@ export function EditableCell({
         }}
         data={options}
         style={{ minWidth: width ?? 120 }}
+        onFocus={() => { isFocused.current = true }}
+        onBlur={() => {
+          isFocused.current = false
+          onBlur?.(selectValue)
+        }}
       />
     )
   }
@@ -71,14 +78,21 @@ export function EditableCell({
       size="xs"
       type={type}
       value={localValue}
-      onChange={(e) => setLocalValue(e.target.value)}
-      onBlur={(e) => {
+      disabled={disabled}
+      onChange={(e) => {
         const raw = e.target.value
+        setLocalValue(raw)
+        // update form on every keystroke, not just on blur
         if (type === 'number') {
           onChange(field, raw ? Number(raw) : null, false)
         } else {
-          onChange(field, raw || null, false)
+          onChange(field, raw || '', false)
         }
+      }}
+      onFocus={() => { isFocused.current = true }}
+      onBlur={(e) => {
+        isFocused.current = false
+        onBlur?.(e.target.value)
       }}
       style={{ minWidth: width ?? 100 }}
       autoComplete="off"

@@ -8,6 +8,8 @@ export interface CIColumnDef<T> {
   render?: (value: unknown, row: T) => React.ReactNode
   width?: number
   readOnly?: boolean
+  onBlur?: (value: unknown, formValues: Partial<T>, setFormValues: React.Dispatch<React.SetStateAction<Partial<T>>>) => void
+  disabled?: boolean
 }
 
 export interface CIService<T, P> {
