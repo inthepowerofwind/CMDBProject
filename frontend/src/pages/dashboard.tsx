@@ -3,7 +3,7 @@ import { IconServer, IconCircleCheck, IconCircleX, IconAlertTriangle, IconAlertC
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { ComponentType, useEffect, useState } from 'react'
 import { dashboardService, DashboardData } from '../api/dashboardService'
-// import { changeLogService } from '../api/changeLogService' // uncomment when ready
+import { changeLogService, ChangeLog as ChangeLogEntry } from '../api/changeLogService'
 
 interface StatCardProps {
   title: string
@@ -13,32 +13,32 @@ interface StatCardProps {
   icon: ComponentType<{ size?: number }>
 }
 
-export type ChangeType = 'Created' | 'Deleted' | 'Status Change' | 'Location Change' | 'Updated'
-
-export interface ChangeLog {
-  ci_id: string
-  description: string
-  change_log_id: string
-  changed_by: string
-  change_type: ChangeType
+interface DashboardProps {
+  onNavigate: (page: string) => void
 }
 
-const BADGE_CONFIG: Record<ChangeType, { color: string }> = {
-  'Created':         { color: 'green'  },
-  'Deleted':         { color: 'red'    },
-  'Status Change':   { color: 'blue'   },
-  'Location Change': { color: 'violet' },
-  'Updated':         { color: 'orange' },
+const CHANGE_TYPE_COLOR: Record<string, string> = {
+  'Created':               'green',
+  'Deleted':               'red',
+  'Restored':              'yellow',
+  'Updated':               'blue',
+  'Status Change':         'blue',
+  'Patch Update':          'cyan',
+  'OS Update':             'cyan',
+  'Firmware Update':       'cyan',
+  'Version Update':        'cyan',
+  'Ownership Change':      'blue',
+  'Location Change':       'blue',
+  'Environment Change':    'blue',
+  'Criticality Change':    'violet',
+  'Classification Change': 'grape',
+  'Tier Change':           'violet',
+  'Cost Update':           'yellow',
+  'License Update':        'yellow',
+  'Compliance Update':     'yellow',
+  'SLA Update':            'yellow',
+  'Rename':                'gray',
 }
-
-// Mock data (swap for changeLogService.get() when ready)
-const MOCK_CHANGES: ChangeLog[] = [
-  { ci_id: 'DB-002',  description: 'New CI record created in Databases',                    change_log_id: 'CHG-LOG-109', changed_by: 'Test User1', change_type: 'Created'         },
-  { ci_id: 'REL-001', description: 'New CI record created in Relationships',                change_log_id: 'CHG-LOG-108', changed_by: 'Test User2', change_type: 'Created'         },
-  { ci_id: 'SRV-012', description: 'Updated Status in Servers',                             change_log_id: 'CHG-LOG-107', changed_by: 'John',       change_type: 'Status Change'   },
-  { ci_id: 'NET-016', description: 'CI record removed from Network Devices',                change_log_id: 'CHG-LOG-106', changed_by: 'Test User1', change_type: 'Deleted'         },
-  { ci_id: 'SRV-009', description: 'Updated Storage (TB), Virtualized, Location, Rack Slot', change_log_id: 'CHG-LOG-105', changed_by: 'John',     change_type: 'Location Change' },
-]
 
 const tableData: TableData = {
   body: [
@@ -48,22 +48,22 @@ const tableData: TableData = {
     ['Last Reviewed',       '2026-03-01'],
     ['CMDB Owner',          'IT Asset Manager'],
     ['Policy Reference',    '7.2.1 Asset Management | 7.2.2 Configuration Management'],
-    ['Framework Alignment', 'ISO 27001:2022 A.5.9, A.5.10 | ITIL 4 — Configuration Management Practice']
+    ['Framework Alignment', 'ISO 27001:2022 A.5.9, A.5.10 | ITIL 4 — Configuration Management Practice'],
   ],
 }
 
 const tableWorkbook: TableData = {
   head: [['Sheet'], ['Contents'], ['CI Types Covered']],
   body: [
-    ['Servers',         'Physical and virtual servers',               'File Server, Domain Controller, App Server, Web Server, VM Host'],
-    ['Network',         'Network infrastructure devices',             'Core Switch, Firewall, Router, Wireless AP, Load Balancer'],
-    ['Endpoints',       'User endpoint devices',                      'Laptop, Desktop, Mobile Phone, Tablet'],
-    ['Software',        'Software license and application records',   'OS, Office Suite, Security Tools, Business Applications'],
-    ['Cloud Services',  'Cloud service and SaaS records',             'IaaS, PaaS, SaaS platforms'],
-    ['Databases',       'Database instances',                         'SQL Server, Oracle, MySQL, PostgreSQL'],
-    ['Relationships',   'CI dependency and relationship map',         'All CI-to-CI and CI-to-Service relationships'],
-    ['Change Log',      'Change history for all CIs',                 'All changes, versions, and configuration updates'],
-    ['Reference',       'Lookup tables and classification codes',     'Status, Category, Criticality, Environment values']
+    ['Servers',        'Physical and virtual servers',              'File Server, Domain Controller, App Server, Web Server, VM Host'],
+    ['Network',        'Network infrastructure devices',            'Core Switch, Firewall, Router, Wireless AP, Load Balancer'],
+    ['Endpoints',      'User endpoint devices',                     'Laptop, Desktop, Mobile Phone, Tablet'],
+    ['Software',       'Software license and application records',  'OS, Office Suite, Security Tools, Business Applications'],
+    ['Cloud Services', 'Cloud service and SaaS records',            'IaaS, PaaS, SaaS platforms'],
+    ['Databases',      'Database instances',                        'SQL Server, Oracle, MySQL, PostgreSQL'],
+    ['Relationships',  'CI dependency and relationship map',        'All CI-to-CI and CI-to-Service relationships'],
+    ['Change Log',     'Change history for all CIs',                'All changes, versions, and configuration updates'],
+    ['Reference',      'Lookup tables and classification codes',    'Status, Category, Criticality, Environment values'],
   ],
 }
 
@@ -83,42 +83,57 @@ function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps)
   )
 }
 
-function ChangeRow({ log }: { log: ChangeLog }) {
-  const badge = BADGE_CONFIG[log.change_type] ?? { color: 'gray' }
-
+function ChangeRow({ log }: { log: ChangeLogEntry }) {
   return (
     <Box
       style={{
+        background: '#F8FAFC',
         border: '1px solid #e9ecef',
         borderRadius: 10,
-        padding: '14px 18px',
+        padding: '10px 18px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 12,
-        background: '#fff',
+        marginBottom: 8,
       }}
     >
-      <Group gap={16} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-        <Text fw={700} size="sm" style={{ whiteSpace: 'nowrap', minWidth: 72, color: '#1a2b4a' }}>
+      <Group gap={14} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+        <Text
+          fw={600}
+          size="sm"
+          style={{
+            whiteSpace: 'nowrap',
+            minWidth: 68,
+            color: '#1a2b4a',
+            alignSelf: 'flex-start',
+            paddingTop: 1,
+          }}
+        >
           {log.ci_id}
         </Text>
+
         <Box style={{ minWidth: 0 }}>
           <Text size="sm" fw={500} style={{ color: '#1a2b4a' }} truncate>
-            {log.description}
+            {log.change_description ?? `${log.change_type} on ${log.ci_name}`}
           </Text>
-          <Text size="xs" c="dimmed" mt={2}>
-            {log.change_log_id} &bull; {log.changed_by}
+          <Text
+            size="xs"
+            c="dimmed"
+            mt={2}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            {log.change_log_id} &bull; {log.change_by}
           </Text>
         </Box>
       </Group>
 
       <Badge
-        color={badge.color}
+        color={CHANGE_TYPE_COLOR[log.change_type] ?? 'gray'}
         variant="light"
-        size="lg"
+        size="sm"
         radius="md"
-        style={{ whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 600, minWidth: 130, textAlign: 'center' }}
+        style={{ whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 600, minWidth: 90, minHeight: 30, textAlign: 'center' }}
       >
         {log.change_type}
       </Badge>
@@ -126,14 +141,14 @@ function ChangeRow({ log }: { log: ChangeLog }) {
   )
 }
 
-export default function Dashboard() {
-  const [dashData, setDashData]   = useState<DashboardData | null>(null)
+export default function Dashboard({ onNavigate }: DashboardProps) {
+  const [dashData, setDashData]       = useState<DashboardData | null>(null)
   const [dashLoading, setDashLoading] = useState(true)
-  const [dashError, setDashError] = useState('')
+  const [dashError, setDashError]     = useState('')
 
-  const [changeLogs, setChangeLogs]     = useState<ChangeLog[]>([])
-  const [logsLoading, setLogsLoading]   = useState(true)
-  const [logsError, setLogsError]       = useState('')
+  const [changeLogs, setChangeLogs]   = useState<ChangeLogEntry[]>([])
+  const [logsLoading, setLogsLoading] = useState(true)
+  const [logsError, setLogsError]     = useState('')
 
   useEffect(() => {
     dashboardService.get()
@@ -143,15 +158,10 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => {
-    // ── Swap this block for your real service call
-    // changeLogService.get()
-    //   .then((data) => setChangeLogs(data.slice(0, 5)))
-    //   .catch(() => setLogsError('Failed to load change logs.'))
-    //   .finally(() => setLogsLoading(false))
-    setTimeout(() => {
-      setChangeLogs(MOCK_CHANGES.slice(0, 5))
-      setLogsLoading(false)
-    }, 500)
+    changeLogService.list({ page: 1, per_page: 5, sort_by: 'created_at', sort_dir: 'desc' })
+      .then((result) => setChangeLogs(result.data))
+      .catch(() => setLogsError('Failed to load change logs.'))
+      .finally(() => setLogsLoading(false))
   }, [])
 
   if (dashLoading) {
@@ -172,20 +182,19 @@ export default function Dashboard() {
     )
   }
 
-  const totalCIs    = dashData.total_cis
-  const totalActive = dashData.ci_per_status.find((s) => s.label === 'Active')?.total ?? 0
-  const totalDecomm = dashData.ci_per_status.find((s) => s.label === 'Decommissioned')?.total ?? 0
-
-  const totalEol = dashData.ci_per_status.find((s) => s.label === 'EOL')?.total ?? 0
+  const totalCIs      = dashData.total_cis
+  const totalActive   = dashData.ci_per_status.find((s) => s.label === 'Active')?.total ?? 0
+  const totalDecomm   = dashData.ci_per_status.find((s) => s.label === 'Decommissioned')?.total ?? 0
+  const totalEol      = dashData.ci_per_status.find((s) => s.label === 'EOL')?.total ?? 0
   const totalArchived = dashData.ci_per_status.find((s) => s.label === 'Archived')?.total ?? 0
 
   return (
     <Box p="xl" mt="xl">
       <Group grow mb="xl">
-        <StatCard title="Total CIs"      value={totalCIs}   color="black" iconColor="blue"   icon={IconServer} />
-        <StatCard title="Active"         value={totalActive} color="black" iconColor="green" icon={IconCircleCheck} />
-        <StatCard title="Decommissioned" value={totalDecomm} color="black" iconColor="gray"  icon={IconCircleX} />
-        <StatCard title="EOL / At Risk"  value={totalEol}    color="black" iconColor="red"   icon={IconAlertTriangle} />
+        <StatCard title="Total CIs"      value={totalCIs}      color="black" iconColor="blue"   icon={IconServer} />
+        <StatCard title="Active"         value={totalActive}   color="black" iconColor="green"  icon={IconCircleCheck} />
+        <StatCard title="Decommissioned" value={totalDecomm}   color="black" iconColor="gray"   icon={IconCircleX} />
+        <StatCard title="EOL / At Risk"  value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
         <StatCard title="Archived"       value={totalArchived} color="black" iconColor="yellow" icon={IconArchive} />
       </Group>
 
@@ -231,10 +240,7 @@ export default function Dashboard() {
                 component="button"
                 size="sm"
                 c="dimmed"
-                onClick={() => {
-                  // TODO: navigate to your Change Logs module
-                  // e.g. navigate('/change-logs')
-                }}
+                onClick={() => onNavigate('changelog')}
                 style={{ display: 'flex', alignItems: 'center', gap: 4 }}
               >
                 View All Change Logs
@@ -255,7 +261,7 @@ export default function Dashboard() {
             )}
 
             {!logsLoading && !logsError && (
-              <Stack gap={10}>
+              <Stack gap={8}>
                 {changeLogs.map((log) => (
                   <ChangeRow key={log.change_log_id} log={log} />
                 ))}

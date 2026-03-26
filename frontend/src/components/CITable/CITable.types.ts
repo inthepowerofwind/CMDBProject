@@ -40,5 +40,5 @@ export interface CITableProps<
   addLabel?:          string
   searchPlaceholder?: string
   requiredFields?:    (keyof P & string)[]
-  
+  tableMinWidth?:     number
 }
