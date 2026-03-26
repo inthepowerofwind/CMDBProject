@@ -6,7 +6,7 @@ export interface Relationships {
   source_ci_id:       string
   source_ci_name:     string
   relationship_type:  string
-  version:            string
+  //version:            string
   target_ci_id:       string
   target_ci_name:     string
   description:        string | null
@@ -15,8 +15,15 @@ export interface Relationships {
   updated_at:         string
 }
 
-export type RelationshipsPayload = Omit<Relationships, 'relationship_id' | 'created_at' | 'updated_at'>
-
+export interface RelationshipsPayload {
+  source_ci_id:      string
+  source_ci_name:    string
+  relationship_type: string
+  target_ci_id:      string
+  target_ci_name:    string
+  description:       string | null
+  criticality:       'Critical' | 'High' | 'Medium' | 'Low'
+}
 export interface RelationshipsListParams {
   search?:   string
   status?:   string

@@ -17,20 +17,38 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
         style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
     : null
 
-const makeCiIdBlur = (
-  nameField: 'source_ci_name' | 'target_ci_name'
-) => async (
-  value: unknown,
-  _formValues: Partial<Relationships>,
-  setFormValues: Dispatch<SetStateAction<Partial<Relationships>>>
-) => {
-  const ciId = (value as string)?.trim()
-  if (!ciId) return
-  const result = await relationshipService.lookupCi(ciId)
-  if (result) {
-    setFormValues(prev => ({ ...prev, [nameField]: result.ci_name }))
+const makeCiIdBlur = (nameField: 'source_ci_name' | 'target_ci_name') => 
+  async (value: unknown, _formValues: Partial<Relationships>, setFormValues: Dispatch<SetStateAction<Partial<Relationships>>>) => {
+    console.log('onBlur fired, value:', value)
+    const ciId = (value as string)?.trim()
+    if (!ciId) {
+      console.log('ciId empty, returning early')
+      return
+    }
+    const result = await relationshipService.lookupCi(ciId)
+    console.log('lookup result:', result)
+    if (result) {
+      setFormValues(prev => {
+        console.log('setFormValues called, prev:', prev)
+        return { ...prev, [nameField]: result.ci_name }
+      })
+    }
   }
-}
+
+// const makeCiIdBlur = (
+//   nameField: 'source_ci_name' | 'target_ci_name'
+// ) => async (
+//   value: unknown,
+//   _formValues: Partial<Relationships>,
+//   setFormValues: Dispatch<SetStateAction<Partial<Relationships>>>
+// ) => {
+//   const ciId = (value as string)?.trim()
+//   if (!ciId) return
+//   const result = await relationshipService.lookupCi(ciId)
+//   if (result) {
+//     setFormValues(prev => ({ ...prev, [nameField]: result.ci_name }))
+//   }
+// }
 
 const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'relationship_id',   header: 'Relationship ID',            readOnly: true },

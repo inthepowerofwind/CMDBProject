@@ -76,6 +76,7 @@ interface TableViewProps<T extends object, P extends object> {
   toolbar: React.ReactNode
 
   setNewForm: React.Dispatch<React.SetStateAction<P>>
+  newFormRef: React.MutableRefObject<P>   
 }
 
 function TableView<T extends object, P extends object>({
@@ -84,7 +85,7 @@ function TableView<T extends object, P extends object>({
   selectedIds, allSelected, someSelected, onSelectAll, onRowClick,
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
   isAdding, newForm, setNewField,setNewForm,tableMinWidth,
-  onPageChange, toolbar,
+  onPageChange, toolbar, newFormRef,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
 
@@ -240,9 +241,9 @@ function TableView<T extends object, P extends object>({
                       isEditing
                       onChange={(f, v) => setNewField(f, v)}
                       onBlur={col.onBlur
-                        ? (value) => col.onBlur!(value, newForm as Partial<T>, (updater) => {
+                        ? (value) => col.onBlur!(value, newFormRef.current as Partial<T>, (updater) => {
                             const next = typeof updater === 'function'
-                              ? (updater as (prev: Partial<T>) => Partial<T>)(newForm as Partial<T>)
+                              ? (updater as (prev: Partial<T>) => Partial<T>)(newFormRef.current as Partial<T>)
                               : updater
                             setNewForm((prev) => ({ ...prev, ...next } as P))
                           })
@@ -338,6 +339,8 @@ export default function CITable<
   const [editableIds, setEditableIds]       = useState<Set<string>>(new Set())
   const [editForms, setEditForms]           = useState<Record<string, Partial<P>>>({})
   const editFormsRef                        = useRef<Record<string, Partial<P>>>({})
+  const newFormRef                          = useRef<P>(emptyForm())
+  useEffect(() => { newFormRef.current = newForm }, [newForm])
   const [editSaving, setEditSaving]         = useState(false)
 
   // Delete confirm modal
@@ -400,12 +403,12 @@ export default function CITable<
   }, [page, search, filterStatus, isArchiveView, archivePage, archiveSearch])
 
   // Form helpers
-  const setNewField = (key: string, value: unknown) =>
-    setNewForm((f) => {
-      const current = (f as Record<string, unknown>)[key]
-      if ((value === '' || value === null) && current) return f
-      return { ...f, [key]: value } as P
-    })
+  const setNewField = (key: string, value: unknown) => {
+  console.log('setNewField', key, value)
+  setNewForm((f) => ({ ...f, [key]: value } as P))
+}
+  // const setNewField = (key: string, value: unknown) =>
+  // setNewForm((f) => ({ ...f, [key]: value } as P))
 
   const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
     editFormsRef.current = {
@@ -717,6 +720,8 @@ export default function CITable<
           onPageChange={setArchivePage}
           toolbar={archiveToolbar}
           tableMinWidth={900}
+          newFormRef={newFormRef}
+          
         />
       ) : (
         /* Main View */
@@ -748,6 +753,7 @@ export default function CITable<
           onPageChange={setPage}
           toolbar={mainToolbar}
           tableMinWidth={900}
+          newFormRef={newFormRef}
         />
       )}
     </Box>

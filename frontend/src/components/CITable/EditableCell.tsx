@@ -86,7 +86,7 @@ export function EditableCell({
         if (type === 'number') {
           onChange(field, raw ? Number(raw) : null, false)
         } else {
-          onChange(field, raw || '', false)
+          onChange(field, raw || '', true)
         }
       }}
       onFocus={() => { isFocused.current = true }}

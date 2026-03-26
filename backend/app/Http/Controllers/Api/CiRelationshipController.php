@@ -17,7 +17,7 @@ class CiRelationshipController extends Controller
     {
         $last = CiRelationship::withTrashed()
             ->where('relationship_id', 'like', 'REL-%')
-            ->orderByRaw('TRY_CAST(SUBSTRING(relationship_id, 4, LEN(relationship_id)) AS INT) DESC')
+            ->orderByRaw('LEN(relationship_id) DESC, relationship_id DESC')
             ->value('relationship_id');
 
         if (!$last) {
@@ -191,25 +191,31 @@ class CiRelationshipController extends Controller
     // Lookup CI name by CI ID across all CI types.
     public function lookupCi(string $ciId)
     {
-        $models = [
-            \App\Models\Server::class         => 'ci_name',
-            \App\Models\NetworkDevice::class  => 'ci_name',
-            \App\Models\Endpoint::class       => 'ci_name',
-            \App\Models\Software::class       => 'software_name',
-            \App\Models\CloudService::class   => 'service_name',
-            \App\Models\CmdbDatabase::class   => 'database_name',
-        ];
+        try {
+            $models = [
+                \App\Models\Server::class         => 'ci_name',
+                \App\Models\NetworkDevice::class  => 'ci_name',
+                \App\Models\Endpoint::class       => 'ci_name',
+                \App\Models\Software::class       => 'software_name',
+                \App\Models\CloudService::class   => 'service_name',
+                \App\Models\CmdbDatabase::class   => 'database_name',
+            ];
 
-        foreach ($models as $model => $nameColumn) {
-            $ci = $model::where('ci_id', $ciId)->first(['ci_id', $nameColumn]);
-            if ($ci) {
-                return response()->json([
-                    'ci_id'   => $ci->ci_id,
-                    'ci_name' => $ci->{$nameColumn},
-                ]);
+            foreach ($models as $model => $nameColumn) {
+                $ci = $model::where('ci_id', $ciId)->first(['ci_id', $nameColumn]);
+                if ($ci) {
+                    return response()->json([
+                        'ci_id'   => $ci->ci_id,
+                        'ci_name' => $ci->{$nameColumn},
+                    ]);
+                }
             }
-        }
 
-        return response()->json(['message' => 'CI not found.'], 404);
+            return response()->json(['message' => 'CI not found.'], 404);
+
+        } catch (\Throwable $th) {
+            \Log::error('lookupCi error: ' . $th->getMessage());
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 }
