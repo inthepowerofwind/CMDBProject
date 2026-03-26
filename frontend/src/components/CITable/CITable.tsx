@@ -48,6 +48,7 @@ interface TableViewProps<T extends object, P extends object> {
   colDefs: CIColumnDef<T>[]
   addLabel: string
   isArchiveView: boolean
+  tableMinWidth: number
 
   // selection
   selectedIds: Set<string>
@@ -82,7 +83,7 @@ function TableView<T extends object, P extends object>({
   idField, colDefs, addLabel, isArchiveView,
   selectedIds, allSelected, someSelected, onSelectAll, onRowClick,
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
-  isAdding, newForm, setNewField,setNewForm,
+  isAdding, newForm, setNewField,setNewForm,tableMinWidth,
   onPageChange, toolbar,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
@@ -165,7 +166,7 @@ function TableView<T extends object, P extends object>({
 
   const renderTableContent = () => (
     <ScrollArea scrollbarSize={8}>
-      <table style={{ minWidth: 3200, width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ minWidth: tableMinWidth, width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id} style={{ backgroundColor: '#F8FAFC' }}>
@@ -422,7 +423,7 @@ export default function CITable<
       setRows((prev) => [...prev, created])
       setTotal((t) => t + 1)
       setNewForm(emptyForm())
-      setIsAdding(true)
+      setIsAdding(false)  // exit add mode after successful save
       notifications.show({ color: 'green', message: `${String((created as Indexable<T>)[idField])} added.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add.' })
@@ -573,7 +574,11 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={handleCancelEdit}>
               Cancel
             </Button>
-            <Button size="sm" leftSection={<IconDeviceFloppy size={14} />} onClick={handleSaveEdit} loading={editSaving} style={{ backgroundColor: '#2563EB' }}>
+            <Button 
+            size="sm" 
+            leftSection={<IconDeviceFloppy size={14} />} 
+            onClick={handleSaveEdit} loading={editSaving}
+            style={{ backgroundColor: '#2563EB' }}>
               Save Changes
             </Button>
           </>
@@ -611,9 +616,12 @@ export default function CITable<
             <Button size="sm" variant="light" color="blue" leftSection={<IconEdit size={14} />} onClick={handleStartEdit}>
               Edit
             </Button>
-            <Button size="sm" leftSection={<IconPlus size={14} />} onClick={() => setIsAdding(true)} style={{ backgroundColor: '#2563EB' }}>
-              {addLabel}
-            </Button>
+            {/* Add button hidden when rows are selected */}
+            {!hasSelection && (
+              <Button size="sm" leftSection={<IconPlus size={14} />} onClick={() => setIsAdding(true)} style={{ backgroundColor: '#2563EB' }}>
+                {addLabel}
+              </Button>
+            )}
             {hasArchive && (
               <Button size="sm" variant="light" color="gray" leftSection={<IconArchive size={14} />} onClick={() => { setIsArchiveView(true); setSelectedIds(new Set()) }}>
                 Archive
@@ -708,6 +716,7 @@ export default function CITable<
           setNewForm={setNewForm}
           onPageChange={setArchivePage}
           toolbar={archiveToolbar}
+          tableMinWidth={900}
         />
       ) : (
         /* Main View */
@@ -738,6 +747,7 @@ export default function CITable<
           setNewForm={setNewForm}
           onPageChange={setPage}
           toolbar={mainToolbar}
+          tableMinWidth={900}
         />
       )}
     </Box>

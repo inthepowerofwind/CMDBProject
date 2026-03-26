@@ -18,6 +18,7 @@ export interface DashboardData {
   total_cis:       number
   ci_per_category: CiPerCategory[]
   ci_per_status:   StatusCount[]
+  total_archive:   number
 }
 
 export const dashboardService = {

@@ -60,6 +60,7 @@ export default function CIRelationships() {
       columns={COLUMNS}
       service={relationshipService}
       emptyForm={emptyRelationshipForm}
+      tableMinWidth={900}
       addLabel="Add Relationship"
       searchPlaceholder="Search by ID, name, relationship..."
       requiredFields={[

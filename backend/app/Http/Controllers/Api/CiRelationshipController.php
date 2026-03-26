@@ -17,7 +17,7 @@ class CiRelationshipController extends Controller
     {
         $last = CiRelationship::withTrashed()
             ->where('relationship_id', 'like', 'REL-%')
-            ->orderByRaw('TRY_CAST(SUBSTRING(relationship_id, 5, LEN(relationship_id)) AS INT) DESC')
+            ->orderByRaw('TRY_CAST(SUBSTRING(relationship_id, 4, LEN(relationship_id)) AS INT) DESC')
             ->value('relationship_id');
 
         if (!$last) {
@@ -87,7 +87,7 @@ class CiRelationshipController extends Controller
                 'target_ci_id'      => 'required|string',
                 'target_ci_name'    => 'required|string|max:255',
                 'description'       => 'nullable|string',
-                'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
+                'criticality'       => 'string|in:Critical,High,Medium,Low',
             ]);
  
             $data['relationship_id'] = $this->generateRelationshipId();
@@ -120,13 +120,15 @@ class CiRelationshipController extends Controller
     {
                 try {
             $data = $request->validate([
+                
                 'source_ci_id'      => 'sometimes|required|string|max:100',
                 'source_ci_name'    => 'sometimes|required|string|max:255',
                 'relationship_type' => 'sometimes|required|string|max:100',
                 'target_ci_id'      => 'sometimes|required|string|max:100',
                 'target_ci_name'    => 'sometimes|required|string|max:255',
+
                 'description'       => 'nullable|string',
-                'criticality'       => 'nullable|string|in:Critical,High,Medium,Low',
+                'criticality'       => 'string|in:Critical,High,Medium,Low',
             ]);
  
             $ciRelationship->update($data);

@@ -20,38 +20,37 @@ type PageName =
   | 'endpoints' | 'software'  | 'cloudservices'
   | 'databases' | 'relationships' | 'changelog' | 'reference'
 
-function getPage(activePage: PageName) {
-  switch (activePage) {
-    case 'dashboard': return <Dashboard />
-    case 'servers':   return <Servers />
-    case 'network':   return <Network/>
-    case 'endpoints': return <Endpoints/>
-    case 'software':  return <Software/>
-    case 'cloudservices': return <CloudServices/>
-    case 'databases': return <Databases/>
-    case 'relationships': return <Relationships/>
-    case 'changelog': return <ChangeLog />
-    case 'reference': return <References/>
-    default:
-      return (
-        <Box p="xl">
-          <Text c="dimmed"><strong>{activePage}</strong></Text>
-        </Box>
-      )
-  }
-}
-
 export default function App() {
   const [user, setUser] = useState<AuthUser | null>(
-    () => authService.getStoredUser()   // restores session on refresh
+    () => authService.getStoredUser()
   )
   const [activePage, setActivePage] = useState<PageName>('dashboard')
-
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
 
   const handleLogout = async () => {
     try { await authService.logout() } catch { }
     setUser(null)
+  }
+
+  function getPage(page: PageName) {
+    switch (page) {
+      case 'dashboard':     return <Dashboard onNavigate={(p) => setActivePage(p as PageName)} />
+      case 'servers':       return <Servers />
+      case 'network':       return <Network />
+      case 'endpoints':     return <Endpoints />
+      case 'software':      return <Software />
+      case 'cloudservices': return <CloudServices />
+      case 'databases':     return <Databases />
+      case 'relationships': return <Relationships />
+      case 'changelog':     return <ChangeLog />
+      case 'reference':     return <References />
+      default:
+        return (
+          <Box p="xl">
+            <Text c="dimmed"><strong>{page}</strong></Text>
+          </Box>
+        )
+    }
   }
 
   if (!user) {
