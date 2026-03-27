@@ -114,4 +114,29 @@ class AuthController extends Controller
             return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
         }
     }
+
+    // Update the authenticated user's username (name).
+
+    public function updateUsername(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+
+            $user = $request->user();
+            $user->update(['name' => $validated['name']]);
+
+            return response()->json([
+                'message' => 'Username updated successfully.',
+                'user'    => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email],
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => $e->errors()], 422);
+        } catch (\Throwable $th) {
+            \Log::error($th->getMessage());
+            return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);
+        }
+    }
 }

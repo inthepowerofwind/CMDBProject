@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\{
     DatabaseController,
     EndpointController,
     NetworkDeviceController,
+    ReferenceController,
     ServerController,
     SoftwareController
 };
@@ -25,6 +26,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me',      [AuthController::class, 'me']);
+        Route::patch('/username', [AuthController::class, 'updateUsername']);
 
     });
 });
@@ -89,11 +91,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('ci-relationships', CiRelationshipController::class);
     Route::post('/ci-relationships/{relationshipId}/restore', [CiRelationshipController::class, 'restore']);
     Route::delete('/ci-relationships/{relationshipId}/force', [CiRelationshipController::class, 'forceDelete']);
-    Route::get('/ci-lookup/{ciId}', [CiRelationshipController::class, 'lookupCi']);
 
     // Change Logs
     Route::get('/change-logs', [CiChangeLogController::class, 'index']);
     Route::post('/change-logs', [CiChangeLogController::class, 'store']);
     Route::get('/change-logs/{ciChangeLog}', [CiChangeLogController::class, 'show']);
+
+    // Reference Tables
+    Route::get('/reference',                          [ReferenceController::class, 'index']);
+    Route::put('/reference/{table}',                  [ReferenceController::class, 'update']);
+    Route::post('/reference/{table}/rows',            [ReferenceController::class, 'addRow']);
+    Route::delete('/reference/{table}/rows/{index}',  [ReferenceController::class, 'deleteRow']);
+    Route::delete('/reference/{table}/reset',         [ReferenceController::class, 'resetTable']);
 
 });
