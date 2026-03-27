@@ -28,9 +28,7 @@ class CiRelationshipController extends Controller
         return 'REL-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * Display a listing of CI relationships.
-     */
+    //Display a listing of CI relationships.
     public function index(Request $request)
     {
         try {
