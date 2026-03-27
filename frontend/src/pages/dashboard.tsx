@@ -1,6 +1,6 @@
 import { Grid, Card, Text, Group, Box, ThemeIcon, Table, TableData, Alert, Loader, Badge, Stack, Anchor } from '@mantine/core'
 import { IconServer, IconCircleCheck, IconCircleX, IconAlertTriangle, IconAlertCircle, IconArchive, IconArrowBarToRight } from '@tabler/icons-react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts'
 import { ComponentType, useEffect, useState } from 'react'
 import { dashboardService, DashboardData } from '../api/dashboardService'
 import { changeLogService, ChangeLog as ChangeLogEntry } from '../api/changeLogService'
@@ -195,22 +195,45 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         <StatCard title="Active"         value={totalActive}   color="black" iconColor="green"  icon={IconCircleCheck} />
         <StatCard title="Decommissioned" value={totalDecomm}   color="black" iconColor="gray"   icon={IconCircleX} />
         <StatCard title="EOL / At Risk"  value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
-        <StatCard title="Archived"       value={totalArchived} color="black" iconColor="yellow" icon={IconArchive} />
+        <StatCard title="Archive"       value={totalArchived}  color="black" iconColor="yellow" icon={IconArchive} />
       </Group>
 
       <Grid mt="lg">
         <Grid.Col span={7}>
           <Card shadow="sm" radius="md" withBorder h="100%">
-            <Text fw={600} mb="md" c="#1a2b4a">CI Category Summary</Text>
-            <ResponsiveContainer width="100%" height={300}>
+            <Text fw={600} mb={4} c="#1a2b4a">CI Category Summary</Text>
+            <Text size="xs" c="dimmed" mb="md">By status across all categories</Text>
+
+            <Group mt={10} gap="lg" mb="xl">
+              {[
+                { label: 'Active',         color: '#40c057' },
+                { label: 'Decommissioned', color: '#adb5bd' },
+                { label: 'EOL / At Risk',  color: '#e53e3e' },
+              ].map(({ label, color }) => (
+                <Group key={label} gap={6}>
+                  <Box style={{ width: 10, height: 10, borderRadius: 2, background: color, flexShrink: 0 }} />
+                  <Text size="xs" c="dimmed">{label}</Text>
+                </Group>
+              ))}
+            </Group>
+
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={dashData.ci_per_category} margin={{ left: -20, bottom: 5 }}>
-                <XAxis dataKey="category" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="active"         name="Active"         fill="#40c057" radius={[4,4,0,0]} />
-                <Bar dataKey="decommissioned" name="Decommissioned" fill="#adb5bd" radius={[4,4,0,0]} />
-                <Bar dataKey="eol"            name="EOL / At Risk"  fill="#e53e3e" radius={[4,4,0,0]} />
+                <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.06)" strokeDasharray="4 4" />
+                <XAxis dataKey="category" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: '#fff',
+                    border: '0.5px solid rgba(0,0,0,0.1)',
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+                />
+                <Bar dataKey="active"         name="Active"         fill="#40c057" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="decommissioned" name="Decommissioned" fill="#adb5bd" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="eol"            name="EOL / At Risk"  fill="#e53e3e" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -233,12 +256,12 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         </Grid.Col>
 
         <Grid.Col>
-          <Card shadow="sm" radius="md" withBorder>
+          <Card shadow="sm" radius="md" withBorder mt="lg">
             <Group justify="space-between" mb="md">
               <Text fw={600} c="#1a2b4a" size="md">Recent Changes</Text>
               <Anchor
                 component="button"
-                size="sm"
+                size="xs"
                 c="dimmed"
                 onClick={() => onNavigate('changelog')}
                 style={{ display: 'flex', alignItems: 'center', gap: 4 }}
