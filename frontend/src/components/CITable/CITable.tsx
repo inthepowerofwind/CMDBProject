@@ -4,10 +4,12 @@ import {
   Box, Text, ScrollArea, Button, Loader,
   TextInput, Select, Group, Alert, Tooltip,
   Checkbox, Pagination, Modal,
+  Stack,
 } from '@mantine/core'
 import {
   IconPlus, IconTrash, IconEdit, IconDeviceFloppy, IconAlertCircle,
   IconX, IconArchive, IconArchiveOff, IconArrowLeft,
+  IconAlertTriangle,
 } from '@tabler/icons-react'
 import {
   useReactTable,
@@ -674,20 +676,54 @@ export default function CITable<
       <Modal
         opened={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        title={<Text fw={700}>Confirm Delete</Text>}
+        withCloseButton={false}
         centered
         size="sm"
+        radius="md"
+        overlayProps={{ blur: 2, backgroundOpacity: 0.35 }}
       >
-        <Text size="sm" mb="lg">
-          Are you sure you want to delete <strong>{selectedIds.size} item(s)</strong>?
-          {hasArchive && ' They will be moved to the Archive and can be restored later.'}
-        </Text>
-        <Group justify="flex-end" gap={8}>
-          <Button variant="default" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
-          <Button variant="filled" color="red" onClick={handleDeleteConfirm}>
-            Delete
-          </Button>
-        </Group>
+        <Stack align="center" gap="md">
+          <Box
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              backgroundColor: '#FFF1F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <IconAlertTriangle size={26} color="#E03131" />
+          </Box>
+
+          <Stack align="center" gap={4}>
+            <Text fw={700} size="md" c="#0F172A">Confirm Delete</Text>
+            <Text size="sm" c="dimmed" ta="center">
+              Are you sure you want to delete <strong>{selectedIds.size} item(s)</strong>?
+              {hasArchive && ' They will be moved to the Archive and can be restored later.'}
+            </Text>
+          </Stack>
+
+          <Group justify="center" gap="sm" w="100%" mt={4}>
+            <Button
+              variant="default"
+              size="sm"
+              style={{ flex: 1 }}
+              onClick={() => setDeleteModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="red"
+              size="sm"
+              style={{ flex: 1 }}
+              onClick={handleDeleteConfirm}
+            >
+              Yes, Delete
+            </Button>
+          </Group>
+        </Stack>
       </Modal>
 
       {/* Archive View */}
