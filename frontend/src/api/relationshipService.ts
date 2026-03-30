@@ -5,8 +5,8 @@ export interface Relationships {
   relationship_id:    string
   source_ci_id:       string
   source_ci_name:     string
-  relationship_type:  string
-  //version:            string
+  relationship_type:  'Runs On / Hosted By' | 'Uses / Depends On' | 'Hosts / Virtualizes' | 'Backed Up By'
+                      | 'Replicates To' | 'HA Pair' | 'Protects / Fronts' | 'Load Balances' | 'Contains PII For'
   target_ci_id:       string
   target_ci_name:     string
   description:        string | null

@@ -12,7 +12,7 @@ export interface CloudServices {
   service_tier:       string | null
   account_id:         string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
-  data_classification: 'Internal' | 'External' | 'Confidential'
+  data_classification: 'Public' | 'Internal' | 'Confidential' | 'Restricted'
   monthly_cost:       string | null
   sla_uptime:         string | null
   mfa_enforced:       boolean

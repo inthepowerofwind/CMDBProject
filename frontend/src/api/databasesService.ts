@@ -12,7 +12,7 @@ export interface Databases {
   ip_address:         string | null
   port:               string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
-  data_classification: 'Internal' | 'External' | 'Confidential'
+  data_classification: 'Public' | 'Internal' | 'Confidential' | 'Restricted'
   size:               number
   backup_enabled:     boolean
   backup_frequency:   string | null

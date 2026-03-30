@@ -38,7 +38,7 @@ const COLUMNS: CIColumnDef<CloudServices>[] = [
   { key: 'service_tier',      header: 'Service Tier',               type: 'text',   width: 140 },
   { key: 'account_id',        header: 'Account / Subscription ID',  type: 'text' },
   { key: 'criticality',       header: 'Criticality',                type: 'select', width: 120, options: ['Critical', 'High', 'Medium', 'Low'], render: badge(CRIT_COLOR) },
-  { key: 'data_classification', header: 'Data Classification',      type: 'select', width: 20, options: ['Internal', 'External', 'Confidential'] },
+  { key: 'data_classification', header: 'Data Classification',      type: 'select', width: 20, options: ['Public', 'Internal', 'Confidential', 'Restricted'] },
   { key: 'monthly_cost',      header: 'Monthly Cost (USD)',         type: 'text' },
   { key: 'sla_uptime',        header: 'SLA Uptime Guarantee',       type: 'text' },
   { key: 'mfa_enfored',       header: 'MFA Enforced',               type: 'boolean' },

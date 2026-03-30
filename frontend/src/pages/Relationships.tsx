@@ -35,26 +35,12 @@ const makeCiIdBlur = (nameField: 'source_ci_name' | 'target_ci_name') =>
     }
   }
 
-// const makeCiIdBlur = (
-//   nameField: 'source_ci_name' | 'target_ci_name'
-// ) => async (
-//   value: unknown,
-//   _formValues: Partial<Relationships>,
-//   setFormValues: Dispatch<SetStateAction<Partial<Relationships>>>
-// ) => {
-//   const ciId = (value as string)?.trim()
-//   if (!ciId) return
-//   const result = await relationshipService.lookupCi(ciId)
-//   if (result) {
-//     setFormValues(prev => ({ ...prev, [nameField]: result.ci_name }))
-//   }
-// }
-
 const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'relationship_id',   header: 'Relationship ID',            readOnly: true },
   { key: 'source_ci_id',      header: 'Source CI ID',               type: 'text',   width: 140, onBlur: makeCiIdBlur('source_ci_name') },
   { key: 'source_ci_name',    header: 'Source CI Name',             type: 'text',   width: 140, disabled: true },
-  { key: 'relationship_type', header: 'Relationship Type',          type: 'text',   width: 140 },
+  { key: 'relationship_type', header: 'Relationship Type',          type: 'text',   width: 200, options: ['Runs On / Hosted By', 'Uses / Depends On', 'Hosts / Virtualizes', 'Backed Up By', 
+                                                                                                'Replicates To', 'HA Pair', 'Protects / Fronts', 'Load Balances', 'Contains PII For'] },
   { key: 'target_ci_id',      header: 'Target CI ID',               type: 'text',   width: 140, onBlur: makeCiIdBlur('target_ci_name') },
   { key: 'target_ci_name',    header: 'Target CI Name',             type: 'text',   width: 140, disabled: true },
   { key: 'description',       header: 'Description',                type: 'text',   width: 200 },
@@ -64,7 +50,7 @@ const COLUMNS: CIColumnDef<Relationships>[] = [
 const emptyRelationshipForm = (): RelationshipsPayload => ({
   source_ci_id:      '',
   source_ci_name:    '',
-  relationship_type: '',
+  relationship_type: 'Runs On / Hosted By',
   target_ci_id:      '',
   target_ci_name:    '',
   description:       '',

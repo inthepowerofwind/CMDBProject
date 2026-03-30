@@ -36,7 +36,7 @@ const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'ip_address',        header: 'IP Address',                 type: 'text',   width: 150 },
   { key: 'port',              header: 'Port',                       type: 'number' },
   { key: 'criticality',       header: 'Criticality',                type: 'select', width: 120, options: ['Critical','High','Medium','Low'], render: badge(CRIT_COLOR) },
-  { key: 'data_classification', header: 'Data Classification',      type: 'select', width: 20, options: ['Internal', 'External', 'Confidential'] },
+  { key: 'data_classification', header: 'Data Classification',      type: 'select', width: 20, options: ['Public', 'Internal', 'Confidential', 'Restricted'] },
   { key: 'size',              header: 'size',                       type: 'number' },
   { key: 'backup_enabled',    header: 'Backup Enabled',             type: 'boolean',width: 110 },
   { key: 'backup_frequency',  header: 'Backup Frequency',           type: 'text' },
