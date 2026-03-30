@@ -10,8 +10,8 @@ export interface Software {
   vendor:             string | null
   license_type:       string | null
   license_count:      string | null
-  license_deployed:   string | null
-  license_available:  string | null
+  licenses_deployed:   string | null
+  licenses_available:  string | null
   compliance_status:  'Compliant' | 'At Limit'
   installed_on:       string | null
   environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' 
@@ -20,7 +20,7 @@ export interface Software {
   auto_update:        boolean
   asl_approved:       boolean
   sast_dast_tested:   'Yes' | 'No' | 'N/A'
-  license_key_loc:    string | null
+  license_key_location:    string | null
   procurement_date:   string | null
   license_expiry:     string | null
   eol_date:           string | null
@@ -60,6 +60,7 @@ export const softwareService = {
     return data
   },
   async create(payload: SoftwarePayload): Promise<Software> {
+    console.log('Sending payload:', JSON.stringify(payload, null, 2))
     const { data } = await api.post<Software>('/software', payload)
     return data
   },

@@ -40,7 +40,7 @@ class Software extends Model
     protected $casts = [
         'auto_update' => 'boolean',
         'asl_approved' => 'boolean',
-        'sast_dast_tested' => 'boolean',
+       // 'sast_dast_tested' => 'boolean',
         'last_review' => 'date',
     ];
 

@@ -63,9 +63,14 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
     setProfileName(user.name)
   }, [user.name])
 
-  const handleEditProfileSave = () => {
-    // TODO: call update API here with profileName
-    setEditProfileOpen(false)
+  const handleEditProfileSave = async () => {
+    try {
+      const updatedUser = await authService.updateUsername(profileName)
+      onUserUpdate(updatedUser)
+      setEditProfileOpen(false)
+    } catch (err) {
+      console.error('Failed to update username:', err)
+    }
   }
 
   const handleEditProfileClose = () => {

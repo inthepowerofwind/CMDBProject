@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('data_classification')->nullable();
             $table->boolean('auto_update')->default(true);
             $table->boolean('asl_approved')->default(true);
-            $table->boolean('sast_dast_tested')->default(true);
+            $table->string('sast_dast_tested')->default('N/A');
             $table->string('license_key_location')->nullable();
             $table->string('procurement_date')->nullable();
             $table->string('license_expiry')->nullable();
