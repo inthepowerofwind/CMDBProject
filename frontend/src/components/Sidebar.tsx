@@ -6,6 +6,7 @@ import {
   IconClipboard, IconBook,
 } from '@tabler/icons-react'
 import { ComponentType } from 'react'
+import CMDBLogo from '../assets/CMDB_LogoIcon.png'
 
 interface NavItem {
   label: string
@@ -40,7 +41,6 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
         height: '100vh',
         position: 'sticky',
         top: 0,
-        overflowY: 'auto',
         backgroundColor: 'white',
         display: 'flex',
         flexDirection: 'column',
@@ -50,27 +50,55 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
         overflow: 'hidden',
       }}
     >
-      <Box style={{
-        height: 58,
-        borderBottom: '1px solid #E3E8EF',
-        flexShrink: 0,
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: 16,
-        overflow: 'hidden',
-      }}>
-        <Box style={{
-          opacity: collapsed ? 0 : 1,
-          transition: 'opacity 180ms ease',
-          pointerEvents: collapsed ? 'none' : 'auto',
-          whiteSpace: 'nowrap',
-        }}>
-          <Text fw={700} size="sm" c="black" tt="uppercase">CMDB System</Text>
-          <Text size="xs" c="dimmed" mt={-3.3}>IT Asset Registry</Text>
+      <Box
+        style={{
+          height: 58,
+          borderBottom: '1px solid #E3E8EF',
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          paddingLeft: collapsed ? 0 : 12,
+          overflow: 'hidden',
+          transition: 'padding 220ms ease',
+          gap: 8,
+        }}
+      >
+        <Tooltip label="CMDB System" position="right" withArrow disabled={!collapsed}>
+          <img
+            src={CMDBLogo}
+            alt="CMDB Logo"
+            style={{
+              width: collapsed ? 30 : 34,
+              height: collapsed ? 30 : 34,
+              objectFit: 'contain',
+              flexShrink: 0,
+              transition: 'width 220ms ease, height 220ms ease',
+            }}
+          />
+        </Tooltip>
+
+        <Box
+          style={{
+            opacity: collapsed ? 0 : 1,
+            maxWidth: collapsed ? 0 : 200,
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            transition: 'opacity 180ms ease, max-width 220ms ease',
+            pointerEvents: collapsed ? 'none' : 'auto',
+          }}
+        >
+          <Text fw={700} size="sm" c="black" tt="uppercase" style={{ lineHeight: 1.2 }}>
+            CMDB System
+          </Text>
+          <Text size="xs" c="dimmed" style={{ lineHeight: 1.2 }}>
+            IT Asset Registry
+          </Text>
         </Box>
       </Box>
 
-      <Stack gap={2} px={6} py="md" style={{ flex: 1 }}>
+      {/* ── Nav items ── */}
+      <Stack gap={2} px={collapsed ? 6 : 6} py="md" style={{ flex: 1 }}>
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = activePage === item.path
@@ -83,22 +111,25 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: collapsed ? 'center' : 'flex-start',
-                gap: 10,
-                padding: collapsed ? '7px 0' : '7px 8px',
+                gap: collapsed ? 0 : 10,
+                padding: collapsed ? 0 : '7px 8px',
                 borderRadius: 6,
-                width: '100%',
+                width: collapsed ? 40 : '100%',
+                height: collapsed ? 40 : 'auto',
+                marginLeft: collapsed ? 'auto' : 0,
+                marginRight: collapsed ? 'auto' : 0,
                 color: isActive ? '#5375BF' : '#585c64',
                 backgroundColor: isActive ? '#DEE9FC' : 'transparent',
                 cursor: 'pointer',
-                transition: 'background-color 150ms ease',
+                transition: 'background-color 150ms ease, width 220ms ease',
               }}
             >
               <Box style={{
-                width: 16, 
-                height: 16, 
+                width: 17,
+                height: 17,
                 flexShrink: 0,
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
               }}>
                 <Icon size={17} />
