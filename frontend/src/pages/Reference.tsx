@@ -8,17 +8,12 @@ import {
   IconTrash, IconPlus, IconCheck, IconX,
   IconRefresh, IconAlertCircle,
 } from '@tabler/icons-react'
-
 import referenceService from '../api/referenceService'
 import { ReferenceTable, ReferenceRow } from '../api/referenceService'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function generateTempId() {
   return `temp_${Math.random().toString(36).slice(2, 9)}`
 }
-
-// ─── Editable Table ───────────────────────────────────────────────────────────
 
 interface EditingCell {
   tableId: string
@@ -76,7 +71,7 @@ function EditableTable({
     editingCell?.column  === column
 
   return (
-    <Card mb="lg" shadow="sm" radius="md" withBorder>
+    <Card mb="lg" shadow="sm" radius="md" withBorder mt="xl">
       <Text fw={600} mb="md" c="#1a2b4a">{table.title}</Text>
 
       <Box style={{ overflowX: 'auto' }}>
@@ -184,8 +179,6 @@ function EditableTable({
     </Card>
   )
 }
-
-// ─── Main Reference Page ──────────────────────────────────────────────────────
 
 export default function Reference() {
   const [tables, setTables]   = useState<ReferenceTable[]>([])

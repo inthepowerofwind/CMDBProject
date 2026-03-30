@@ -129,11 +129,10 @@ function ChangeRow({ log }: { log: ChangeLogEntry }) {
       </Group>
 
       <Badge
-        color={CHANGE_TYPE_COLOR[log.change_type] ?? 'gray'}
+        color={CHANGE_TYPE_COLOR[log.change_type] ?? 'blue'}
         variant="light"
         size="sm"
-        radius="md"
-        style={{ whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 600, minWidth: 90, minHeight: 30, textAlign: 'center' }}
+        style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
       >
         {log.change_type}
       </Badge>

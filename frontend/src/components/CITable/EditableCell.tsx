@@ -26,11 +26,14 @@ export function EditableCell({
   onBlur,
   disabled = false
 }: EditableCellProps) {
+
   const toStr = (v: unknown): string => {
-    if (typeof v === 'boolean') return v ? 'Yes' : 'No'
-    if (!v && v !== 0) return ''
-    return String(v).split('T')[0]   // strips ISO timestamp
-  }
+  if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+  if (!v && v !== 0) return ''
+  const s = String(v)
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s.split('T')[0]
+  return s
+}
 
   const [localValue, setLocalValue]   = useState<string>(toStr(value))
   const [selectValue, setSelectValue] = useState<string>(toStr(value))
