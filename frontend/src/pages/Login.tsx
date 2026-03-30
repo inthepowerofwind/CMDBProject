@@ -2,16 +2,17 @@ import { useState } from 'react'
 import { Box, Card, TextInput, PasswordInput, Button, Text, Alert } from '@mantine/core'
 import { IconLock, IconMail, IconAlertCircle } from '@tabler/icons-react'
 import { authService, AuthUser } from '../api/authService'
+import cmdbLogo from '../assets/CMDB_LogoIcon.png'
 
 interface LoginProps {
-  onLogin: (user: AuthUser) => void   
+  onLogin: (user: AuthUser) => void
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const [email, setEmail] = useState<string>('')
+  const [email, setEmail]     = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [error, setError]       = useState<string>('')
-  const [loading, setLoading]   = useState<boolean>(false)
+  const [error, setError]     = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
 
   async function handleSubmit() {
     setError('')
@@ -37,13 +38,34 @@ export default function Login({ onLogin }: LoginProps) {
 
   return (
     <Box style={{
-      minHeight: '100vh', backgroundColor: '#111F3D',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      minHeight: '100vh',
+      backgroundColor: '#111F3D',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
       <Card shadow="xl" radius="lg" p="xl" style={{ width: 420, backgroundColor: '#F8FAFC' }}>
+
         <Box ta="center" mb="xl">
+          <Box style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mb: 8,
+          }}>
+            <img
+              src={cmdbLogo}
+              alt="CMDB Logo"
+              style={{
+                width: 80,
+                height: 80,
+                objectFit: 'contain',
+                marginBottom: 8,
+              }}
+            />
+          </Box>
           <Text fw={700} size="xl" c="#111F3D">Configuration Management Database</Text>
-          <Text size="xs" c="dimmed" mt={4}>IT Asset Registry — ISO 27001 | ITIL 4</Text>
+          {/* <Text size="xs" c="dimmed" mt={4}>IT Asset Registry — ISO 27001 | ITIL 4</Text> */}
         </Box>
 
         {error && (
@@ -53,7 +75,8 @@ export default function Login({ onLogin }: LoginProps) {
         )}
 
         <TextInput
-          label="Email" placeholder="Enter email"
+          label="Email"
+          placeholder="Enter email"
           leftSection={<IconMail size={16} />}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -61,15 +84,22 @@ export default function Login({ onLogin }: LoginProps) {
           mb="md"
         />
         <PasswordInput
-          label="Password" placeholder="Enter password"
+          label="Password"
+          placeholder="Enter password"
           leftSection={<IconLock size={16} />}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           mb="xl"
         />
-        <Button fullWidth size="md" radius="md" loading={loading}
-          onClick={handleSubmit} style={{ backgroundColor: '#111F3D' }}>
+        <Button
+          fullWidth
+          size="md"
+          radius="md"
+          loading={loading}
+          onClick={handleSubmit}
+          style={{ backgroundColor: '#111F3D' }}
+        >
           Sign In
         </Button>
       </Card>
