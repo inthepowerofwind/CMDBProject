@@ -8,8 +8,6 @@ import {
   Button,
   Group,
   Stack,
-  Avatar,
-  FileButton,
   Divider,
 } from '@mantine/core'
 import { IconMenu2, IconLogout, IconUserEdit, IconAlertTriangle } from '@tabler/icons-react'
@@ -41,8 +39,6 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
   const [editProfileOpen, setEditProfileOpen] = useState(false)
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
   const [profileName, setProfileName] = useState(user.name)
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const avatarBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -67,31 +63,13 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
     setProfileName(user.name)
   }, [user.name])
 
-  const handleAvatarFileChange = (file: File | null) => {
-    setAvatarFile(file)
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setAvatarPreview(url)
-    } else {
-      setAvatarPreview(null)
-    }
-  }
-
-  const handleEditProfileSave = async () => {
-    try {
-      const updatedUser = await authService.updateUsername(profileName)
-      onUserUpdate(updatedUser)
-      setEditProfileOpen(false)
-    } catch (err) {
-      console.error('Failed to update username:', err)
-    }
+  const handleEditProfileSave = () => {
+    // TODO: call update API here with profileName
+    setEditProfileOpen(false)
   }
 
   const handleEditProfileClose = () => {
-    // Reset unsaved changes
     setProfileName(user.name)
-    setAvatarFile(null)
-    setAvatarPreview(null)
     setEditProfileOpen(false)
   }
 
@@ -157,13 +135,9 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
               flexShrink: 0,
             }}
           >
-            {avatarPreview ? (
-              <img src={avatarPreview} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <Text size="xs" fw={700} c="#5375BF">
-                {initials}
-              </Text>
-            )}
+            <Text size="xs" fw={700} c="#5375BF">
+              {initials}
+            </Text>
           </Box>
 
           {/* Name / role */}
@@ -192,7 +166,7 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
             >
               {/* Profile header inside dropdown */}
               <Box style={{ padding: '10px 14px 8px' }}>
-                <Text size="xs" c="dimmed" fw={500}>{user.name}</Text>
+                <Text size="xs" fw={500} c="#0F172A">{user.name}</Text>
                 <Text size="xs" c="dimmed">Admin</Text>
               </Box>
 
@@ -271,7 +245,7 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
         overlayProps={{ blur: 2, backgroundOpacity: 0.35 }}
       >
         <Stack gap="lg">
-          {/* Avatar editor */}
+          {/* Avatar display */}
           <Stack align="center" gap="xs">
             <Box
               style={{
@@ -286,43 +260,16 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
                 border: '2px solid #C5D5F8',
               }}
             >
-              {avatarPreview ? (
-                <img src={avatarPreview} alt="avatar preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <Text size="xl" fw={700} c="#5375BF">
-                  {profileName
-                    .split(' ')
-                    .map((w) => w[0])
-                    .slice(0, 2)
-                    .join('')
-                    .toUpperCase()}
-                </Text>
-              )}
+              <Text size="xl" fw={700} c="#5375BF">
+                {profileName
+                  .split(' ')
+                  .map((w) => w[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase()}
+              </Text>
             </Box>
-
-            <Group gap="xs">
-              <FileButton onChange={handleAvatarFileChange} accept="image/png,image/jpeg,image/webp">
-                {(props) => (
-                  <Button variant="light" color="blue" size="xs" {...props}>
-                    Upload Photo
-                  </Button>
-                )}
-              </FileButton>
-              {avatarPreview && (
-                <Button
-                  variant="subtle"
-                  color="gray"
-                  size="xs"
-                  onClick={() => { setAvatarFile(null); setAvatarPreview(null) }}
-                >
-                  Remove
-                </Button>
-              )}
-            </Group>
-            <Text size="xs" c="dimmed">JPG, PNG or WEBP · Max 2 MB</Text>
           </Stack>
-
-          <Divider />
 
           {/* Name field */}
           <TextInput
@@ -361,9 +308,9 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout, on
         size="sm"
         radius="md"
         overlayProps={{ blur: 2, backgroundOpacity: 0.35 }}
+        padding="xl"
       >
         <Stack align="center" gap="md">
-          {/* Icon */}
           <Box
             style={{
               width: 56,

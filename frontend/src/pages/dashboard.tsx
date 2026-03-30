@@ -195,7 +195,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         <StatCard title="Active"         value={totalActive}   color="black" iconColor="green"  icon={IconCircleCheck} />
         <StatCard title="Decommissioned" value={totalDecomm}   color="black" iconColor="gray"   icon={IconCircleX} />
         <StatCard title="EOL / At Risk"  value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
-        <StatCard title="Archive"       value={totalArchived}  color="black" iconColor="yellow" icon={IconArchive} />
+        <StatCard title="Archive"        value={totalArchived}  color="black" iconColor="yellow" icon={IconArchive} />
       </Group>
 
       <Grid mt="lg">

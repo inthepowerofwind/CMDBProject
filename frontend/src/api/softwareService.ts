@@ -16,7 +16,7 @@ export interface Software {
   installed_on:       string | null
   environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' 
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
-  data_classification: 'Internal' | 'External' | 'Confidential'
+  data_classification: 'Public' | 'Internal' | 'Confidential' | 'Restricted'
   auto_update:        boolean
   asl_approved:       boolean
   sast_dast_tested:   'Yes' | 'No' | 'N/A'
