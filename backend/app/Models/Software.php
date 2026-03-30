@@ -41,7 +41,6 @@ class Software extends Model
         'auto_update' => 'boolean',
         'asl_approved' => 'boolean',
         'sast_dast_tested' => 'boolean',
-        'eol_date' => 'date',
         'last_review' => 'date',
     ];
 

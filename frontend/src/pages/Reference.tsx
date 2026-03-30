@@ -1,13 +1,24 @@
-import { Box, Card, Text, Grid, ActionIcon, Group, TextInput, Button, Tooltip } from '@mantine/core'
-import { IconTrash, IconPlus, IconCheck, IconX } from '@tabler/icons-react'
+import { useState, useEffect, useCallback } from 'react'
+import {
+  Box, Card, Text, Grid, ActionIcon, Group,
+  TextInput, Button, Tooltip, Loader, Alert,
+} from '@mantine/core'
+import { notifications } from '@mantine/notifications'
+import {
+  IconTrash, IconPlus, IconCheck, IconX,
+  IconRefresh, IconAlertCircle,
+} from '@tabler/icons-react'
 
-import { useState } from 'react'
+import referenceService from '../api/referenceService'
 import { ReferenceTable, ReferenceRow } from '../api/referenceService'
-import { referenceTables as initialData } from '../data/referenceData'
 
-function generateId() {
-  return Math.random().toString(36).slice(2, 9)
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function generateTempId() {
+  return `temp_${Math.random().toString(36).slice(2, 9)}`
 }
+
+// ─── Editable Table ───────────────────────────────────────────────────────────
 
 interface EditingCell {
   tableId: string
@@ -17,13 +28,17 @@ interface EditingCell {
 
 interface EditableTableProps {
   table:       ReferenceTable
+  saving:      boolean
   onUpdateRow: (tableId: string, rowId: string, column: string, value: string) => void
   onDeleteRow: (tableId: string, rowId: string) => void
   onAddRow:    (tableId: string) => void
 }
 
-function EditableTable({ table, onUpdateRow, onDeleteRow, onAddRow }: EditableTableProps) {
-  const [editingCell, setEditingCell] = useState<EditingCell | null>(null)
+function EditableTable({
+  table, saving,
+  onUpdateRow, onDeleteRow, onAddRow,
+}: EditableTableProps) {
+  const [editingCell, setEditingCell]   = useState<EditingCell | null>(null)
   const [editingValue, setEditingValue] = useState('')
 
   function handleCellClick(rowId: string, column: string, currentValue: string) {
@@ -84,21 +99,12 @@ function EditableTable({ table, onUpdateRow, onDeleteRow, onAddRow }: EditableTa
                   {col}
                 </th>
               ))}
-              <th
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid #e9ecef',
-                  width: 40,
-                }}
-              />
+              <th style={{ padding: '8px 12px', borderBottom: '1px solid #e9ecef', width: 40 }} />
             </tr>
           </thead>
           <tbody>
             {table.rows.map((row, rowIndex) => (
-              <tr
-                key={row.id}
-                style={{ background: rowIndex % 2 === 0 ? '#fff' : '#f8fafc' }}
-              >
+              <tr key={row.id} style={{ background: rowIndex % 2 === 0 ? '#fff' : '#f8fafc' }}>
                 {table.columns.map((col) => (
                   <td
                     key={col}
@@ -134,30 +140,17 @@ function EditableTable({ table, onUpdateRow, onDeleteRow, onAddRow }: EditableTa
                         </ActionIcon>
                       </Group>
                     ) : (
-                      <Text
-                        size="xs"
-                        c={row[col] ? '#1a2b4a' : 'dimmed'}
-                        style={{ minHeight: 20 }}
-                      >
+                      <Text size="xs" c={row[col] ? '#1a2b4a' : 'dimmed'} style={{ minHeight: 20 }}>
                         {row[col] || '—'}
                       </Text>
                     )}
                   </td>
                 ))}
 
-                {/* Delete row action */}
-                <td
-                  style={{
-                    padding: '6px 8px',
-                    borderBottom: '1px solid #e9ecef',
-                    textAlign: 'center',
-                  }}
-                >
+                <td style={{ padding: '6px 8px', borderBottom: '1px solid #e9ecef', textAlign: 'center' }}>
                   <Tooltip label="Delete row" withArrow position="left">
                     <ActionIcon
-                      size="sm"
-                      color="red"
-                      variant="subtle"
+                      size="sm" color="red" variant="subtle"
                       onClick={() => onDeleteRow(table.id, row.id)}
                     >
                       <IconTrash size={13} />
@@ -167,13 +160,9 @@ function EditableTable({ table, onUpdateRow, onDeleteRow, onAddRow }: EditableTa
               </tr>
             ))}
 
-            {/* Empty state */}
             {table.rows.length === 0 && (
               <tr>
-                <td
-                  colSpan={table.columns.length + 1}
-                  style={{ padding: '24px 12px', textAlign: 'center' }}
-                >
+                <td colSpan={table.columns.length + 1} style={{ padding: '24px 12px', textAlign: 'center' }}>
                   <Text size="xs" c="dimmed">No rows yet. Click + to add one.</Text>
                 </td>
               </tr>
@@ -184,11 +173,10 @@ function EditableTable({ table, onUpdateRow, onDeleteRow, onAddRow }: EditableTa
 
       <Group justify="flex-end" mt="sm">
         <Button
-          size="xs"
-          variant="subtle"
-          color="blue"
+          size="xs" variant="subtle" color="blue"
           leftSection={<IconPlus size={13} />}
           onClick={() => onAddRow(table.id)}
+          loading={saving}
         >
           Add row
         </Button>
@@ -197,44 +185,110 @@ function EditableTable({ table, onUpdateRow, onDeleteRow, onAddRow }: EditableTa
   )
 }
 
+// ─── Main Reference Page ──────────────────────────────────────────────────────
+
 export default function Reference() {
-  const [tables, setTables] = useState<ReferenceTable[]>(initialData)
+  const [tables, setTables]   = useState<ReferenceTable[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState('')
 
-  function handleUpdateRow(tableId: string, rowId: string, column: string, value: string) {
+  const [savingTables, setSavingTables] = useState<Record<string, boolean>>({})
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await referenceService.getAll()
+      setTables(data)
+    } catch {
+      setError('Failed to load reference data. Make sure the backend is running.')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchAll() }, [fetchAll])
+
+  function startSaving(tableId: string) {
+    setSavingTables((prev) => ({ ...prev, [tableId]: true }))
+  }
+  function stopSaving(tableId: string) {
+    setSavingTables((prev) => ({ ...prev, [tableId]: false }))
+  }
+
+  async function handleUpdateRow(tableId: string, rowId: string, column: string, value: string) {
+    const updatedTables = tables.map((t) => {
+      if (t.id !== tableId) return t
+      return {
+        ...t,
+        rows: t.rows.map((r) => r.id === rowId ? { ...r, [column]: value } : r),
+      }
+    })
+    setTables(updatedTables)
+
+    const table = updatedTables.find((t) => t.id === tableId)!
+    startSaving(tableId)
+    try {
+      await referenceService.replaceTable(tableId, table.rows)
+      notifications.show({ color: 'green', message: 'Row updated.' })
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to save changes.' })
+      setTables(tables)
+    } finally {
+      stopSaving(tableId)
+    }
+  }
+
+  async function handleDeleteRow(tableId: string, rowId: string) {
+    const table = tables.find((t) => t.id === tableId)!
+    const index = table.rows.findIndex((r) => r.id === rowId)
+    if (index === -1) return
+
+    const updatedRows = table.rows.filter((r) => r.id !== rowId)
     setTables((prev) =>
-      prev.map((table) => {
-        if (table.id !== tableId) return table
-        return {
-          ...table,
-          rows: table.rows.map((row) => {
-            if (row.id !== rowId) return row
-            return { ...row, [column]: value }
-          }),
-        }
-      })
+      prev.map((t) => t.id === tableId ? { ...t, rows: updatedRows } : t)
+    )
+
+    if (rowId.startsWith('temp_')) return
+
+    startSaving(tableId)
+    try {
+      await referenceService.deleteRow(tableId, index)
+      notifications.show({ color: 'orange', message: 'Row deleted.' })
+    } catch {
+      notifications.show({ color: 'red', message: 'Failed to delete row.' })
+      setTables(tables)
+    } finally {
+      stopSaving(tableId)
+    }
+  }
+
+  async function handleAddRow(tableId: string) {
+    const table = tables.find((t) => t.id === tableId)!
+    const emptyRow: ReferenceRow = { id: generateTempId() }
+    table.columns.forEach((col) => { emptyRow[col] = '' })
+
+    setTables((prev) =>
+      prev.map((t) => t.id === tableId ? { ...t, rows: [...t.rows, emptyRow] } : t)
     )
   }
 
-  function handleDeleteRow(tableId: string, rowId: string) {
-    setTables((prev) =>
-      prev.map((table) => {
-        if (table.id !== tableId) return table
-        return {
-          ...table,
-          rows: table.rows.filter((row) => row.id !== rowId),
-        }
-      })
+  if (loading) {
+    return (
+      <Box p="xl" style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
+        <Loader color="#5375BF" />
+      </Box>
     )
   }
 
-  function handleAddRow(tableId: string) {
-    setTables((prev) =>
-      prev.map((table) => {
-        if (table.id !== tableId) return table
-        const emptyRow: ReferenceRow = { id: generateId() }
-        table.columns.forEach((col) => { emptyRow[col] = '' })
-        return { ...table, rows: [...table.rows, emptyRow] }
-      })
+  if (error) {
+    return (
+      <Box p="xl">
+        <Alert icon={<IconAlertCircle size={16} />} color="red" mb="md">{error}</Alert>
+        <Button variant="light" size="sm" leftSection={<IconRefresh size={14} />} onClick={fetchAll}>
+          Retry
+        </Button>
+      </Box>
     )
   }
 
@@ -246,6 +300,7 @@ export default function Reference() {
             <EditableTable
               key={table.id}
               table={table}
+              saving={savingTables[table.id] ?? false}
               onUpdateRow={handleUpdateRow}
               onDeleteRow={handleDeleteRow}
               onAddRow={handleAddRow}
