@@ -81,7 +81,7 @@ class SoftwareController extends Controller
                 'license_key_location' => 'nullable|string',
                 'procurement_date'     => 'nullable|string',
                 'license_expiry'       => 'nullable|string',
-                'eol_date'             => 'nullable|date',
+                'eol_date'             => 'nullable|string',
                 'last_review'          => 'nullable|date',
                 'notes'                => 'nullable|string',
                  // Add validation rules for other fields as needed
@@ -134,7 +134,7 @@ class SoftwareController extends Controller
                 'license_key_location' => 'nullable|string',
                 'procurement_date'     => 'nullable|string',
                 'license_expiry'       => 'nullable|string',
-                'eol_date'             => 'nullable|date',
+                'eol_date'             => 'nullable|string',
                 'last_review'          => 'nullable|date',
                 'notes'                => 'nullable|string',
                 // Add validation rules for other fields as needed

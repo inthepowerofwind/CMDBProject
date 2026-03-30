@@ -11,13 +11,14 @@ import {
   Divider,
 } from '@mantine/core'
 import { IconMenu2, IconLogout, IconUserEdit, IconAlertTriangle } from '@tabler/icons-react'
-import { AuthUser } from '../api/authService'
+import { authService, AuthUser } from '../api/authService'
 
 interface HeaderProps {
   activePage: string
   onToggleSidebar: () => void
   user: AuthUser
   onLogout: () => void
+  onUserUpdate: (updatedUser: AuthUser) => void
 }
 
 const pageTitles: Record<string, string> = {
@@ -33,7 +34,7 @@ const pageTitles: Record<string, string> = {
   reference:     'Reference / Lookup Tables',
 }
 
-export default function Header({ activePage, onToggleSidebar, user, onLogout }: HeaderProps) {
+export default function Header({ activePage, onToggleSidebar, user, onLogout, onUserUpdate }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [editProfileOpen, setEditProfileOpen] = useState(false)
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false)
@@ -56,6 +57,11 @@ export default function Header({ activePage, onToggleSidebar, user, onLogout }: 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+  
+  // Sync profileName when user.name updates after save
+  useEffect(() => {
+    setProfileName(user.name)
+  }, [user.name])
 
   const handleEditProfileSave = () => {
     // TODO: call update API here with profileName

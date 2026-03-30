@@ -41,4 +41,10 @@ export const authService = {
     return !!localStorage.getItem('token')
   },
 
+  async updateUsername(name: string): Promise<AuthUser> {
+    const { data } = await api.patch<{ message: string; user: AuthUser }>('/auth/username', { name })
+    localStorage.setItem('user', JSON.stringify(data.user))
+    return data.user
+  },
+
 }

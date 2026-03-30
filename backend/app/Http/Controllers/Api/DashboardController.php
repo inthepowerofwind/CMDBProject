@@ -120,6 +120,7 @@ class DashboardController extends Controller
             Software::class,
             CloudService::class,
             CmdbDatabase::class,
+            CiRelationship::class,
         ])->sum(fn($model) => $model::onlyTrashed()->count());
 
         $statusCounts[] = ['label' => 'Archived', 'total' => $archivedTotal];

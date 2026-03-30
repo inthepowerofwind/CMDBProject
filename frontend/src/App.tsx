@@ -69,7 +69,9 @@ export default function App() {
           activePage={activePage}
           onToggleSidebar={() => setSidebarCollapsed((c) => !c)}
           user={user}
+          onUserUpdate={(updated) => setUser(updated)}
           onLogout={handleLogout}
+          
         />
         <Box style={{ flex: 1, overflowY: 'auto' }}>
           {getPage(activePage)}

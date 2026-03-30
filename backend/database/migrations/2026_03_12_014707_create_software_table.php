@@ -34,7 +34,7 @@ return new class extends Migration
             $table->string('license_key_location')->nullable();
             $table->string('procurement_date')->nullable();
             $table->string('license_expiry')->nullable();
-            $table->date('eol_date')->nullable();
+            $table->string('eol_date')->nullable();
             $table->date('last_review')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
