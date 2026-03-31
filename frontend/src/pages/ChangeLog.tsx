@@ -12,6 +12,19 @@ import {
   ChangeLogListParams,
 } from '../api/changeLogService'
 
+function getChangeTypeColor(changeType: string): string {
+  // Direct match first
+  if (CHANGE_TYPE_COLOR[changeType]) return CHANGE_TYPE_COLOR[changeType]
+
+  // Split combined types like "Criticality Change, Location Change"
+  const parts = changeType.split(',').map((s) => s.trim())
+  for (const part of parts) {
+    if (CHANGE_TYPE_COLOR[part]) return CHANGE_TYPE_COLOR[part]
+  }
+
+  return 'blue'
+}
+
 const CHANGE_TYPE_COLOR: Record<string, string> = {
   'Created':               'green',
   'Deleted':               'red',
@@ -90,6 +103,7 @@ const tdStyle: React.CSSProperties = {
 
 // Single log row — clickable to expand diff details
 function LogRow({ log, index }: { log: ChangeLogEntry; index: number }) {
+  console.log('change_type:', JSON.stringify(log.change_type))
   const [open, setOpen] = useState(false)
   const hasDiff = log.previous_values || log.new_values
   return (
@@ -123,14 +137,22 @@ function LogRow({ log, index }: { log: ChangeLogEntry; index: number }) {
           </Badge>
         </td>
         <td style={tdStyle}>
-          <Badge
-            variant="light"
-            size="sm"
-            color={CHANGE_TYPE_COLOR[log.change_type] ?? 'blue'}
-            style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}
-          >
-            {log.change_type}
-          </Badge>
+          <Group gap={4}>
+            {log.change_type.split(',').map((type) => {
+              const t = type.trim()
+              return (
+                <Badge
+                  key={t}
+                  variant="light"
+                  size="sm"
+                  color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
+                  style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}
+                >
+                  {t}
+                </Badge>
+              )
+            })}
+          </Group>
         </td>
         <td style={{ ...tdStyle, maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis' }}>
           <Text size="sm" c="dimmed">{log.change_description ?? '—'}</Text>

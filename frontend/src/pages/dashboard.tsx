@@ -83,6 +83,15 @@ function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps)
   )
 }
 
+function getChangeTypeColor(changeType: string): string {
+  if (CHANGE_TYPE_COLOR[changeType]) return CHANGE_TYPE_COLOR[changeType]
+  const parts = changeType.split(',').map((s) => s.trim())
+  for (const part of parts) {
+    if (CHANGE_TYPE_COLOR[part]) return CHANGE_TYPE_COLOR[part]
+  }
+  return 'blue'
+}
+
 function ChangeRow({ log }: { log: ChangeLogEntry }) {
   return (
     <Box
@@ -128,14 +137,22 @@ function ChangeRow({ log }: { log: ChangeLogEntry }) {
         </Box>
       </Group>
 
-      <Badge
-        color={CHANGE_TYPE_COLOR[log.change_type] ?? 'blue'}
-        variant="light"
-        size="sm"
-        style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
-      >
-        {log.change_type}
-      </Badge>
+      <Group gap={4} style={{ flexShrink: 0 }}>
+        {log.change_type.split(',').map((type) => {
+          const t = type.trim()
+          return (
+            <Badge
+              key={t}
+              color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
+              variant="light"
+              size="sm"
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              {t}
+            </Badge>
+          )
+        })}
+      </Group>
     </Box>
   )
 }
