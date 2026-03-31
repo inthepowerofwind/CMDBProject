@@ -26,9 +26,9 @@ import { CITableProps, CIColumnDef } from './CITable.types'
 const PER_PAGE = 15
 
 const DATE_FIELDS = new Set([
-  'purchase_date','warranty_expiry','eol_date','last_config_review',
-  'last_backup','last_review','last_login','contract_expiry',
-  'procurement_date','license_expiry','change_date','last_security_review',
+  'purchase_date', 'warranty_expiry', 'eol_date', 'last_config_review',
+  'last_backup', 'last_review', 'last_login', 'contract_expiry',
+  'procurement_date', 'license_expiry', 'change_date', 'last_security_review',
 ])
 
 const formatDate = (v: unknown): string => {
@@ -409,8 +409,6 @@ export default function CITable<
   console.log('setNewField', key, value)
   setNewForm((f) => ({ ...f, [key]: value } as P))
 }
-  // const setNewField = (key: string, value: unknown) =>
-  // setNewForm((f) => ({ ...f, [key]: value } as P))
 
   const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
     editFormsRef.current = {
@@ -592,7 +590,7 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" onClick={() => { setIsAdding(false); setNewForm(emptyForm()) }}>
               Cancel
             </Button>
-            {/* <pre style={{ fontSize: 10 }}>{JSON.stringify(newForm, null, 2)}</pre> */}
+
             <Button
               size="sm"
               leftSection={<IconDeviceFloppy size={14} />}

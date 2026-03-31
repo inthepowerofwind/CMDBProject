@@ -62,9 +62,9 @@ function DiffTable({ prev, next }: {
         {keys.map((key) => {
           const oldVal = prev?.[key] ?? null
           const newVal = next?.[key] ?? null
-          const changed = JSON.stringify(oldVal) !== JSON.stringify(newVal)
+
           return (
-            <Table.Tr key={key} style={{ backgroundColor: changed ? '#FFFBEB' : 'white' }}>
+            <Table.Tr key={key} style={{ backgroundColor: 'white' }}>
               <Table.Td fw={500}>{key}</Table.Td>
               <Table.Td c={oldVal === null ? 'dimmed' : '#e53e3e'}>
                 {oldVal === null ? '—' : String(oldVal)}
