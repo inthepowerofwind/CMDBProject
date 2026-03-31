@@ -4,12 +4,12 @@ import {
   Box, Text, ScrollArea, Button, Loader,
   TextInput, Select, Group, Alert, Tooltip,
   Checkbox, Pagination, Modal,
-  Stack,
+  Stack, ActionIcon,
 } from '@mantine/core'
 import {
   IconPlus, IconTrash, IconEdit, IconDeviceFloppy, IconAlertCircle,
   IconX, IconArchive, IconArchiveOff, IconArrowLeft,
-  IconAlertTriangle,
+  IconAlertTriangle, IconCalendar,
 } from '@tabler/icons-react'
 import {
   useReactTable,
@@ -26,9 +26,22 @@ import { CITableProps, CIColumnDef } from './CITable.types'
 const PER_PAGE = 15
 
 const DATE_FIELDS = new Set([
-  'purchase_date', 'warranty_expiry', 'eol_date', 'last_config_review',
-  'last_backup', 'last_review', 'last_login', 'contract_expiry',
-  'procurement_date', 'license_expiry', 'change_date', 'last_security_review',
+  'purchase_date',
+  'warranty_expiry',
+  'last_config_review',
+  'last_backup',
+  'last_review',
+  'last_login',
+  'contract_expiry',
+  'procurement_date',
+  'change_date',
+  'last_security_review',
+])
+
+// These fields accept free text BUT also have a date picker icon
+const TEXT_DATE_FIELDS = new Set([
+  'eol_date',
+  'license_expiry',
 ])
 
 const formatDate = (v: unknown): string => {
@@ -36,7 +49,83 @@ const formatDate = (v: unknown): string => {
   return String(v).split('T')[0]
 }
 
+// Converts a native date input value (YYYY-MM-DD) to MM/DD/YYYY display format
+const isoToDisplay = (iso: string): string => {
+  if (!iso) return ''
+  const [y, m, d] = iso.split('-')
+  if (!y || !m || !d) return iso
+  return `${m}/${d}/${y}`
+}
+
 type Indexable<T> = T & { [key: string]: unknown }
+
+// TextDateCell free-text input with a calendar icon that opens a date picker
+interface TextDateCellProps {
+  value: unknown
+  field: string
+  width?: number
+  disabled?: boolean
+  onChange: (field: string, value: unknown, rerender?: boolean) => void
+}
+
+function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellProps) {
+  const hiddenRef = useRef<HTMLInputElement>(null)
+
+  const openPicker = () => {
+    try {
+      hiddenRef.current?.showPicker()
+    } catch {
+      hiddenRef.current?.click()
+    }
+  }
+
+  return (
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+      <TextInput
+        size="xs"
+        value={String(value ?? '')}
+        disabled={disabled}
+        placeholder="MM/DD/YYYY or text"
+        onChange={(e) => onChange(field, e.target.value)}
+        rightSection={
+          <ActionIcon
+            size="xs"
+            variant="subtle"
+            color="gray"
+            onClick={openPicker}
+            disabled={disabled}
+            style={{ cursor: 'pointer' }}
+          >
+            <IconCalendar size={13} />
+          </ActionIcon>
+        }
+        style={{ width: width ?? 170 }}
+      />
+      {/* Hidden native date input — zero-size, invisible */}
+      <input
+        ref={hiddenRef}
+        type="date"
+        tabIndex={-1}
+        style={{
+          position: 'absolute',
+          opacity: 0,
+          pointerEvents: 'none',
+          width: 0,
+          height: 0,
+          border: 'none',
+          padding: 0,
+        }}
+        onChange={(e) => {
+          if (e.target.value) {
+            onChange(field, isoToDisplay(e.target.value))
+          }
+        }}
+      />
+    </div>
+  )
+}
+
+
 
 interface TableViewProps<T extends object, P extends object> {
   // data
@@ -61,7 +150,7 @@ interface TableViewProps<T extends object, P extends object> {
 
   // grid edit
   isGridEditing: boolean
-  editableIds: Set<string> // rows that are editable
+  editableIds: Set<string>
   editFormsRef: React.MutableRefObject<Record<string, Partial<P>>>
   booleanFields: string[]
   setGridField: (id: string, key: string, value: unknown, rerender?: boolean) => void
@@ -78,7 +167,7 @@ interface TableViewProps<T extends object, P extends object> {
   toolbar: React.ReactNode
 
   setNewForm: React.Dispatch<React.SetStateAction<P>>
-  newFormRef: React.MutableRefObject<P>   
+  newFormRef: React.MutableRefObject<P>
 }
 
 function TableView<T extends object, P extends object>({
@@ -86,10 +175,17 @@ function TableView<T extends object, P extends object>({
   idField, colDefs, addLabel, isArchiveView,
   selectedIds, allSelected, someSelected, onSelectAll, onRowClick,
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
-  isAdding, newForm, setNewField,setNewForm,tableMinWidth,
+  isAdding, newForm, setNewField, setNewForm, tableMinWidth,
   onPageChange, toolbar, newFormRef,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
+
+  /** Resolve the inputType for EditableCell (excludes text-date fields) */
+  const resolveInputType = (colKey: string, colType?: string) => {
+    if (DATE_FIELDS.has(colKey)) return 'date'
+    if (colType === 'number') return 'number'
+    return 'text'
+  }
 
   const columns = useMemo<ColumnDef<T, any>[]>(() => {
     const cols: ColumnDef<T, any>[] = []
@@ -137,14 +233,27 @@ function TableView<T extends object, P extends object>({
 
             const val = (editFormsRef.current[rowId] as Indexable<P>)?.[col.key]
               ?? (row.original as Indexable<T>)[col.key]
-            const inputType = DATE_FIELDS.has(col.key) ? 'date' : col.type === 'number' ? 'number' : 'text'
+
+            // Hybrid text + date picker for eol_date / license_expiry
+            if (TEXT_DATE_FIELDS.has(col.key)) {
+              return (
+                <TextDateCell
+                  value={val}
+                  field={col.key}
+                  width={col.width}
+                  disabled={col.disabled}
+                  onChange={(f, v, r) => setGridField(rowId, f, v, r)}
+                />
+              )
+            }
+
             const opts = col.type === 'boolean' ? ['Yes', 'No'] : col.options
 
             return (
               <EditableCell
                 value={val}
                 field={col.key}
-                type={inputType}
+                type={resolveInputType(col.key, col.type)}
                 options={opts}
                 isEditing
                 onChange={(f, v, r) => setGridField(rowId, f, v, r)}
@@ -200,8 +309,8 @@ function TableView<T extends object, P extends object>({
             </tr>
           ) : (
             table.getRowModel().rows.map((row, i) => {
-              const rowId      = String((row.original as Indexable<T>)[idField])
-              const isSelected = selectedIds.has(rowId)
+              const rowId        = String((row.original as Indexable<T>)[idField])
+              const isSelected   = selectedIds.has(rowId)
               const isRowEditing = isGridEditing && editableIds.has(rowId)
               return (
                 <tr
@@ -216,8 +325,11 @@ function TableView<T extends object, P extends object>({
                   onMouseLeave={(e) => { if (!isSelected && !isRowEditing) e.currentTarget.style.backgroundColor = i % 2 === 0 ? 'white' : '#FAFBFC' }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} style={{ padding: '9px 16px', whiteSpace: 'nowrap', borderBottom: '1px solid #F1F5F9', fontSize: 13, color: '#374151' }}
-                      onClick={(e) => { if (isRowEditing) e.stopPropagation() }}>
+                    <td
+                      key={cell.id}
+                      style={{ padding: '9px 16px', whiteSpace: 'nowrap', borderBottom: '1px solid #F1F5F9', fontSize: 13, color: '#374151' }}
+                      onClick={(e) => { if (isRowEditing) e.stopPropagation() }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -234,11 +346,20 @@ function TableView<T extends object, P extends object>({
                 <td key={col.key} style={{ padding: '8px 16px' }}>
                   {col.readOnly ? (
                     <Text size="xs" c="dimmed" fs="italic">Auto</Text>
+                  ) : TEXT_DATE_FIELDS.has(col.key) ? (
+                    // Hybrid text + date picker in add row
+                    <TextDateCell
+                      value={(newForm as Indexable<P>)[col.key]}
+                      field={col.key}
+                      width={col.width}
+                      disabled={col.disabled}
+                      onChange={(f, v) => setNewField(f, v)}
+                    />
                   ) : (
                     <EditableCell
                       value={(newForm as Indexable<P>)[col.key]}
                       field={col.key}
-                      type={DATE_FIELDS.has(col.key) ? 'date' : col.type === 'number' ? 'number' : 'text'}
+                      type={resolveInputType(col.key, col.type)}
                       options={col.type === 'boolean' ? ['Yes', 'No'] : col.options}
                       isEditing
                       onChange={(f, v) => setNewField(f, v)}
@@ -320,13 +441,13 @@ export default function CITable<
   const [sorting, setSorting]   = useState<SortingState>([])
 
   // Archive table state
-  const [archiveRows, setArchiveRows]       = useState<T[]>([])
-  const [archiveTotal, setArchiveTotal]     = useState(0)
-  const [archivePage, setArchivePage]       = useState(1)
-  const [archiveLastPage, setArchiveLastPage] = useState(1)
-  const [archiveLoading, setArchiveLoading] = useState(false)
-  const [archiveError, setArchiveError]     = useState('')
-  const [archiveSearch, setArchiveSearch]   = useState('')
+  const [archiveRows, setArchiveRows]           = useState<T[]>([])
+  const [archiveTotal, setArchiveTotal]         = useState(0)
+  const [archivePage, setArchivePage]           = useState(1)
+  const [archiveLastPage, setArchiveLastPage]   = useState(1)
+  const [archiveLoading, setArchiveLoading]     = useState(false)
+  const [archiveError, setArchiveError]         = useState('')
+  const [archiveSearch, setArchiveSearch]       = useState('')
 
   // Selection state (shared, resets on view switch)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -337,13 +458,13 @@ export default function CITable<
   const [saving, setSaving]     = useState(false)
 
   // Grid edit state
-  const [isGridEditing, setIsGridEditing]   = useState(false)
-  const [editableIds, setEditableIds]       = useState<Set<string>>(new Set())
-  const [editForms, setEditForms]           = useState<Record<string, Partial<P>>>({})
-  const editFormsRef                        = useRef<Record<string, Partial<P>>>({})
-  const newFormRef                          = useRef<P>(emptyForm())
+  const [isGridEditing, setIsGridEditing] = useState(false)
+  const [editableIds, setEditableIds]     = useState<Set<string>>(new Set())
+  const [editForms, setEditForms]         = useState<Record<string, Partial<P>>>({})
+  const editFormsRef                      = useRef<Record<string, Partial<P>>>({})
+  const newFormRef                        = useRef<P>(emptyForm())
   useEffect(() => { newFormRef.current = newForm }, [newForm])
-  const [editSaving, setEditSaving]         = useState(false)
+  const [editSaving, setEditSaving]       = useState(false)
 
   // Delete confirm modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -406,9 +527,9 @@ export default function CITable<
 
   // Form helpers
   const setNewField = (key: string, value: unknown) => {
-  console.log('setNewField', key, value)
-  setNewForm((f) => ({ ...f, [key]: value } as P))
-}
+    console.log('setNewField', key, value)
+    setNewForm((f) => ({ ...f, [key]: value } as P))
+  }
 
   const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
     editFormsRef.current = {
@@ -426,7 +547,7 @@ export default function CITable<
       setRows((prev) => [...prev, created])
       setTotal((t) => t + 1)
       setNewForm(emptyForm())
-      setIsAdding(false)  // exit add mode after successful save
+      setIsAdding(false)
       notifications.show({ color: 'green', message: `${String((created as Indexable<T>)[idField])} added.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add.' })
@@ -488,7 +609,7 @@ export default function CITable<
     setEditForms({})
   }
 
-  // Delete record/s (with confirm modal)
+  // Delete (with confirm modal)
   const handleDeleteConfirm = async () => {
     setDeleteModalOpen(false)
     const ids = Array.from(selectedIds)
@@ -509,11 +630,9 @@ export default function CITable<
     const ids = Array.from(selectedIds)
     try {
       const restored = await Promise.all(ids.map((id) => service.restore!(id)))
-      // Remove from archive view
       setArchiveRows((prev) => prev.filter((r) => !selectedIds.has(String((r as Indexable<T>)[idField]))))
       setArchiveTotal((t) => t - ids.length)
       setSelectedIds(new Set())
-      // Add restored items back to main table rows
       setRows((prev) => [...prev, ...restored])
       setTotal((t) => t + ids.length)
       notifications.show({ color: 'green', message: `${ids.length} item(s) restored.` })
@@ -577,11 +696,13 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={handleCancelEdit}>
               Cancel
             </Button>
-            <Button 
-            size="sm" 
-            leftSection={<IconDeviceFloppy size={14} />} 
-            onClick={handleSaveEdit} loading={editSaving}
-            style={{ backgroundColor: '#2563EB' }}>
+            <Button
+              size="sm"
+              leftSection={<IconDeviceFloppy size={14} />}
+              onClick={handleSaveEdit}
+              loading={editSaving}
+              style={{ backgroundColor: '#2563EB' }}
+            >
               Save Changes
             </Button>
           </>
@@ -590,15 +711,12 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" onClick={() => { setIsAdding(false); setNewForm(emptyForm()) }}>
               Cancel
             </Button>
-
             <Button
               size="sm"
               leftSection={<IconDeviceFloppy size={14} />}
               onClick={handleAdd}
               loading={saving}
-              disabled={requiredFields.some(
-                (f) => !(newForm as Record<string, unknown>)[f]
-              )}
+              disabled={requiredFields.some((f) => !(newForm as Record<string, unknown>)[f])}
               style={{ backgroundColor: '#2563EB' }}
             >
               Save
@@ -619,7 +737,6 @@ export default function CITable<
             <Button size="sm" variant="light" color="blue" leftSection={<IconEdit size={14} />} onClick={handleStartEdit}>
               Edit
             </Button>
-            {/* Add button hidden when rows are selected */}
             {!hasSelection && (
               <Button size="sm" leftSection={<IconPlus size={14} />} onClick={() => setIsAdding(true)} style={{ backgroundColor: '#2563EB' }}>
                 {addLabel}
@@ -683,13 +800,9 @@ export default function CITable<
         <Stack align="center" gap="md">
           <Box
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
+              width: 56, height: 56, borderRadius: '50%',
               backgroundColor: '#FFF1F0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
             <IconAlertTriangle size={26} color="#E03131" />
@@ -704,20 +817,10 @@ export default function CITable<
           </Stack>
 
           <Group justify="center" gap="sm" w="100%" mt={4}>
-            <Button
-              variant="default"
-              size="sm"
-              style={{ flex: 1 }}
-              onClick={() => setDeleteModalOpen(false)}
-            >
+            <Button variant="default" size="sm" style={{ flex: 1 }} onClick={() => setDeleteModalOpen(false)}>
               Cancel
             </Button>
-            <Button
-              color="red"
-              size="sm"
-              style={{ flex: 1 }}
-              onClick={handleDeleteConfirm}
-            >
+            <Button color="red" size="sm" style={{ flex: 1 }} onClick={handleDeleteConfirm}>
               Yes, Delete
             </Button>
           </Group>
@@ -755,10 +858,8 @@ export default function CITable<
           toolbar={archiveToolbar}
           tableMinWidth={900}
           newFormRef={newFormRef}
-          
         />
       ) : (
-        /* Main View */
         <TableView<T, P>
           rows={rows}
           total={total}
