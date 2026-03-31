@@ -48,17 +48,19 @@ const formatDate = (v: unknown): string => {
   return String(v).split('T')[0]
 }
 
-// Converts a native date input value (YYYY-MM-DD) to MM/DD/YYYY display format
+
+/** Converts a native date input value (YYYY-MM-DD) to MM/DD/YYYY display format */
 const isoToDisplay = (iso: string): string => {
   if (!iso) return ''
   const [y, m, d] = iso.split('-')
   if (!y || !m || !d) return iso
   return `${m}/${d}/${y}`
+  
 }
 
 type Indexable<T> = T & { [key: string]: unknown }
 
-// TextDateCell free-text input with a calendar icon that opens a date picker
+// TextDateCell — free-text input with a calendar icon that opens a date picker
 interface TextDateCellProps {
   value: unknown
   field: string
@@ -68,63 +70,102 @@ interface TextDateCellProps {
 }
 
 function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellProps) {
-  const hiddenRef = useRef<HTMLInputElement>(null)
-
-  const openPicker = () => {
-    try {
-      hiddenRef.current?.showPicker()
-    } catch {
-      hiddenRef.current?.click()
-    }
+  //
+  const stripTime = (v: unknown): string => {
+    if (!v) return ''
+    return String(v).split('T')[0]
   }
 
+  const [localValue, setLocalValue] = useState(stripTime(value))
+
+  useEffect(() => {
+    setLocalValue(String(value ?? ''))
+  }, [value])
+
+  const applyDate = (raw: string) => {
+    const picked = raw ? isoToDisplay(raw) : ''
+    setLocalValue(picked)
+    onChange(field, picked, true)
+  }
+
+  const handleClear = () => {
+    setLocalValue('')
+    onChange(field, '', true)
+  }
+
+  const dateInputRef = useRef<HTMLInputElement>(null)
+
+  // Attach a native "input" listener in addition to React onChange —
+  // Chrome fires "input" (not "change") when the user clicks Clear inside the picker.
+  useEffect(() => {
+    const el = dateInputRef.current
+    if (!el) return
+    const onNativeInput = (e: Event) => {
+      applyDate((e.target as HTMLInputElement).value)
+      ;(e.target as HTMLInputElement).value = ''
+    }
+    el.addEventListener('input', onNativeInput)
+    return () => el.removeEventListener('input', onNativeInput)
+  }, [field])   // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-      <TextInput
-        size="xs"
-        value={String(value ?? '')}
-        disabled={disabled}
-        placeholder="MM/DD/YYYY or text"
-        onChange={(e) => onChange(field, e.target.value)}
-        rightSection={
-          <ActionIcon
-            size="xs"
-            variant="subtle"
-            color="gray"
-            onClick={openPicker}
-            disabled={disabled}
-            style={{ cursor: 'pointer' }}
-          >
-            <IconCalendar size={13} />
-          </ActionIcon>
-        }
-        style={{ width: width ?? 170 }}
-      />
-      {/* Hidden native date input — zero-size, invisible */}
-      <input
-        ref={hiddenRef}
-        type="date"
-        tabIndex={-1}
-        style={{
-          position: 'absolute',
-          opacity: 0,
-          pointerEvents: 'none',
-          width: 0,
-          height: 0,
-          border: 'none',
-          padding: 0,
-        }}
-        onChange={(e) => {
-          if (e.target.value) {
-            onChange(field, isoToDisplay(e.target.value))
-          }
-        }}
-      />
-    </div>
+    <TextInput
+      size="xs"
+      value={localValue}
+      disabled={disabled}
+      placeholder="MM/DD/YYYY or text"
+      onChange={(e) => {
+        const v = e.target.value
+        setLocalValue(v)
+        onChange(field, v, true)
+      }}
+      rightSectionWidth={localValue ? 44 : 24}
+      rightSection={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Clear button — only shown when there is a value */}
+          {localValue && !disabled && (
+            <ActionIcon
+              size={14}
+              variant="transparent"
+              color="gray"
+              onClick={handleClear}
+              onMouseDown={(e) => e.preventDefault()}
+              style={{ cursor: 'pointer', minWidth: 14 }}
+            >
+              <IconX size={10} />
+            </ActionIcon>
+          )}
+
+          {/* Calendar icon overlaid with the native date input */}
+          <div style={{ position: 'relative', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <IconCalendar size={13} style={{ color: '#868e96', pointerEvents: 'none' }} />
+            <input
+              ref={dateInputRef}
+              type="date"
+              disabled={disabled}
+              tabIndex={-1}
+              onChange={(e) => {
+                // React onChange fires on a confirmed selection
+                applyDate(e.target.value)
+                e.target.value = ''
+              }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                opacity: 0,
+                cursor: 'pointer',
+                colorScheme: 'light',
+              }}
+            />
+          </div>
+        </div>
+      }
+      style={{ width: width ?? 180 }}
+    />
   )
 }
 
-
+// ---------------------------------------------------------------------------
 
 interface TableViewProps<T extends object, P extends object> {
   // data
@@ -238,7 +279,7 @@ function TableView<T extends object, P extends object>({
             if (TEXT_DATE_FIELDS.has(col.key)) {
               return (
                 <TextDateCell
-                  value={val}
+                  value={val ? String(val).split('T')[0] : val}  // <-- strip here
                   field={col.key}
                   width={col.width}
                   disabled={col.disabled}
@@ -349,7 +390,9 @@ function TableView<T extends object, P extends object>({
                   ) : TEXT_DATE_FIELDS.has(col.key) ? (
                     // Hybrid text + date picker in add row
                     <TextDateCell
-                      value={(newForm as Indexable<P>)[col.key]}
+                      value={(newForm as Indexable<P>)[col.key] 
+                        ? String((newForm as Indexable<P>)[col.key]).split('T')[0] 
+                        : (newForm as Indexable<P>)[col.key]}
                       field={col.key}
                       width={col.width}
                       disabled={col.disabled}
@@ -430,15 +473,15 @@ export default function CITable<
   const [isArchiveView, setIsArchiveView] = useState(false)
 
   // Main table state
-  const [rows, setRows]         = useState<T[]>([])
-  const [total, setTotal]       = useState(0)
-  const [page, setPage]         = useState(1)
-  const [lastPage, setLastPage] = useState(1)
-  const [loading, setLoading]   = useState(true)
-  const [error, setError]       = useState('')
-  const [search, setSearch]     = useState('')
+  const [rows, setRows]                 = useState<T[]>([])
+  const [total, setTotal]               = useState(0)
+  const [page, setPage]                 = useState(1)
+  const [lastPage, setLastPage]         = useState(1)
+  const [loading, setLoading]           = useState(true)
+  const [error, setError]               = useState('')
+  const [search, setSearch]             = useState('')
   const [filterStatus, setFilterStatus] = useState<string | null>(null)
-  const [sorting, setSorting]   = useState<SortingState>([])
+  const [sorting, setSorting]           = useState<SortingState>([])
 
   // Archive table state
   const [archiveRows, setArchiveRows]           = useState<T[]>([])
@@ -830,65 +873,65 @@ export default function CITable<
       {/* Archive View */}
       {isArchiveView ? (
         <TableView<T, P>
-          rows={archiveRows}
-          total={archiveTotal}
-          page={archivePage}
-          lastPage={archiveLastPage}
-          loading={archiveLoading}
-          error={archiveError}
-          idField={idField}
-          colDefs={colDefs}
-          addLabel={addLabel}
+          rows=         {archiveRows}
+          total=        {archiveTotal}
+          page=         {archivePage}
+          lastPage=     {archiveLastPage}
+          loading=      {archiveLoading}
+          error=        {archiveError}
+          idField=      {idField}
+          colDefs=      {colDefs}
+          addLabel=     {addLabel}
           isArchiveView
-          selectedIds={selectedIds}
-          allSelected={allSelected}
-          someSelected={someSelected}
-          onSelectAll={handleSelectAll}
-          onRowClick={handleRowClick}
+          selectedIds=  {selectedIds}
+          allSelected=  {allSelected}
+          someSelected= {someSelected}
+          onSelectAll=  {handleSelectAll}
+          onRowClick=   {handleRowClick}
           isGridEditing={false}
-          editableIds={new Set()}
-          editFormsRef={editFormsRef}
+          editableIds=  {new Set()}
+          editFormsRef= {editFormsRef}
           booleanFields={booleanFields}
-          setGridField={setGridField}
-          isAdding={false}
-          newForm={newForm}
-          setNewField={setNewField}
-          setNewForm={setNewForm}
-          onPageChange={setArchivePage}
-          toolbar={archiveToolbar}
+          setGridField= {setGridField}
+          isAdding=     {false}
+          newForm=      {newForm}
+          setNewField=  {setNewField}
+          setNewForm=   {setNewForm}
+          onPageChange= {setArchivePage}
+          toolbar=      {archiveToolbar}
           tableMinWidth={900}
-          newFormRef={newFormRef}
+          newFormRef=   {newFormRef}
         />
       ) : (
         <TableView<T, P>
-          rows={rows}
-          total={total}
-          page={page}
-          lastPage={lastPage}
-          loading={loading}
-          error={error}
-          idField={idField}
-          colDefs={colDefs}
-          addLabel={addLabel}
-          isArchiveView={false}
-          selectedIds={selectedIds}
-          allSelected={allSelected}
-          someSelected={someSelected}
-          onSelectAll={handleSelectAll}
-          onRowClick={handleRowClick}
-          isGridEditing={isGridEditing}
-          editableIds={editableIds}
-          editFormsRef={editFormsRef}
-          booleanFields={booleanFields}
-          setGridField={setGridField}
-          isAdding={isAdding}
-          newForm={newForm}
-          setNewField={setNewField}
-          setNewForm={setNewForm}
-          onPageChange={setPage}
-          toolbar={mainToolbar}
-          tableMinWidth={900}
-          newFormRef={newFormRef}
+          rows=           {rows}
+          total=          {total}
+          page=           {page}
+          lastPage=       {lastPage}
+          loading=        {loading}
+          error=          {error}
+          idField=        {idField}
+          colDefs=        {colDefs}
+          addLabel=       {addLabel}
+          isArchiveView=  {false}
+          selectedIds=    {selectedIds}
+          allSelected=    {allSelected}
+          someSelected=   {someSelected}
+          onSelectAll=    {handleSelectAll}
+          onRowClick=     {handleRowClick}
+          isGridEditing=  {isGridEditing}
+          editableIds=    {editableIds}
+          editFormsRef=   {editFormsRef}
+          booleanFields=  {booleanFields}
+          setGridField=   {setGridField}
+          isAdding=       {isAdding}
+          newForm=        {newForm}
+          setNewField=    {setNewField}
+          setNewForm=     {setNewForm}
+          onPageChange=   {setPage}
+          toolbar=        {mainToolbar}
+          tableMinWidth=  {900}
+          newFormRef=     {newFormRef}
         />
       )}
     </Box>
