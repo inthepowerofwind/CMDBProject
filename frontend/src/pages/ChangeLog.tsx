@@ -32,12 +32,12 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
   'License Update':        'yellow',
   'Compliance Update':     'yellow',
   'SLA Update':            'yellow',
-  'Rename':                'gray',
+  'Rename':                'blue',
 }
 
 const CI_TABLES = [
-  'servers', 'network_devices', 'endpoints',
-  'software', 'cloud_services', 'databases',
+  'Servers', 'Network Devices', 'Endpoints',
+  'Software', 'Cloud Services', 'Databases',
 ]
 
 function DiffTable({ prev, next }: {

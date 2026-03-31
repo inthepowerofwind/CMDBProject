@@ -28,12 +28,12 @@ export function EditableCell({
 }: EditableCellProps) {
 
   const toStr = (v: unknown): string => {
-  if (typeof v === 'boolean') return v ? 'Yes' : 'No'
-  if (!v && v !== 0) return ''
-  const s = String(v)
-  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s.split('T')[0]
-  return s
-}
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+    if (!v && v !== 0) return ''
+    const s = String(v)
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return s.split('T')[0]
+    return s
+  }
 
   const [localValue, setLocalValue]   = useState<string>(toStr(value))
   const [selectValue, setSelectValue] = useState<string>(toStr(value))
@@ -85,7 +85,6 @@ export function EditableCell({
       onChange={(e) => {
         const raw = e.target.value
         setLocalValue(raw)
-        // update form on every keystroke, not just on blur
         if (type === 'number') {
           onChange(field, raw ? Number(raw) : null, false)
         } else {

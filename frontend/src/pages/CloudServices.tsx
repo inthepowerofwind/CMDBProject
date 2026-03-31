@@ -92,6 +92,9 @@ export default function cloud_services() {
       service={cloud_servicesService}
       emptyForm={emptyEndpointsForm}
       statusOptions={STATUS_OPTIONS}
+      booleanFields={['mfa_enfored', 'sso_integrated', 'encryption_at_rest', 'encryption_in_transit',
+                      'dlp_monitored', 'logging_to_siem', 'soc2_certified', 'shared_responsibility'
+                    ]}
       addLabel="Add Cloud Service"
       searchPlaceholder="Search by ID, name..."
     />

@@ -38,7 +38,6 @@ const DATE_FIELDS = new Set([
   'last_security_review',
 ])
 
-// These fields accept free text BUT also have a date picker icon
 const TEXT_DATE_FIELDS = new Set([
   'eol_date',
   'license_expiry',
@@ -227,6 +226,7 @@ function TableView<T extends object, P extends object>({
               const raw = (row.original as Indexable<T>)[col.key]
               if (col.render) return col.render(raw, row.original)
               if (DATE_FIELDS.has(col.key)) return <Text size="sm">{formatDate(raw)}</Text>
+              if (TEXT_DATE_FIELDS.has(col.key)) return <Text size="sm">{formatDate(raw)}</Text>
               if (typeof raw === 'boolean') return <Text size="sm">{raw ? 'Yes' : 'No'}</Text>
               return <Text size="sm">{(raw as string) ?? '—'}</Text>
             }

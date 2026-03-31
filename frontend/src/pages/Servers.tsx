@@ -101,7 +101,7 @@ export default function Servers() {
       service={serverService}
       emptyForm={emptyServerForm}
       statusOptions={STATUS_OPTIONS}
-      booleanFields={['virtualized','baseline_applied','backup_enabled','monitoring_siem']}
+      booleanFields={['virtualized', 'baseline_applied', 'backup_enabled', 'monitoring_siem']}
       addLabel="Add Server"
       searchPlaceholder="Search by ID, name, OS..."
     />

@@ -5,6 +5,7 @@ import { ModalsProvider } from '@mantine/modals'
 import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
 import App from './App.tsx'
+import './styles/index.css'
 
 createRoot(document.getElementById('root')!).render(
   <MantineProvider>
