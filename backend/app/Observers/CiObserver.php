@@ -209,8 +209,6 @@ class CiObserver
         return str_replace('Ci ', '', ucwords(str_replace('_', ' ', $table)));
     }
 
-
-
     private function buildDescription(string $type, string $table, array $changedFields = []): string
     {
         $table = $this->formatTableName($table);
@@ -333,6 +331,4 @@ class CiObserver
     {
         $this->log($m, 'Restored', [], $m->toArray());
     }
-
-
 }

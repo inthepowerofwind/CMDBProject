@@ -49,18 +49,16 @@ const formatDate = (v: unknown): string => {
 }
 
 
-/** Converts a native date input value (YYYY-MM-DD) to MM/DD/YYYY display format */
 const isoToDisplay = (iso: string): string => {
   if (!iso) return ''
   const [y, m, d] = iso.split('-')
   if (!y || !m || !d) return iso
   return `${m}/${d}/${y}`
-  
 }
 
 type Indexable<T> = T & { [key: string]: unknown }
 
-// TextDateCell — free-text input with a calendar icon that opens a date picker
+// accepts both date and string input
 interface TextDateCellProps {
   value: unknown
   field: string
@@ -70,7 +68,6 @@ interface TextDateCellProps {
 }
 
 function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellProps) {
-  //
   const stripTime = (v: unknown): string => {
     if (!v) return ''
     return String(v).split('T')[0]
@@ -95,8 +92,7 @@ function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellP
 
   const dateInputRef = useRef<HTMLInputElement>(null)
 
-  // Attach a native "input" listener in addition to React onChange —
-  // Chrome fires "input" (not "change") when the user clicks Clear inside the picker.
+  // date input (chrome)
   useEffect(() => {
     const el = dateInputRef.current
     if (!el) return
@@ -113,7 +109,7 @@ function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellP
       size="xs"
       value={localValue}
       disabled={disabled}
-      placeholder="MM/DD/YYYY or text"
+      placeholder="mm/dd/yyyy or text"
       onChange={(e) => {
         const v = e.target.value
         setLocalValue(v)
@@ -165,8 +161,7 @@ function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellP
   )
 }
 
-// ---------------------------------------------------------------------------
-
+// Table Props
 interface TableViewProps<T extends object, P extends object> {
   // data
   rows: T[]
@@ -275,11 +270,11 @@ function TableView<T extends object, P extends object>({
             const val = (editFormsRef.current[rowId] as Indexable<P>)?.[col.key]
               ?? (row.original as Indexable<T>)[col.key]
 
-            // Hybrid text + date picker for eol_date / license_expiry
+            // string and date input field for eol_date & license_expiry
             if (TEXT_DATE_FIELDS.has(col.key)) {
               return (
                 <TextDateCell
-                  value={val ? String(val).split('T')[0] : val}  // <-- strip here
+                  value={val ? String(val).split('T')[0] : val}
                   field={col.key}
                   width={col.width}
                   disabled={col.disabled}
@@ -388,7 +383,6 @@ function TableView<T extends object, P extends object>({
                   {col.readOnly ? (
                     <Text size="xs" c="dimmed" fs="italic">Auto</Text>
                   ) : TEXT_DATE_FIELDS.has(col.key) ? (
-                    // Hybrid text + date picker in add row
                     <TextDateCell
                       value={(newForm as Indexable<P>)[col.key] 
                         ? String((newForm as Indexable<P>)[col.key]).split('T')[0] 
