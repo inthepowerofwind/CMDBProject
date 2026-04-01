@@ -38,7 +38,7 @@ return new class extends Migration
             $table->string('asset_tag')->nullable();
             $table->date('purchase_date')->nullable();
             $table->date('warranty_expiry')->nullable();
-            $table->date('eol_date')->nullable();
+            $table->string('eol_date')->nullable();
             $table->date('last_config_review')->nullable();
             $table->boolean('baseline_applied')->default(true);
             $table->boolean('backup_enabled')->default(true);

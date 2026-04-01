@@ -41,7 +41,7 @@ return new class extends Migration
             $table->date('last_login')->nullable();
             $table->date('purchase_date')->nullable();
             $table->date('warranty_expiry')->nullable();
-            $table->date('eol_date')->nullable();
+            $table->string('eol_date')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

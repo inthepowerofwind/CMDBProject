@@ -33,7 +33,7 @@ return new class extends Migration
             $table->boolean('access_control')->default(true);
             $table->boolean('monitoring')->default(true);
             $table->string('patch_level')->nullable();
-            $table->date('eol_date')->nullable();
+            $table->string('eol_date')->nullable(); //
             $table->string('db_owner')->nullable();
             $table->string('bussiness_application')->nullable();
             $table->date('last_review')->nullable();
