@@ -93,6 +93,7 @@ export default function Endpoint() {
       service={endpointService}
       emptyForm={emptyEndpointsForm}
       statusOptions={STATUS_OPTIONS}
+      booleanFields={['mdm_enrolled', 'edr_agent', 'antivirus']}
       addLabel="Add Endpoint"
       searchPlaceholder="Search by ID, name, IP..."
     />

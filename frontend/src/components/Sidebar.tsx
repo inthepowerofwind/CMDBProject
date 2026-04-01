@@ -97,7 +97,6 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
         </Box>
       </Box>
 
-      {/* ── Nav items ── */}
       <Stack gap={2} px={collapsed ? 6 : 6} py="md" style={{ flex: 1 }}>
         {navItems.map((item) => {
           const Icon = item.icon
@@ -115,7 +114,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
                 padding: collapsed ? 0 : '7px 8px',
                 borderRadius: 6,
                 width: collapsed ? 40 : '100%',
-                height: collapsed ? 40 : 'auto',
+                height: collapsed ? 34 : 'auto',
                 marginLeft: collapsed ? 'auto' : 0,
                 marginRight: collapsed ? 'auto' : 0,
                 color: isActive ? '#5375BF' : '#585c64',
@@ -124,6 +123,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
                 transition: 'background-color 150ms ease, width 220ms ease',
               }}
             >
+              {/* Icon when expand */}
               <Box style={{
                 width: 17,
                 height: 17,

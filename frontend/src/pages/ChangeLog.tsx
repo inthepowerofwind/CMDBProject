@@ -45,12 +45,12 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
   'License Update':        'yellow',
   'Compliance Update':     'yellow',
   'SLA Update':            'yellow',
-  'Rename':                'gray',
+  'Rename':                'blue',
 }
 
 const CI_TABLES = [
-  'servers', 'network_devices', 'endpoints',
-  'software', 'cloud_services', 'databases',
+  'Servers', 'Network Devices', 'Endpoints',
+  'Software', 'Cloud Services', 'Databases',
 ]
 
 function DiffTable({ prev, next }: {
@@ -75,9 +75,9 @@ function DiffTable({ prev, next }: {
         {keys.map((key) => {
           const oldVal = prev?.[key] ?? null
           const newVal = next?.[key] ?? null
-          const changed = JSON.stringify(oldVal) !== JSON.stringify(newVal)
+
           return (
-            <Table.Tr key={key} style={{ backgroundColor: changed ? '#FFFBEB' : 'white' }}>
+            <Table.Tr key={key} style={{ backgroundColor: 'white' }}>
               <Table.Td fw={500}>{key}</Table.Td>
               <Table.Td c={oldVal === null ? 'dimmed' : '#e53e3e'}>
                 {oldVal === null ? '—' : String(oldVal)}

@@ -88,8 +88,9 @@ export default function Database() {
       service={databasesService}
       emptyForm={emptyDatabaseForm}
       statusOptions={STATUS_OPTIONS}
-      booleanFields={['backup_enabled', 'backup_frequency', 'encryption_at_rest', 
-                      'tde_enabled', 'access_control', 'monitoring_siem']}
+      booleanFields={['backup_enabled', 'encryption_at_rest', 
+                      'tde_enabled', 'access_control', 'monitoring_siem'
+                    ]}
       addLabel="Add Database"
       searchPlaceholder="Search by ID, name, IP..."
     />

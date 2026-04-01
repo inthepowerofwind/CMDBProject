@@ -33,8 +33,8 @@ const COLUMNS: CIColumnDef<Software>[] = [
   { key: 'vendor',            header: 'Vendor',                     type: 'text' },
   { key: 'license_type',      header: 'License Type',               type: 'text' },
   { key: 'license_count',     header: 'License Count (Purchased)',  type: 'text' },
-  { key: 'licenses_deployed',  header: 'License Deployed',           type: 'text' },
-  { key: 'licenses_available', header: 'License Available',          type: 'text' },
+  { key: 'licenses_deployed',  header: 'License Deployed',          type: 'text' },
+  { key: 'licenses_available', header: 'License Available',         type: 'text' },
   { key: 'compliance_status', header: 'Compliance Status',          type: 'select', width: 180, options: ['Compliant', 'At Limit'] },
   { key: 'installed_on',      header: 'Installed On (Systems)',     type: 'text' },
   { key: 'environment',       header: 'Environment',                type: 'select', width: 160, options: ['Production', 'Staging', 'Testing / QA', 'Development', 'DR / Failover'] },
@@ -43,10 +43,10 @@ const COLUMNS: CIColumnDef<Software>[] = [
   { key: 'auto_update',       header: 'Auto Update',                type: 'boolean', width: 110 },
   { key: 'asl_approved',      header: 'ASL Approved',               type: 'boolean', width: 110 },
   { key: 'sast_dast_tested',  header: 'SAST/DAST Tested',           type: 'select', width: 120, options: ['Yes', 'No', 'N/A'] },
-  { key: 'license_key_location',   header: 'License Key Location',       type: 'text' },
+  { key: 'license_key_location',   header: 'License Key Location',  type: 'text' },
   { key: 'procurement_date',  header: 'Procurement Date',           type: 'date',   width: 140 },
-  { key: 'license_expiry',    header: 'License Expiry',             type: 'text',   width: 140 },
-  { key: 'eol_date',          header: 'EOL Date',                   type: 'text',   width: 140 },
+  { key: 'license_expiry',    header: 'License Expiry',             type: 'text',   width: 160 },
+  { key: 'eol_date',          header: 'EOL Date',                   type: 'text',   width: 160 },
   { key: 'last_review',       header: 'Last Review',                type: 'date',   width: 140 },
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
@@ -83,6 +83,7 @@ export default function Softwares() {
       service={softwareService}
       emptyForm={emptySoftwareForm}
       statusOptions={STATUS_OPTIONS}
+      booleanFields={['auto_update', 'asl_approved']}
       addLabel="Add Software"
       searchPlaceholder="Search by ID, name..."
     />
