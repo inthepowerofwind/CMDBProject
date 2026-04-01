@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import {
-  Box, Text, Badge, ScrollArea, Loader,
+  Box, Text, Badge, Loader,
   TextInput, Select, Group, Alert, Pagination, Table, ActionIcon,
+  ScrollArea,
+  Tooltip,
 } from '@mantine/core'
 import {
   IconAlertCircle, IconChevronDown, IconChevronRight,
@@ -67,8 +69,8 @@ function DiffTable({ prev, next }: {
       <Table.Thead style={{ backgroundColor: '#F8FAFC' }}>
         <Table.Tr>
           <Table.Th style={{ width: '30%' }}>Field</Table.Th>
-          <Table.Th style={{ width: '35%', color: '#e53e3e' }}>Previous</Table.Th>
-          <Table.Th style={{ width: '35%', color: '#2e6fdb' }}>New</Table.Th>
+          <Table.Th style={{ width: '35%', color: 'gray' }}>Previous</Table.Th>
+          <Table.Th style={{ width: '35%', color: 'green' }}>New</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
@@ -79,10 +81,10 @@ function DiffTable({ prev, next }: {
           return (
             <Table.Tr key={key} style={{ backgroundColor: 'white' }}>
               <Table.Td fw={500}>{key}</Table.Td>
-              <Table.Td c={oldVal === null ? 'dimmed' : '#e53e3e'}>
+              <Table.Td c={oldVal === null ? 'dimmed' : 'gray'}>
                 {oldVal === null ? '—' : String(oldVal)}
               </Table.Td>
-              <Table.Td c={newVal === null ? 'dimmed' : '#2e6fdb'}>
+              <Table.Td c={newVal === null ? 'dimmed' : 'green'}>
                 {newVal === null ? '—' : String(newVal)}
               </Table.Td>
             </Table.Tr>
@@ -94,17 +96,21 @@ function DiffTable({ prev, next }: {
 }
 
 const tdStyle: React.CSSProperties = {
-  padding: '9px 16px',
+  padding: '11px 16px',
   whiteSpace: 'nowrap',
   borderBottom: '1px solid #F1F5F9',
   fontSize: 13,
   color: '#374151',
 }
 
-// Single log row — clickable to expand diff details
-function LogRow({ log, index }: { log: ChangeLogEntry; index: number }) {
-  console.log('change_type:', JSON.stringify(log.change_type))
-  const [open, setOpen] = useState(false)
+// field change expand function: automatically closes 
+// other field change table when another field is expanded
+function LogRow({ log, index, isOpen, onToggle }: {
+  log: ChangeLogEntry
+  index: number
+  isOpen: boolean
+  onToggle: () => void
+}) {
   const hasDiff = log.previous_values || log.new_values
   return (
     <>
@@ -116,46 +122,67 @@ function LogRow({ log, index }: { log: ChangeLogEntry; index: number }) {
         }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F0F4FF')}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'white' : '#FAFBFC')}
-        onClick={() => hasDiff && setOpen((o) => !o)}
+        onClick={() => hasDiff && onToggle()}
       >
-        {/* Log ID with expand toggle */}
         <td style={tdStyle}>
-          <Group gap={4}>
+          <Group gap={4} wrap="nowrap">
             {hasDiff && (
               <ActionIcon size="xs" variant="subtle" color="gray">
-                {open ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
+                {isOpen ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
               </ActionIcon>
             )}
             <Text size="xs" fw={600} c="#5375BF" ff="monospace">{log.change_log_id}</Text>
           </Group>
         </td>
         <td style={tdStyle}><Text size="sm">{log.ci_id}</Text></td>
-        <td style={tdStyle}><Text size="sm">{log.ci_name}</Text></td>
+        <td style={{ ...tdStyle, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <Text size="sm" truncate>{log.ci_name}</Text>
+        </td>
         <td style={tdStyle}>
           <Badge variant="light" color="gray" size="sm" style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
             {log.ci_table}
           </Badge>
         </td>
         <td style={tdStyle}>
-          <Group gap={4}>
-            {log.change_type.split(',').map((type) => {
-              const t = type.trim()
+          {/* when change types overflow; limits the displays and an option to show more */}
+          <Group gap={4} wrap="nowrap">
+            {(() => {
+              const types = log.change_type.split(',').map((s) => s.trim())
+              const visible = types.slice(0, 1)
+              const overflow = types.length - 1
               return (
-                <Badge
-                  key={t}
-                  variant="light"
-                  size="sm"
-                  color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
-                  style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}
-                >
-                  {t}
-                </Badge>
+                <>
+                  {visible.map((t) => (
+                    <Badge
+                      key={t}
+                      variant="light"
+                      size="sm"
+                      color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
+                      style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}
+                    >
+                      {t}
+                    </Badge>
+                  ))}
+                  {overflow > 0 && (
+                    <Badge
+                      variant="light"
+                      size="sm"
+                      color="gray"
+                      title={types.slice(1).join(', ')}
+                      style={{ whiteSpace: 'nowrap', display: 'inline-flex', cursor: 'default' }}
+                    >
+                      +{overflow}
+                    </Badge>
+                  )}
+                </>
               )
-            })}
+            })()}
           </Group>
         </td>
-        <td style={{ ...tdStyle, maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          <Text size="sm" c="dimmed">{log.change_description ?? '—'}</Text>
+        <td style={{ ...tdStyle, overflow: 'hidden', maxWidth: 100 }}>
+          <Tooltip label={log.change_description ?? '—'} position="bottom" withArrow openDelay={300}>
+            <Text size="sm" c="dimmed" truncate="end">{log.change_description ?? '—'}</Text>
+          </Tooltip>
         </td>
         <td style={tdStyle}><Text size="sm">{log.change_by}</Text></td>
         {/* <td style={tdStyle}><Text size="sm" c="dimmed">{log.rfs_reference ?? '—'}</Text></td> */}
@@ -166,7 +193,7 @@ function LogRow({ log, index }: { log: ChangeLogEntry; index: number }) {
       </tr>
 
       {/* Expandable diff row — shows field-level changes */}
-      {open && hasDiff && (
+      {isOpen && hasDiff && (
         <tr style={{ backgroundColor: '#F8FAFC' }}>
           <td colSpan={10} style={{ padding: '12px 24px', borderBottom: '1px solid #F1F5F9' }}>
             <Text size="xs" fw={600} c="dimmed" mb={6} tt="uppercase" style={{ letterSpacing: '0.05em' }}>
@@ -188,17 +215,16 @@ export default function ChangeLog() {
   const [loading, setLoading]         = useState(true)
   const [error, setError]             = useState('')
   const [search, setSearch]           = useState('')
-  const [filterType, setFilterType]   = useState<string | null>(null)
   const [filterTable, setFilterTable] = useState<string | null>(null)
+  const [expandedId, setExpandedId]   = useState<string | null>(null)
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
       const params: ChangeLogListParams = {
-        page, per_page: 15,
+        page, per_page: 14,
         search:      search      || undefined,
-        change_type: filterType  || undefined,
         ci_table:    filterTable || undefined,
         sort_by: 'created_at', sort_dir: 'desc',
       }
@@ -212,7 +238,7 @@ export default function ChangeLog() {
     } finally {
       setLoading(false)
     }
-  }, [page, search, filterType, filterTable])
+  }, [page, search, filterTable])
 
   useEffect(() => { fetchLogs() }, [fetchLogs])
 
@@ -236,13 +262,7 @@ export default function ChangeLog() {
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             size="sm" style={{ width: 280 }}
           />
-          <Select
-            placeholder="Filter by type"
-            value={filterType}
-            onChange={(v) => { setFilterType(v); setPage(1) }}
-            data={Object.keys(CHANGE_TYPE_COLOR)}
-            clearable size="sm" style={{ width: 180 }}
-          />
+
           <Select
             placeholder="Filter by CI table"
             value={filterTable}
@@ -254,7 +274,7 @@ export default function ChangeLog() {
         </Group>
       </Group>
 
-      {/* Table */}
+{/* Table */}
       {loading ? (
         <Box style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
           <Loader color="#5375BF" />
@@ -268,14 +288,24 @@ export default function ChangeLog() {
         </>
       ) : (
         <ScrollArea scrollbarSize={8}>
-          <table style={{ minWidth: 1400, width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ minWidth: 1000, borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: '10%' }} /> {/* Log ID */}
+              <col style={{ width: '6%'  }} /> {/* CI ID */}
+              <col style={{ width: '9%'  }} /> {/* CI Name */}
+              <col style={{ width: '10%' }} /> {/* CI Table */}
+              <col style={{ width: '12%' }} /> {/* Change Type */}
+              <col style={{ width: '30%' }} /> {/* Description */}
+              <col style={{ width: '10%' }} /> {/* Changed By */}
+              <col style={{ width: '13%' }} /> {/* Date & Time */}
+            </colgroup>
             <thead>
               <tr style={{ backgroundColor: '#F8FAFC' }}>
                 {HEADERS.map((h) => (
                   <th
                     key={h}
                     style={{
-                      padding: '10px 16px',
+                      padding: '12px 16px',
                       textAlign: 'left',
                       whiteSpace: 'nowrap',
                       borderBottom: '1px solid #E3E8EF',
@@ -298,7 +328,15 @@ export default function ChangeLog() {
                 </tr>
               ) : (
                 logs.map((log, i) => (
-                  <LogRow key={log.change_log_id} log={log} index={i} />
+                  <LogRow
+                    key={log.change_log_id}
+                    log={log}
+                    index={i}
+                    isOpen={expandedId === log.change_log_id}
+                    onToggle={() => setExpandedId(
+                      expandedId === log.change_log_id ? null : log.change_log_id
+                    )}
+                  />
                 ))
               )}
             </tbody>

@@ -137,21 +137,39 @@ function ChangeRow({ log }: { log: ChangeLogEntry }) {
         </Box>
       </Group>
 
+     {/* displays enough change type to avoid overflowing */}
       <Group gap={4} style={{ flexShrink: 0 }}>
-        {log.change_type.split(',').map((type) => {
-          const t = type.trim()
+        {(() => {
+          const types = log.change_type.split(',').map((s) => s.trim())
+          const visible = types.slice(0, 1)
+          const overflow = types.length - 2
           return (
-            <Badge
-              key={t}
-              color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
-              variant="light"
-              size="sm"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              {t}
-            </Badge>
+            <>
+              {visible.map((t) => (
+                <Badge
+                  key={t}
+                  color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
+                  variant="light"
+                  size="sm"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  {t}
+                </Badge>
+              ))}
+              {overflow > 0 && (
+                <Badge
+                  variant="light"
+                  size="sm"
+                  color="gray"
+                  title={types.slice(2).join(', ')}
+                  style={{ whiteSpace: 'nowrap', cursor: 'default' }}
+                >
+                  +{overflow}
+                </Badge>
+              )}
+            </>
           )
-        })}
+        })()}
       </Group>
     </Box>
   )
