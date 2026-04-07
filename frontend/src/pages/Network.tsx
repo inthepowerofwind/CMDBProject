@@ -41,7 +41,7 @@ const COLUMNS: CIColumnDef<NetworkDevice>[] = [
   { key: 'rack_position',     header: 'Rack / Position',            type: 'text' },
   { key: 'criticality',       header: 'Criticality',                type: 'select', width: 120, options: ['Critical','High','Medium','Low'], render: badge(CRIT_COLOR) },
   { key: 'business_service',  header: 'Business Service',           type: 'text',   width: 140 },
-  { key: 'redundancy_ha',        header: 'Redundancy / HA',            type: 'text' },
+  { key: 'redundancy_ha',     header: 'Redundancy / HA',            type: 'text' },
   { key: 'assigned_owner',    header: 'Assigned Owner',             type: 'text',   width: 140 },
   { key: 'department',        header: 'Department',                 type: 'text' },
   { key: 'manufacturer',      header: 'Manufacturer',               type: 'text' },

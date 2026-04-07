@@ -8,23 +8,23 @@ export interface Databases {
   db_type:            string | null
   version:            string | null
   environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' | null
-  host_server:        string | null
+  host_server_ci:     string | null
   ip_address:         string | null
   port:               string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
   data_classification: 'Public' | 'Internal' | 'Confidential' | 'Restricted'
-  size:               number
+  size_gb:            number
   backup_enabled:     boolean
   backup_frequency:   string | null
   last_backup:        string | null
   encryption_at_rest: boolean
   tde_enabled:        boolean
   access_control:     boolean
-  monitoring_siem:    boolean
+  monitoring:         boolean
   patch_level:        string | null
   eol_date:           string | null
   db_owner:           string | null
-  business_application: string | null
+  bussiness_application: string | null
   last_review:        string | null
   notes:              string | null
   created_at:         string

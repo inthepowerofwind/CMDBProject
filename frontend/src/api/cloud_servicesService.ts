@@ -8,7 +8,7 @@ export interface CloudServices {
   service_type:       string | null
   cloud_model:        string | null
   provider:           string | null
-  region:             string | null
+  region_data_recidency: string | null
   service_tier:       string | null
   account_id:         string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
@@ -21,9 +21,9 @@ export interface CloudServices {
   encryption_in_transit: boolean
   dlp_monitored:      boolean
   logging_to_siem:    boolean
-  soc2_certified:     boolean
-  contract_expiry:    string | null
-  shared_responsibility: boolean
+  soc_2_certified:     boolean
+  contact_expiry:    string | null
+  shared_responsibility_documented: boolean
   business_owner:     string | null
   it_owner:           string | null
   last_security_review: string | null

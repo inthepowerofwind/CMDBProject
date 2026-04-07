@@ -45,7 +45,7 @@ class CmdbDatabase extends Model
         'tde_enabled' => 'boolean',
         'access_control' => 'boolean',
         'monitoring' => 'boolean',
-        'eol_date' => 'date',
+        'eol_date' => 'string',
         'last_review' => 'date',
     ];
 }

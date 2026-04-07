@@ -15,14 +15,14 @@ export interface Endpoints {
   assigned_user:      string | null
   employee_id:        string | null
   department:         string | null
-  location_flr:       string | null
+  location_floor:     string | null
   manufacturer:       string | null
   model:              string | null
   serial_number:      string | null
   asset_tag:          string | null
   cpu:                string | null
-  ram:                number
-  storage:            number
+  ram_gb:             number
+  storage_gb:         number
   encryption:         string | null
   mdm_enrolled:       boolean
   edr_agent:          boolean
