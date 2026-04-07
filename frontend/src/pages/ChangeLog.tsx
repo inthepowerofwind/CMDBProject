@@ -51,8 +51,8 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
 }
 
 const CI_TABLES = [
-  'Servers', 'Network Devices', 'Endpoints',
-  'Software', 'Cloud Services', 'Databases',
+  'Servers', 'Network_Devices', 'Endpoints',
+  'Software', 'Cloud_Services', 'Databases',
 ]
 
 function DiffTable({ prev, next }: {

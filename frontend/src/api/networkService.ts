@@ -15,7 +15,7 @@ export interface NetworkDevice {
   patch_level:        string | null
   location:           string | null
   rack_position:      string | null
-  redundancy:         string | null // waley sa CIObserver
+  redundancy_ha:         string | null // waley sa CIObserver
   criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
   business_service:   string | null // waley sa CIObserver
   assigned_owner:     string | null
