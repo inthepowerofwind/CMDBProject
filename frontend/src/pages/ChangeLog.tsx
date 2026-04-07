@@ -74,12 +74,11 @@ function DiffTable({ prev, next }: {
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {keys.map((key) => {
+        {keys.map((key, i) => {
           const oldVal = prev?.[key] ?? null
           const newVal = next?.[key] ?? null
-
           return (
-            <Table.Tr key={key} style={{ backgroundColor: 'white' }}>
+            <Table.Tr key={key} style={{ backgroundColor: i % 2 === 0 ? 'white' : '#FAFBFC' }}>
               <Table.Td fw={500}>{key}</Table.Td>
               <Table.Td c={oldVal === null ? 'dimmed' : 'gray'}>
                 {oldVal === null ? '—' : String(oldVal)}

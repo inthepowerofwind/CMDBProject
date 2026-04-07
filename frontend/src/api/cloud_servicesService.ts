@@ -22,7 +22,7 @@ export interface CloudServices {
   dlp_monitored:      boolean
   logging_to_siem:    boolean
   soc_2_certified:     boolean
-  contract_expiry:    string | null
+  contact_expiry:    string | null
   shared_responsibility_documented: boolean
   business_owner:     string | null
   it_owner:           string | null

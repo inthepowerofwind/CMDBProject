@@ -76,7 +76,7 @@ const emptyEndpointsForm = (): CloudServicesPayload => ({
   dlp_monitored: true,
   logging_to_siem: true,
   soc_2_certified: true,
-  contract_expiry: null, // to drop & migrate; wrong column name
+  contact_expiry: null, // to drop & migrate; wrong column name
   shared_responsibility_documented: true,
   business_owner: null,
   it_owner: null,
@@ -92,8 +92,8 @@ export default function cloud_services() {
       service={cloud_servicesService}
       emptyForm={emptyEndpointsForm}
       statusOptions={STATUS_OPTIONS}
-      booleanFields={['mfa_enfored', 'sso_integrated', 'encryption_at_rest', 'encryption_in_transit',
-                      'dlp_monitored', 'logging_to_siem', 'soc2_certified', 'shared_responsibility'
+      booleanFields={['mfa_enforced', 'sso_integrated', 'encryption_at_rest', 'encryption_in_transit',
+                      'dlp_monitored', 'logging_to_siem', 'soc_2_certified', 'shared_responsibility_documented'
                     ]}
       addLabel="Add Cloud Service"
       searchPlaceholder="Search by ID, name..."

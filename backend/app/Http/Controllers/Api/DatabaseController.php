@@ -83,9 +83,9 @@ class DatabaseController extends Controller
             'access_control'        => 'boolean',
             'monitoring'            => 'boolean',
             'patch_level'           => 'nullable|string',
-            'eol_date'              => 'nullable|date',
+            'eol_date'              => 'nullable|string',
             'db_owner'              => 'nullable|string',
-            'bussiness_application' => 'nullable|string',
+            'bussiness_application' => 'nullable|string', // typo: should be business
             'last_review'           => 'nullable|date',
             'notes'                 => 'nullable|string',
             ]);
@@ -138,7 +138,7 @@ class DatabaseController extends Controller
             'access_control'        => 'boolean',
             'monitoring'            => 'boolean',
             'patch_level'           => 'nullable|string',
-            'eol_date'              => 'nullable|date',
+            'eol_date'              => 'nullable|string',
             'db_owner'              => 'nullable|string',
             'bussiness_application' => 'nullable|string',
             'last_review'           => 'nullable|date',

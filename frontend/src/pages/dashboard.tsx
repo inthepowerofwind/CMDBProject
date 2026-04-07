@@ -69,7 +69,7 @@ const tableWorkbook: TableData = {
 
 function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps) {
   return (
-    <Card shadow="sm" radius="md" withBorder h={100}>
+    <Card shadow="sm" radius="md" withBorder style={{ minHeight: 100 }}>
       <Group justify="space-between">
         <Box>
           <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={4}>{title}</Text>
@@ -224,13 +224,23 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <Box p="xl" mt="xl">
-      <Group grow mb="xl">
-        <StatCard title="Total CIs"      value={totalCIs}      color="black" iconColor="blue"   icon={IconServer} />
-        <StatCard title="Active"         value={totalActive}   color="black" iconColor="green"  icon={IconCircleCheck} />
-        <StatCard title="Decommissioned" value={totalDecomm}   color="black" iconColor="gray"   icon={IconCircleX} />
-        <StatCard title="EOL / At Risk"  value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
-        <StatCard title="Archive"        value={totalArchived}  color="black" iconColor="yellow" icon={IconArchive} />
-      </Group>
+      <Grid mb="xl">
+        <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
+          <StatCard title="Total CIs"      value={totalCIs}      color="black" iconColor="blue"   icon={IconServer} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
+          <StatCard title="Active"         value={totalActive}   color="black" iconColor="green"  icon={IconCircleCheck} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
+          <StatCard title="Decommissioned" value={totalDecomm}   color="black" iconColor="gray"   icon={IconCircleX} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
+          <StatCard title="EOL / At Risk"  value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
+          <StatCard title="Archive"        value={totalArchived}  color="black" iconColor="yellow" icon={IconArchive} />
+        </Grid.Col>
+      </Grid>
 
       <Grid mt="lg">
         <Grid.Col span={7}>

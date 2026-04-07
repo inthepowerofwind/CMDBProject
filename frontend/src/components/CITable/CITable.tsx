@@ -215,7 +215,7 @@ function TableView<T extends object, P extends object>({
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
 
-  /** Resolve the inputType for EditableCell (excludes text-date fields) */
+  // Resolve the inputType for EditableCell (excludes text-date fields)
   const resolveInputType = (colKey: string, colType?: string) => {
     if (DATE_FIELDS.has(colKey)) return 'date'
     if (colType === 'number') return 'number'
@@ -563,15 +563,22 @@ export default function CITable<
   }, [page, search, filterStatus, isArchiveView, archivePage, archiveSearch])
 
   // Form helpers
-  const setNewField = (key: string, value: unknown) => {
-    console.log('setNewField', key, value)
-    setNewForm((f) => ({ ...f, [key]: value } as P))
+    const setNewField = (key: string, value: unknown) => {
+    const col = colDefs.find((c) => c.key === key)
+    const coerced = col?.type === 'number'
+      ? (value === '' || value === null || value === undefined ? null : Number(value))
+      : (value === '' ? null : value)  // ← empty string → null for all text fields
+    setNewForm((f) => ({ ...f, [key]: coerced } as P))
   }
 
-  const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
+    const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
+    const col = colDefs.find((c) => c.key === key)
+    const coerced = col?.type === 'number'
+      ? (value === '' || value === null || value === undefined ? null : Number(value))
+      : (value === '' ? null : value)  // ← empty string → null for all text fields
     editFormsRef.current = {
       ...editFormsRef.current,
-      [ciId]: { ...editFormsRef.current[ciId], [key]: value },
+      [ciId]: { ...editFormsRef.current[ciId], [key]: coerced },
     }
     if (rerender) setEditForms({ ...editFormsRef.current })
   }

@@ -251,7 +251,8 @@ class CiObserver
         if ($type === 'Updated') {
             [$prevSummary, $nextSummary] = $this->buildChangedSummaries($prev, $next);
             $changeType  = $this->resolveChangeType($next);
-            $description = $this->buildDescription($type, $table, $next);
+            $filteredNext = array_diff_key($next, array_flip($this->excludedFields));
+            $description = $this->buildDescription($type, $table, $filteredNext);
         } elseif ($type === 'Deleted') {
             $prevSummary = $this->buildSummary($prev);
             $nextSummary = [];
