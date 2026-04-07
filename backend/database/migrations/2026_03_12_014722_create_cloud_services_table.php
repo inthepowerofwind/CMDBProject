@@ -33,7 +33,7 @@ return new class extends Migration
             $table->boolean('dlp_monitored')->default(true);
             $table->boolean('logging_to_siem')->default(true);
             $table->boolean('soc_2_certified')->default(true);
-            $table->date('contact_expiry')->nullable();
+            $table->date('contract_expiry')->nullable();
             $table->boolean('shared_responsibility_documented')->default(true);
             $table->string('business_owner')->nullable();
             $table->string('it_owner')->nullable();

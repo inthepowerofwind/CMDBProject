@@ -85,12 +85,12 @@ class EndpointController extends Controller
                 'storage_gb'      => 'nullable|integer',
                 'encryption'      => 'nullable|string',
                 'mdm_enrolled'    => 'nullable|boolean',
-                'edr_enrolled'    => 'nullable|boolean',
+                'edr_agent'    => 'nullable|boolean',
                 'antivirus'       => 'nullable|boolean',
                 'last_login'      => 'nullable|date',
                 'purchase_date'   => 'nullable|date',
                 'warranty_expiry' => 'nullable|date',
-                'eol_date'        => 'nullable|date',
+                'eol_date'        => 'nullable|string',
                 'notes'           => 'nullable|string',
             ]);
             $data['ci_id'] = $this->generateCiId();
@@ -144,12 +144,12 @@ class EndpointController extends Controller
                 'storage_gb'      => 'nullable|integer',
                 'encryption'      => 'nullable|string',
                 'mdm_enrolled'    => 'nullable|boolean',
-                'edr_enrolled'    => 'nullable|boolean',
+                'edr_agent'    => 'nullable|boolean',
                 'antivirus'       => 'nullable|boolean',
                 'last_login'      => 'nullable|date',
                 'purchase_date'   => 'nullable|date',
                 'warranty_expiry' => 'nullable|date',
-                'eol_date'        => 'nullable|date',
+                'eol_date'        => 'nullable|string',
                 'notes'           => 'nullable|string',
             ]);
 

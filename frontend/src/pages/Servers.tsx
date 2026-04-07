@@ -52,7 +52,7 @@ const COLUMNS: CIColumnDef<Server>[] = [
   { key: 'asset_tag',         header: 'Asset Tag',                 type: 'text' },
   { key: 'purchase_date',     header: 'Purchase Date',             type: 'date',   width: 140 },
   { key: 'warranty_expiry',   header: 'Warranty Expiry',           type: 'date',   width: 140 },
-  { key: 'eol_date',          header: 'EOL Date',                  type: 'date',   width: 140 },
+  { key: 'eol_date',          header: 'EOL Date',                  type: 'text',   width: 140 },
   { key: 'last_config_review',header: 'Last Configuration Review', type: 'date',   width: 160 },
   { key: 'baseline_applied',  header: 'Baseline Applied',          type: 'boolean',width: 110 },
   { key: 'backup_enabled',    header: 'Backup Enabled',            type: 'boolean',width: 110 },
