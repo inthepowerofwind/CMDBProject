@@ -49,7 +49,7 @@ const COLUMNS: CIColumnDef<Endpoints>[] = [
   { key: 'last_login',        header: 'Last Login',                 type: 'date',   width: 140 },
   { key: 'purchase_date',     header: 'Purchase Date',              type: 'date',   width: 140 },
   { key: 'warranty_expiry',   header: 'Warranty Expiry',            type: 'date',   width: 140 },
-  { key: 'eol_date',          header: 'EOL Date',                   type: 'date',   width: 140 },
+  { key: 'eol_date',          header: 'EOL Date',                   type: 'text',   width: 140 },
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 

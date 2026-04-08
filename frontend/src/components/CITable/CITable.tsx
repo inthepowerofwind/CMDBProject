@@ -45,7 +45,8 @@ const TEXT_DATE_FIELDS = new Set([
 
 const formatDate = (v: unknown): string => {
   if (!v) return '—'
-  return String(v).split('T')[0]
+  const s = String(v)
+  return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
 }
 
 
@@ -70,7 +71,8 @@ interface TextDateCellProps {
 function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellProps) {
   const stripTime = (v: unknown): string => {
     if (!v) return ''
-    return String(v).split('T')[0]
+    const s = String(v)
+    return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
   }
 
   const [localValue, setLocalValue] = useState(stripTime(value))
@@ -274,7 +276,7 @@ function TableView<T extends object, P extends object>({
             if (TEXT_DATE_FIELDS.has(col.key)) {
               return (
                 <TextDateCell
-                  value={val ? String(val).split('T')[0] : val}
+                  value={val}
                   field={col.key}
                   width={col.width}
                   disabled={col.disabled}
@@ -384,9 +386,8 @@ function TableView<T extends object, P extends object>({
                     <Text size="xs" c="dimmed" fs="italic">Auto</Text>
                   ) : TEXT_DATE_FIELDS.has(col.key) ? (
                     <TextDateCell
-                      value={(newForm as Indexable<P>)[col.key] 
-                        ? String((newForm as Indexable<P>)[col.key]).split('T')[0] 
-                        : (newForm as Indexable<P>)[col.key]}
+                      value={(newForm as Indexable<P>)[col.key] }
+                        
                       field={col.key}
                       width={col.width}
                       disabled={col.disabled}

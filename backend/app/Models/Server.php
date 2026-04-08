@@ -50,7 +50,7 @@ class Server extends Model
         'monitoring_siem'=> 'boolean',
         'purchase_date'=> 'date',
         'warranty_expiry'=> 'date',
-        'eol_date'=> 'date',
+        'eol_date'=> 'string',
         'last_config_review'=> 'date',
     ];
 }

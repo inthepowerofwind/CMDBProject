@@ -42,6 +42,7 @@ class Software extends Model
         'asl_approved' => 'boolean',
        // 'sast_dast_tested' => 'boolean',
         'last_review' => 'date',
+        'eol_date' => 'string',
     ];
 
 }

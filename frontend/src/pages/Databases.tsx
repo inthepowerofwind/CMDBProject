@@ -48,7 +48,7 @@ const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'patch_level',       header: 'Patch Level',                type: 'text' },
   { key: 'eol_date',          header: 'EOL Date',                   type: 'text',   width: 140 },
   { key: 'db_owner',          header: 'DB Owner',                   type: 'text',   width: 140 },
-  { key: 'bussiness_application', header: 'Business Application',    type: 'text' },
+  { key: 'bussiness_application', header: 'Business Application',   type: 'text' },
   { key: 'last_review',       header: 'Last Review',                type: 'date',   width: 160 },
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]

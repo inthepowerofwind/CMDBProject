@@ -90,7 +90,7 @@ class EndpointController extends Controller
                 'last_login'      => 'nullable|date',
                 'purchase_date'   => 'nullable|date',
                 'warranty_expiry' => 'nullable|date',
-                'eol_date'        => 'nullable|date',
+                'eol_date'        => 'nullable|string',
                 'notes'           => 'nullable|string',
             ]);
             $data['ci_id'] = $this->generateCiId();
@@ -149,7 +149,7 @@ class EndpointController extends Controller
                 'last_login'      => 'nullable|date',
                 'purchase_date'   => 'nullable|date',
                 'warranty_expiry' => 'nullable|date',
-                'eol_date'        => 'nullable|date',
+                'eol_date'        => 'nullable|string',
                 'notes'           => 'nullable|string',
             ]);
 
