@@ -51,6 +51,6 @@ class Endpoint extends Model
         'purchase_date'=> 'date',
         'last_login'=> 'date',
         'warranty_expiry'=> 'date',
-        'eol_date'=> 'date',
+        'eol_date'=> 'string',
     ];
 }
