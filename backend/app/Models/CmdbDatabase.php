@@ -34,7 +34,7 @@ class CmdbDatabase extends Model
         'patch_level',
         'eol_date',
         'db_owner',
-        'bussiness_application',
+        'business_application',
         'last_review',
         'notes',
     ];

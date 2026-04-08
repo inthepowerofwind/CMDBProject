@@ -24,7 +24,7 @@ export interface Databases {
   patch_level:        string | null
   eol_date:           string | null
   db_owner:           string | null
-  bussiness_application: string | null
+  business_application: string | null
   last_review:        string | null
   notes:              string | null
   created_at:         string

@@ -76,7 +76,7 @@ const emptyEndpointsForm = (): CloudServicesPayload => ({
   dlp_monitored: true,
   logging_to_siem: true,
   soc_2_certified: true,
-  contact_expiry: null, // to drop & migrate; wrong column name
+  contract_expiry: null,
   shared_responsibility_documented: true,
   business_owner: null,
   it_owner: null,
