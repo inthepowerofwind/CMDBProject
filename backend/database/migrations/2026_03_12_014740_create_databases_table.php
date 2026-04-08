@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('patch_level')->nullable();
             $table->string('eol_date')->nullable(); //
             $table->string('db_owner')->nullable();
-            $table->string('bussiness_application')->nullable();
+            $table->string('business_application')->nullable();
             $table->date('last_review')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

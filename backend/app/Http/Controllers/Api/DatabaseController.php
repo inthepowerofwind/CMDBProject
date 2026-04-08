@@ -85,7 +85,7 @@ class DatabaseController extends Controller
             'patch_level'           => 'nullable|string',
             'eol_date'              => 'nullable|string',
             'db_owner'              => 'nullable|string',
-            'bussiness_application' => 'nullable|string', // typo: should be business
+            'business_application' => 'nullable|string', 
             'last_review'           => 'nullable|date',
             'notes'                 => 'nullable|string',
             ]);
@@ -140,7 +140,7 @@ class DatabaseController extends Controller
             'patch_level'           => 'nullable|string',
             'eol_date'              => 'nullable|string',
             'db_owner'              => 'nullable|string',
-            'bussiness_application' => 'nullable|string',
+            'business_application' => 'nullable|string',
             'last_review'           => 'nullable|date',
             'notes'                 => 'nullable|string',
             ]);

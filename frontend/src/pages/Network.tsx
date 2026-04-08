@@ -66,7 +66,7 @@ const emptyNetworkForm = (): NetworkPayload => ({
   mac_address: null, 
   vlan_segment: null, 
   ports_interfaces: null,
-  firmware_ver: null, 
+  firmware_version: null, 
   patch_level: null, 
   location: null, 
   rack_position: null,

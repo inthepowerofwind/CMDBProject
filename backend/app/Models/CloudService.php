@@ -52,7 +52,7 @@ class CloudService extends Model
         'dlp_monitored',
         'logging_to_siem',
         'soc_2_certified',
-        'contact_expiry',
+        'contract_expiry',
         'shared_responsibility_documented',
         'business_owner',
         'it_owner',
@@ -70,7 +70,7 @@ class CloudService extends Model
         'logging_to_siem' => 'boolean',
         'soc_2_certified' => 'boolean',
         'shared_responsibility_documented' => 'boolean',
-        'contact_expiry' => 'date',
+        'contract_expiry' => 'date',
         'last_security_review' => 'date',
     ];
 }
