@@ -46,9 +46,12 @@ const TEXT_DATE_FIELDS = new Set([
 const formatDate = (v: unknown): string => {
   if (!v) return '—'
   const s = String(v)
-  return /^\d{4}-\d{2}-\d{2}T/.test(s) ? s.split('T')[0] : s
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const [y, m, d] = s.split('T')[0].split('-')
+    return `${m}/${d}/${y}`
+  }
+  return s
 }
-
 
 const isoToDisplay = (iso: string): string => {
   if (!iso) return ''

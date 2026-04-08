@@ -55,6 +55,16 @@ const CI_TABLES = [
   'Software', 'Cloud_Services', 'Databases',
 ]
 
+const formatLogValue = (v: unknown): string => {
+  if (v === null || v === undefined) return '—'
+  const s = String(v)
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const [y, m, d] = s.split('T')[0].split('-')
+    return `${m}/${d}/${y}`
+  }
+  return s
+}
+
 function DiffTable({ prev, next }: {
   prev: Record<string, unknown> | null
   next: Record<string, unknown> | null
@@ -81,10 +91,10 @@ function DiffTable({ prev, next }: {
             <Table.Tr key={key} style={{ backgroundColor: i % 2 === 0 ? 'white' : '#FAFBFC' }}>
               <Table.Td fw={500}>{key}</Table.Td>
               <Table.Td c={oldVal === null ? 'dimmed' : 'gray'}>
-                {oldVal === null ? '—' : String(oldVal)}
+                {formatLogValue(oldVal)}
               </Table.Td>
               <Table.Td c={newVal === null ? 'dimmed' : 'green'}>
-                {newVal === null ? '—' : String(newVal)}
+                {formatLogValue(newVal)}
               </Table.Td>
             </Table.Tr>
           )

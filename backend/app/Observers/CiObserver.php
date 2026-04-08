@@ -158,8 +158,8 @@ class CiObserver
         if ($value === false || $value === 0 || $value === '0') return 'No';
         if (is_array($value))                                   return json_encode($value);
         $str = (string) $value;
-        if (preg_match('/^(\d{4}-\d{2}-\d{2})T00:00:00/', $str, $m)) {
-            return $m[1];
+        if (preg_match('/^(\d{4})-(\d{2})-(\d{2})/', $str, $m)) {
+            return $m[2] . '/' . $m[3] . '/' . $m[1];
         }
         return $str;
     }
