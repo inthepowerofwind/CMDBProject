@@ -70,15 +70,12 @@ class ReferenceController extends Controller
         return $this->defaults();
     }
 
-    /**
-     * Persist data to storage.
-     */
+    //Persist data to storage.
     private function save(array $data): void
     {
         Storage::put($this->storagePath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
-    // GET /api/reference
     // Return all reference tables.
     public function index()
     {
@@ -90,11 +87,8 @@ class ReferenceController extends Controller
         }
     }
 
-    //  PUT /api/reference/{table}
     //  Replace all rows for a given reference table.
-    //  Allowed table keys:
-    //  ci_status | criticality_levels | environments | data_classifications | relationship_types
-    //  Body: { "rows": [ { ...row fields }, ... ] }
+    //  Allowed table keys: ci_status | criticality_levels | environments | data_classifications | relationship_types
     public function update(Request $request, string $table)
     {
         try {
@@ -128,9 +122,7 @@ class ReferenceController extends Controller
         }
     }
 
-    //POST /api/reference/{table}/rows
     //Append a single row to a reference table.
-    //Body: { ...row fields }
     public function addRow(Request $request, string $table)
     {
         try {
@@ -155,7 +147,6 @@ class ReferenceController extends Controller
         }
     }
 
-    //DELETE /api/reference/{table}/rows/{index}
     //Remove a row by its 0-based index.
     public function deleteRow(string $table, int $index)
     {
@@ -186,8 +177,9 @@ class ReferenceController extends Controller
         }
     }
 
-    // DELETE /api/reference/{table}/reset
     //Reset a table to its built-in defaults.
+    //Not required but useful for quickly undoing mistakes or restoring original values without needing to reformat JSON manually.
+    //So this function is not implemented!
     public function resetTable(string $table)
     {
         try {

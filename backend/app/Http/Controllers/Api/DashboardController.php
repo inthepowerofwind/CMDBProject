@@ -17,7 +17,7 @@ class DashboardController extends Controller
 {
     public function index(): JsonResponse
     {
-        // ── 1. CIs per Category ───────────────────────────────────────────────
+        // 1. CIs per Category
         $ciPerCategory = [
             ['category' => 'Server',
                 'total'          => Server::count(),
@@ -59,7 +59,7 @@ class DashboardController extends Controller
  
         $totalCIs = array_sum(array_column($ciPerCategory, 'total'));
  
-        // ── 2. CIs per Status ────────────────────────────────────────────────
+        // 2. CIs per Status
         // All 6 CI tables have a 'status' column
         $statusCounts = $this->aggregateByField([
             Server::class,
@@ -70,7 +70,7 @@ class DashboardController extends Controller
             CmdbDatabase::class,
         ], 'status');
  
-        // ── 3. CIs per Criticality ────────────────────────────────────────────
+        // 3. CIs per Criticality
         // Endpoint has NO criticality column — excluded
         // CloudService HAS criticality — included
         $criticalityCounts = $this->aggregateByField([
@@ -81,7 +81,7 @@ class DashboardController extends Controller
             CmdbDatabase::class,
         ], 'criticality');
  
-        // ── 4. CIs per Environment ────────────────────────────────────────────
+        // 4. CIs per Environment
         // CloudService has NO environment column — excluded
         $environmentCounts = $this->aggregateByField([
             Server::class,
@@ -91,7 +91,7 @@ class DashboardController extends Controller
             CmdbDatabase::class,
         ], 'environment');
  
-        // ── 5. CIs per Classification ─────────────────────────────────────────
+        // 5. CIs per Classification
         // Only Software, CloudService, and Database have data_classification
         $classificationCounts = $this->aggregateByField([
             Software::class,
@@ -99,7 +99,7 @@ class DashboardController extends Controller
             CmdbDatabase::class,
         ], 'data_classification');
  
-        // ── 6. Relationships per Type ─────────────────────────────────────────
+        // 6. Relationships per Type
         $relationshipCounts = CiRelationship::query()
             ->select('relationship_type', DB::raw('COUNT(*) as total'))
             ->groupBy('relationship_type')
@@ -124,7 +124,7 @@ class DashboardController extends Controller
         ])->sum(fn($model) => $model::onlyTrashed()->count());
 
         $statusCounts[] = ['label' => 'Archived', 'total' => $archivedTotal];
-        // ── Response ──────────────────────────────────────────────────────────
+        // Response
         return response()->json([
             'success' => true,
             'data'    => [

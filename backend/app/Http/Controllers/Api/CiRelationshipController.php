@@ -10,9 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CiRelationshipController extends Controller
 {
-     /**
-     * Auto-generate the next relationship_id (e.g. REL-001, REL-002...).
-     */
+     //Auto-generate the next relationship_id (e.g. REL-001, REL-002...)
     private function generateRelationshipId(): string
     {
         $last = CiRelationship::withTrashed()
@@ -100,7 +98,6 @@ class CiRelationshipController extends Controller
     }
 
     //Display a specific CI relationship by relationship_id.
-    
     public function show(CiRelationship $ciRelationship)
     {
         try {
@@ -141,7 +138,6 @@ class CiRelationshipController extends Controller
     }
 
     //Soft-delete a CI relationship.
-    
     public function destroy(CiRelationship $ciRelationship)
     {
         try {

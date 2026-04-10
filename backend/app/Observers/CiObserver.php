@@ -236,15 +236,15 @@ class CiObserver
                 ?? (string) $model->id;
 
         $ciName = $next['ci_name']
-                  ?? $next['service_name']
-                  ?? $next['software_name']
-                  ?? $next['database_name']
-                  ?? $prev['ci_name']
-                  ?? $model->ci_name
-                  ?? $model->service_name
-                  ?? $model->software_name
-                  ?? $model->database_name
-                  ?? 'Unknown';
+                ?? $next['service_name']
+                ?? $next['software_name']
+                ?? $next['database_name']
+                ?? $prev['ci_name']
+                ?? $model->ci_name
+                ?? $model->service_name
+                ?? $model->software_name
+                ?? $model->database_name
+                ?? 'Unknown';
 
         $table = $model->getTable();
 

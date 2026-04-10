@@ -72,7 +72,6 @@ class CiChangeLogController extends Controller
     // }
 
     // Display a specific change log entry by change_log_id (e.g. CHG-LOG-001).
-     
     public function show(CiChangeLog $ciChangeLog)
     {
         try {
