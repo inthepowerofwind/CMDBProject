@@ -79,7 +79,7 @@ class AuthController extends Controller
             ]);
  
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['message' => $e->errors()], 422);
+            return response()->json(['message' => 'Invalid email address. Please try again.'], 422);
         } catch (\Throwable $th) {
             \Log::error($th->getMessage());
             return response()->json(['message' => 'Something went wrong. Please contact IT.'], 500);

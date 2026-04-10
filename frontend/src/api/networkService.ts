@@ -6,7 +6,7 @@ export interface NetworkDevice {
   ci_name:            string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
   ci_type:            string | null
-  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' | null
+  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
   ip_address:         string | null
   mac_address:        string | null
   vlan_segment:       string | null
@@ -15,9 +15,9 @@ export interface NetworkDevice {
   patch_level:        string | null
   location:           string | null
   rack_position:      string | null
-  redundancy_ha:         string | null // waley sa CIObserver
-  criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
-  business_service:   string | null // waley sa CIObserver
+  redundancy_ha:      string | null
+  criticality:        'Critical' | 'High' | 'Medium' | 'Low'
+  business_service:   string | null
   assigned_owner:     string | null
   department:         string | null
   manufacturer:       string | null

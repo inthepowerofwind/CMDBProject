@@ -1,27 +1,23 @@
 import api from './axios'
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export interface ReferenceRow {
-  id: string           // frontend-only, stripped before any API call
+  id: string
   [key: string]: string
 }
 
 export interface ReferenceTable {
   id: string
   title: string
-  columns: string[]    // human-readable display labels
+  columns: string[]
   rows: ReferenceRow[]
 }
 
 type BackendData = Record<string, Record<string, string>[]>
 
-// ─── Column metadata ──────────────────────────────────────────────────────────
-
 interface ColumnMeta {
   title:   string
-  columns: string[]   // display labels
-  fields:  string[]   // backend snake_case keys (same order as columns)
+  columns: string[]
+  fields:  string[]
 }
 
 export const TABLE_META: Record<string, ColumnMeta> = {
@@ -51,8 +47,6 @@ export const TABLE_META: Record<string, ColumnMeta> = {
     fields:  ['relationship_type', 'description'],
   },
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function toFrontendRow(
   backendRow: Record<string, string>,
@@ -85,8 +79,6 @@ function transformResponse(data: BackendData): ReferenceTable[] {
     rows:    (data[tableKey] ?? []).map((row, i) => toFrontendRow(row, meta, i)),
   }))
 }
-
-// ─── Service ──────────────────────────────────────────────────────────────────
 
 const referenceService = {
   async getAll(): Promise<ReferenceTable[]> {

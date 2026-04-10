@@ -7,7 +7,7 @@ export interface Databases {
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
   db_type:            string | null
   version:            string | null
-  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' | null
+  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
   host_server_ci:     string | null
   ip_address:         string | null
   port:               string | null

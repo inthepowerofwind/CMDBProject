@@ -137,7 +137,6 @@ function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellP
             </ActionIcon>
           )}
 
-          {/* Calendar icon overlaid with the native date input */}
           <div style={{ position: 'relative', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <IconCalendar size={13} style={{ color: '#868e96', pointerEvents: 'none' }} />
             <input
@@ -146,7 +145,6 @@ function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellP
               disabled={disabled}
               tabIndex={-1}
               onChange={(e) => {
-                // React onChange fires on a confirmed selection
                 applyDate(e.target.value)
                 e.target.value = ''
               }}
