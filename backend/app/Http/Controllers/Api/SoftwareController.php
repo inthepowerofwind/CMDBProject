@@ -21,6 +21,7 @@ class SoftwareController extends Controller
         $number = (int) substr($last, 3);
         return 'SW-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
     }
+
     //Display a listing of the resource.
     public function index(Request $request)
     {
@@ -84,7 +85,7 @@ class SoftwareController extends Controller
                 'eol_date'             => 'nullable|string',
                 'last_review'          => 'nullable|date',
                 'notes'                => 'nullable|string',
-                 // Add validation rules for other fields as needed
+                // Add validation rules for other fields as needed
             ]);
             $data['ci_id'] = $this->generateCiId();
 

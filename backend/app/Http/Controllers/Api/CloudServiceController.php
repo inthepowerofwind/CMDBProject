@@ -135,8 +135,6 @@ class CloudServiceController extends Controller
                 'data_classification'              => 'nullable|string',
                 'monthly_cost'                     => 'nullable|string',
                 'sla_uptime'                       => 'nullable|string',
-                //'monthly_cost'                     => 'nullable|decimal:15,2',
-                //'sla_uptime'                       => 'nullable|decimal:5,2',
                 'mfa_enforced'                     => 'boolean',
                 'sso_integrated'                   => 'boolean',
                 'encryption_at_rest'               => 'boolean',
