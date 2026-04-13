@@ -366,7 +366,7 @@ function TableView<T extends object, P extends object>({
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      style={{ padding: '9px 16px', whiteSpace: 'nowrap', borderBottom: '1px solid #F1F5F9', fontSize: 13, color: '#374151' }}
+                      style={{ padding: '9px 16px', whiteSpace: 'nowrap',  borderBottom: '1px solid #F1F5F9', fontSize: 13, color: '#374151' }}
                       onClick={(e) => { if (isRowEditing) e.stopPropagation() }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -664,7 +664,7 @@ export default function CITable<
       setRows((prev) => prev.filter((r) => !selectedIds.has(String((r as Indexable<T>)[idField]))))
       setTotal((t) => t - ids.length)
       setSelectedIds(new Set())
-      notifications.show({ color: 'orange', message: `${ids.length} item(s) moved to archive.` })
+      notifications.show({ color: 'orange', message: `${ids.length} item(s) moved to Archive.` })
     } catch {
       notifications.show({ color: 'red', message: 'Failed to delete.' })
     }
