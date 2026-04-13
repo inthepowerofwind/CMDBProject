@@ -137,7 +137,7 @@ SANCTUM_STATEFUL_DOMAINS=localhost:5173
 SESSION_DOMAIN=localhost
 ```
 
-> To switch to **MySQL**, set `DB_CONNECTION=mysql` and fill in `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD`.
+> To switch to **MSSQL (SQL Server)**, set `DB_CONNECTION=sqlsrv` and fill in `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD`.
 
 #### Step 4 - Run Database Migrations
 
@@ -246,7 +246,8 @@ composer run dev
 | npm 9+ | Node package manager |
 | VS Code | Recommended code editor |
 | Git | Version control |
-| XAMPP / Laragon | Optional local Apache/MySQL server |
+| XAMPP / Laragon | Optional local Apache server |
+| SQL Server (MSSQL) | Required if not using SQLite |
 
 ### Recommended Browsers
 
