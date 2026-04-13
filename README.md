@@ -18,10 +18,10 @@
 
 ## Project Title
 
-The **CMDB System - IT Asset Registry** is a full-stack Configuration Management Database (CMDB) web application built with **React + TypeScript** (frontend) and **Laravel 12** (backend). It provides a centralized IT Asset Registry for managing all Configuration Items (CIs), their relationships, lifecycle status, and change history - aligned with ISO 27001:2022 and ITIL 4 practices.
+The **CMDB System - IT Asset Registry** is a full-stack Configuration Management Database (CMDB) web application built with **React + TypeScript** (frontend) and **Laravel 12** (backend). It provides a centralized IT Asset Registry for managing all Configuration Items (CIs), their relationships, status, and change history - aligned with ISO 27001:2022 and ITIL 4 practices.
 
 - Centralized registry for all IT assets and configuration items
-- Real-time tracking of CI status, ownership, and lifecycle
+- Accurate and up-to-date records of hardware, software, cloud services, and databases.
 - Full audit trail with automated change logging
 - Secure token-based authentication via Laravel Sanctum
 - Clean, responsive UI built with Mantine component library
@@ -34,9 +34,9 @@ The **CMDB System - IT Asset Registry** is a full-stack Configuration Management
 <summary><strong>Click to expand features</strong></summary>
 
 - Secure login and session management with Sanctum Bearer tokens
-- Dashboard with CI category summary, status overview bar chart, and recent change log feed
+- Dashboard with CI category summary, status, CMDB Overview, Workbook Navigation, and Recent Change log feed
 - Full CRUD management for 6 CI types: Servers, Network Devices, Endpoints, Software, Cloud Services, and Databases
-- Inline editable table cells with type-aware inputs (text, number, date, select, boolean)
+- Inline and grid editable table cells with type-aware inputs (text, number, date, select, boolean)
 - Soft delete with archive and restore support
 - CI Relationship Register - map dependencies between any two CIs with relationship type and criticality
 - CI Change Log - paginated audit log with expandable field-level diff view
@@ -68,7 +68,7 @@ The **CMDB System - IT Asset Registry** is a full-stack Configuration Management
 5. Every create/update/delete action on the backend triggers the `CiObserver`, which records a detailed change log entry
 6. The Change Log page displays all recorded changes with an expandable diff showing previous vs. new field values
 7. The Dashboard aggregates live stats from the backend and displays the 5 most recent changes
-8. The Reference page allows admins to manage lookup/classification data used across all CI forms
+8. The Reference page allows users to manage lookup/classification data used across all CI forms
 
 ---
 
@@ -177,7 +177,7 @@ cd ../frontend
 npm install
 ```
 
-Installs the following key packages:
+Install the following key packages:
 
 | Package | Version | Purpose |
 |---------|---------|---------|
