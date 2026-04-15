@@ -9,9 +9,10 @@ interface EditableCellProps {
   isEditing:     boolean
   onChange:      (field: string, value: unknown, rerender?: boolean) => void
   booleanFields?: string[]
-  width?:        number
+  width?:         number
+  disabled?:      boolean
   onBlur?: (value: unknown) => void
-  disabled?: boolean
+  onEnter?: () => void
 }
 
 export function EditableCell({
@@ -23,8 +24,9 @@ export function EditableCell({
   onChange,
   booleanFields = [],
   width,
+  disabled = false,
   onBlur,
-  disabled = false
+  onEnter,
 }: EditableCellProps) {
 
   const toStr = (v: unknown): string => {
@@ -65,12 +67,14 @@ export function EditableCell({
             onChange(field, next || null, true)
           }
         }}
+        onKeyDown={(e) => { if (e.key === 'Enter') onEnter?.() }}
         data={options}
         style={{ minWidth: width ?? 120 }}
         onFocus={() => { isFocused.current = true }}
         onBlur={() => {
           isFocused.current = false
           onBlur?.(selectValue)
+        
         }}
       />
     )
@@ -91,6 +95,7 @@ export function EditableCell({
           onChange(field, raw || '', true)
         }
       }}
+      onKeyDown={(e) => { if (e.key === 'Enter') onEnter?.() }}
       onFocus={() => { isFocused.current = true }}
       onBlur={(e) => {
         isFocused.current = false
