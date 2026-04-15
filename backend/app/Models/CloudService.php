@@ -60,8 +60,6 @@ class CloudService extends Model
         'notes',
     ];
     protected $casts = [
-        //'monthly_cost' => 'decimal:2',
-        //'sla_uptime' => 'decimal:2',
         'mfa_enforced' => 'boolean',
         'sso_integrated' => 'boolean',
         'encryption_at_rest' => 'boolean',
