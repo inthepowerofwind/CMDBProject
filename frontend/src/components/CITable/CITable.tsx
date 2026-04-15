@@ -69,9 +69,10 @@ interface TextDateCellProps {
   width?: number
   disabled?: boolean
   onChange: (field: string, value: unknown, rerender?: boolean) => void
+  onEnter?: () => void
 }
 
-function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellProps) {
+function TextDateCell({ value, field, width, disabled, onChange, onEnter }: TextDateCellProps) {
   const stripTime = (v: unknown): string => {
     if (!v) return ''
     const s = String(v)
@@ -120,6 +121,7 @@ function TextDateCell({ value, field, width, disabled, onChange }: TextDateCellP
         setLocalValue(v)
         onChange(field, v, true)
       }}
+      onKeyDown={(e) => { if (e.key === 'Enter') onEnter?.() }}
       rightSectionWidth={localValue ? 44 : 24}
       rightSection={
         <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -206,6 +208,9 @@ interface TableViewProps<T extends object, P extends object> {
 
   setNewForm: React.Dispatch<React.SetStateAction<P>>
   newFormRef: React.MutableRefObject<P>
+
+  // save function key
+  onEnter?: () => void 
 }
 
 function TableView<T extends object, P extends object>({
@@ -214,7 +219,7 @@ function TableView<T extends object, P extends object>({
   selectedIds, allSelected, someSelected, onSelectAll, onRowClick,
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
   isAdding, newForm, setNewField, setNewForm, tableMinWidth,
-  onPageChange, toolbar, newFormRef,
+  onPageChange, toolbar, newFormRef, onEnter,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
 
@@ -282,6 +287,7 @@ function TableView<T extends object, P extends object>({
                   width={col.width}
                   disabled={col.disabled}
                   onChange={(f, v, r) => setGridField(rowId, f, v, r)}
+                  onEnter={onEnter}
                 />
               )
             }
@@ -299,6 +305,7 @@ function TableView<T extends object, P extends object>({
                 booleanFields={booleanFields}
                 width={col.width}
                 disabled={col.disabled}
+                onEnter={onEnter}
               />
             )
           },
@@ -388,11 +395,11 @@ function TableView<T extends object, P extends object>({
                   ) : TEXT_DATE_FIELDS.has(col.key) ? (
                     <TextDateCell
                       value={(newForm as Indexable<P>)[col.key] }
-                        
                       field={col.key}
                       width={col.width}
                       disabled={col.disabled}
                       onChange={(f, v) => setNewField(f, v)}
+                      onEnter={onEnter}
                     />
                   ) : (
                     <EditableCell
@@ -414,6 +421,7 @@ function TableView<T extends object, P extends object>({
                       booleanFields={booleanFields}
                       width={col.width}
                       disabled={col.disabled}
+                      onEnter={onEnter}
                     />
                   )}
                 </td>
@@ -904,6 +912,7 @@ export default function CITable<
           toolbar=      {archiveToolbar}
           tableMinWidth={900}
           newFormRef=   {newFormRef}
+          onEnter={isAdding ? handleAdd : isGridEditing ? handleSaveEdit : undefined}
         />
       ) : (
         <TableView<T, P>
@@ -935,6 +944,7 @@ export default function CITable<
           toolbar=        {mainToolbar}
           tableMinWidth=  {900}
           newFormRef=     {newFormRef}
+          onEnter={isAdding ? handleAdd : isGridEditing ? handleSaveEdit : undefined}
         />
       )}
     </Box>
