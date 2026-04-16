@@ -37,20 +37,24 @@ const makeCiIdBlur = (nameField: 'source_ci_name' | 'target_ci_name') =>
 
 const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'relationship_id',   header: 'Relationship ID',            readOnly: true },
+  { key: 'source_ci_category', header: 'Source CI Category',        type: 'text',   width: 140, options: ['Server', 'Network', 'Endpoints', 'Software', 'Cloud Services', 'Database'] },
   { key: 'source_ci_id',      header: 'Source CI ID',               type: 'text',   width: 140, onBlur: makeCiIdBlur('source_ci_name') },
   { key: 'source_ci_name',    header: 'Source CI Name',             type: 'text',   width: 140, disabled: true },
   { key: 'relationship_type', header: 'Relationship Type',          type: 'text',   width: 200, options: ['Runs On / Hosted By', 'Uses / Depends On', 'Hosts / Virtualizes', 'Backed Up By', 
                                                                                                 'Replicates To', 'HA Pair', 'Protects / Fronts', 'Load Balances', 'Contains PII For'] },
+  { key: 'target_ci_category', header: 'Target CI Category',        type: 'text',   width: 140, options: ['Server', 'Network', 'Endpoints', 'Software', 'Cloud Services', 'Database'] },
   { key: 'target_ci_id',      header: 'Target CI ID',               type: 'text',   width: 140, onBlur: makeCiIdBlur('target_ci_name') },
   { key: 'target_ci_name',    header: 'Target CI Name',             type: 'text',   width: 140, disabled: true },
   { key: 'description',       header: 'Description',                type: 'text',   width: 200 },
-  { key: 'criticality',       header: 'Criticality',                type: 'select', width: 120, options: ['Critical','High','Medium','Low'], render: badge(CRIT_COLOR) },
+  { key: 'criticality',       header: 'Criticality',                type: 'select', width: 120, options: ['Critical', 'High', 'Medium', 'Low'], render: badge(CRIT_COLOR) },
 ]
 
 const emptyRelationshipForm = (): RelationshipsPayload => ({
   source_ci_id:      '',
+  source_ci_category: 'Server',
   source_ci_name:    '',
   relationship_type: 'Runs On / Hosted By',
+  target_ci_category: 'Server',
   target_ci_id:      '',
   target_ci_name:    '',
   description:       '',
