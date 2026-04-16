@@ -111,6 +111,8 @@ class CiObserver
         'monitoring'                        => 'Monitoring',
         'db_owner'                          => 'DB Owner',
         'relationship_id'                   => 'Relationship ID',
+        'source_ci_category'                => 'Source CI Category',
+        'target_ci_category'                => 'Target CI Category',
         'source_ci_id'                      => 'Source CI',
         'target_ci_id'                      => 'Target CI',
         'relationship_type'                 => 'Relationship Type',

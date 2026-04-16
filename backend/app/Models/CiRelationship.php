@@ -14,9 +14,11 @@ class CiRelationship extends Model
    public function getRouteKeyName(): string { return 'relationship_id'; }
    protected $fillable = [
      'relationship_id',
+     'source_ci_category',
      'source_ci_id',
      'source_ci_name',
      'relationship_type',
+     'target_ci_category',
      'target_ci_id',
      'target_ci_name',
      'description',

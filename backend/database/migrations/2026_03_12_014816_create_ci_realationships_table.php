@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('ci_relationships', function (Blueprint $table) {
             $table->id();
             $table->string('relationship_id', 50)->unique();
+            $table->string('source_ci_category');
             $table->string('source_ci_id', 50);
             $table->string('source_ci_name');
             $table->string('relationship_type');
+            $table->string('target_ci_category');
             $table->string('target_ci_id', 50);
             $table->string('target_ci_name');
             $table->text('description')->nullable();
