@@ -5,13 +5,14 @@ export interface Software {
   ci_id:              string
   software_name:      string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  software_type:      string | null
+  software_type:      'Operating System' | 'Productivity Suite' | 'Creative Suite' | 'Security / SIEM' 
+                    | 'Endpoint Security (EDR)' | 'Firewall Firmware' | 'Backup' | 'Business Application'
   version:            string | null
   vendor:             string | null
   license_type:       string | null
   license_count:      string | null
-  licenses_deployed:   string | null
-  licenses_available:  string | null
+  licenses_deployed:  string | null
+  licenses_available: string | null
   compliance_status:  'Compliant' | 'At Limit'
   installed_on:       string | null
   environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' 
@@ -20,7 +21,7 @@ export interface Software {
   auto_update:        boolean
   asl_approved:       boolean
   sast_dast_tested:   'Yes' | 'No' | 'N/A'
-  license_key_location:    string | null
+  license_key_location: string | null
   procurement_date:   string | null
   license_expiry:     string | null
   eol_date:           string | null

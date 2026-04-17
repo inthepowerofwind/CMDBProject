@@ -102,9 +102,9 @@ const referenceService = {
     await api.delete(`/reference/${tableId}/rows/${index}`)
   },
 
-  async resetTable(tableId: string): Promise<void> {
-    await api.delete(`/reference/${tableId}/reset`)
-  },
+  // async resetTable(tableId: string): Promise<void> {
+  //   await api.delete(`/reference/${tableId}/reset`)
+  // },
 }
 
 export default referenceService

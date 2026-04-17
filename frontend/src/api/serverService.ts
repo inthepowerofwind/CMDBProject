@@ -5,8 +5,8 @@ export interface Server {
   ci_id:              string
   ci_name:            string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  ci_type:            string | null
-  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' | null
+  ci_type:            'File Server' | 'Domain Controller' | 'Application Server' | 'Web Server' | 'VM Host' | 'Security / SIEM' | 'Backup Server' | 'Mail Server'
+  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
   hostname:           string | null
   operating_system:   string | null
   os_version:         string | null
@@ -17,7 +17,7 @@ export interface Server {
   virtualized:        boolean
   location:           string | null
   rack_slot:          string | null
-  criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
+  criticality:        'Critical' | 'High' | 'Medium' | 'Low'
   business_service:   string | null
   assigned_owner:     string | null
   department:         string | null

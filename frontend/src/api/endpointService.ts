@@ -5,8 +5,8 @@ export interface Endpoints {
   ci_id:              string
   ci_name:            string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  ci_type:            string | null
-  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover' | null
+  ci_type:            'Laptop' | 'Desktop' | 'Mobile Phone' | 'Tablet'
+  environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
   hostname:           string | null
   ip_address:         string | null
   operating_system:   string | null

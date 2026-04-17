@@ -28,8 +28,8 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
 const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'database_name',     header: 'Database Name',              type: 'text',   width: 140 },
-  { key: 'status',            header: 'Status',                     type: 'select', width: 180, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
-  { key: 'db_type',           header: 'DB Type',                    type: 'text' },
+  { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
+  { key: 'db_type',           header: 'DB Type',                    type: 'select', width: 180, options: ['Microsoft SQL Server', 'MySQL', 'PostgreSQL', 'Oracle Database', 'Elasticsearch'] },
   { key: 'version',           header: 'Version',                    type: 'text' },
   { key: 'environment',       header: 'Environment',                type: 'select', width: 160, options: ['Production','Staging','Testing / QA','Development','DR / Failover'] },
   { key: 'host_server_ci',    header: 'Host Server / CI',           type: 'text',   width: 140 },
@@ -48,7 +48,7 @@ const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'patch_level',       header: 'Patch Level',                type: 'text' },
   { key: 'eol_date',          header: 'EOL Date',                   type: 'text',   width: 140 },
   { key: 'db_owner',          header: 'DB Owner',                   type: 'text',   width: 140 },
-  { key: 'business_application', header: 'Business Application',   type: 'text' },
+  { key: 'business_application', header: 'Business Application',    type: 'text' },
   { key: 'last_review',       header: 'Last Review',                type: 'date',   width: 160 },
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
@@ -56,7 +56,7 @@ const COLUMNS: CIColumnDef<Databases>[] = [
 const emptyDatabaseForm = (): DatabasesPayload => ({
   database_name: '', 
   status: 'Active', 
-  db_type: null, 
+  db_type: 'Microsoft SQL Server', 
   version: null,
   environment: 'Production',
   host_server_ci: null,

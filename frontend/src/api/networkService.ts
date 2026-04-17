@@ -5,7 +5,7 @@ export interface NetworkDevice {
   ci_id:              string
   ci_name:            string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  ci_type:            string | null
+  ci_type:            'Core Switch' | 'Access Switch' | 'Firewall' | 'Router' | 'Wireless Access Point' | 'Load Balancer'
   environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
   ip_address:         string | null
   mac_address:        string | null

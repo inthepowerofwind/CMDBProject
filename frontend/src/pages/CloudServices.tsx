@@ -30,8 +30,8 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
 const COLUMNS: CIColumnDef<CloudServices>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'service_name',      header: 'Service Name',               type: 'text',   width: 140 },
-  { key: 'status',            header: 'Status',                     type: 'select', width: 180, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
-  { key: 'service_type',      header: 'Service Type',               type: 'text' },
+  { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
+  { key: 'service_type',      header: 'Service Type',               type: 'select', options: ['IaaS', 'PaaS', 'SaaS'] },
   { key: 'cloud_model',       header: 'Cloud Model',                type: 'select', width: 160, options: ['Public Cloud', 'Private Cloud'] },
   { key: 'provider',          header: 'Provider',                   type: 'text',   width: 150 },
   { key: 'region_data_recidency', header: 'Region / Data Residency',    type: 'text',   width: 150 },
@@ -59,7 +59,7 @@ const COLUMNS: CIColumnDef<CloudServices>[] = [
 const emptyEndpointsForm = (): CloudServicesPayload => ({
   service_name: '', 
   status: 'Active', 
-  service_type: null, 
+  service_type: 'IaaS', 
   cloud_model: 'Public Cloud',
   provider: null,
   region_data_recidency: null, 

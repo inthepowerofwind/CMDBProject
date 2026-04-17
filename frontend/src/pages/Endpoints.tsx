@@ -23,8 +23,8 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
 const COLUMNS: CIColumnDef<Endpoints>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'ci_name',           header: 'CI Name',                    type: 'text',   width: 140 },
-  { key: 'status',            header: 'Status',                     type: 'select', width: 180, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
-  { key: 'ci_type',           header: 'CI Type',                    type: 'text' },
+  { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
+  { key: 'ci_type',           header: 'CI Type',                    type: 'select', width: 140, options: ['Laptop', 'Desktop', 'Mobile Phone', 'Tablet'] },
   { key: 'environment',       header: 'Environment',                type: 'select', width: 160, options: ['Production','Staging','Testing / QA','Development','DR / Failover'] },
   { key: 'hostname',          header: 'Hostname',                   type: 'text',   width: 150 },
   { key: 'ip_address',        header: 'IP Address (DHCP)',          type: 'text',   width: 150 },
@@ -56,7 +56,7 @@ const COLUMNS: CIColumnDef<Endpoints>[] = [
 const emptyEndpointsForm = (): EndpointsPayload => ({
   ci_name: '', 
   status: 'Active', 
-  ci_type: null, 
+  ci_type: 'Laptop', 
   environment: 'Production',
   hostname: null,
   ip_address: null, 

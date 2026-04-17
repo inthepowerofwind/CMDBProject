@@ -5,7 +5,7 @@ export interface CloudServices {
   ci_id:              string
   service_name:       string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  service_type:       string | null
+  service_type:       'IaaS' | 'PaaS' | 'SaaS'
   cloud_model:        string | null
   provider:           string | null
   region_data_recidency: string | null
@@ -21,8 +21,8 @@ export interface CloudServices {
   encryption_in_transit: boolean
   dlp_monitored:      boolean
   logging_to_siem:    boolean
-  soc_2_certified:     boolean
-  contact_expiry:    string | null
+  soc_2_certified:    boolean
+  contact_expiry:     string | null
   shared_responsibility_documented: boolean
   business_owner:     string | null
   it_owner:           string | null

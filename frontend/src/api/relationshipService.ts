@@ -18,15 +18,15 @@ export interface Relationships {
 }
 
 export interface RelationshipsPayload {
-  source_ci_id:      string
+  source_ci_id:       string
   source_ci_category: string
-  source_ci_name:    string
-  relationship_type: string
+  source_ci_name:     string
+  relationship_type:  string
   target_ci_category: string
-  target_ci_id:      string
-  target_ci_name:    string
-  description:       string | null
-  criticality:       'Critical' | 'High' | 'Medium' | 'Low'
+  target_ci_id:       string
+  target_ci_name:     string
+  description:        string | null
+  criticality:        'Critical' | 'High' | 'Medium' | 'Low'
 }
 export interface RelationshipsListParams {
   search?:   string

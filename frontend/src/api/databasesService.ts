@@ -5,13 +5,13 @@ export interface Databases {
   ci_id:              string
   database_name:      string
   status:             'Active' | 'Decommissioned' | 'EOL' | 'In Procurement' | 'In Deployment' | 'Maintenance'
-  db_type:            string | null
+  db_type:            'Microsoft SQL Server' | 'MySQL' | 'PostgreSQL' | 'Oracle Database' | 'Elasticsearch'
   version:            string | null
   environment:        'Production' | 'Staging' | 'Testing / QA' | 'Development' | 'DR / Failover'
   host_server_ci:     string | null
   ip_address:         string | null
   port:               string | null
-  criticality:        'Critical' | 'High' | 'Medium' | 'Low' | null
+  criticality:        'Critical' | 'High' | 'Medium' | 'Low'
   data_classification: 'Public' | 'Internal' | 'Confidential' | 'Restricted'
   size_gb:            number
   backup_enabled:     boolean
