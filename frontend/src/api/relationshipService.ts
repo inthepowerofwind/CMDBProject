@@ -28,6 +28,7 @@ export interface RelationshipsPayload {
   description:        string | null
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
 }
+
 export interface RelationshipsListParams {
   search?:   string
   status?:   string
@@ -44,6 +45,13 @@ export interface PaginatedRelationships {
   last_page:    number
   per_page:     number
   total:        number
+}
+
+//
+export interface CiOption {
+  ci_id:    string
+  ci_name:  string
+  category: string
 }
 
 export const relationshipService = {
@@ -77,5 +85,13 @@ export const relationshipService = {
     } catch {
       return null
     }
+  },
+
+  //Fetch all CI IDs + names, optionally filtered by category.
+  //Used to populate the Source / Target CI ID dropdowns.
+  async listCis(category?: string): Promise<CiOption[]> {
+    const params = category ? { category } : {}
+    const { data } = await api.get<string[]>('/ci-list', { params })
+    return data.map((id) => ({ ci_id: id, ci_name: '', category: category ?? '' }))
   },
 }

@@ -92,6 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/ci-relationships/{relationshipId}/restore', [CiRelationshipController::class, 'restore']);
     Route::delete('/ci-relationships/{relationshipId}/force', [CiRelationshipController::class, 'forceDelete']);
     Route::get('/ci-lookup/{ciId}', [CiRelationshipController::class, 'lookupCi']);
+    Route::get('/ci-list', [CiRelationshipController::class, 'listCis']);
 
     // Change Logs
     Route::get('/change-logs', [CiChangeLogController::class, 'index']);

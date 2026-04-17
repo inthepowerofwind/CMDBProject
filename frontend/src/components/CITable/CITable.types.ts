@@ -1,3 +1,5 @@
+import React from 'react'
+
 export type FieldType = 'text' | 'number' | 'date' | 'select' | 'boolean'
 
 export interface CIColumnDef<T> {
@@ -43,4 +45,28 @@ export interface CITableProps<
   searchPlaceholder?: string
   requiredFields?:    (keyof P & string)[]
   tableMinWidth?:     number
+  //
+   cellOverride?: (
+    col:          CIColumnDef<T>,
+    rowId:        string,
+    currentVal:   unknown,
+    formSnapshot: Partial<T & P> | undefined,
+    setField:     (key: string, value: unknown, rerender?: boolean) => void,
+    onEnter:      (() => void) | undefined,
+  ) => React.ReactNode | null | undefined
 }
+
+/**
+   * Optional escape hatch for rendering custom edit cells.
+   *
+   * Called for every editable cell in both the grid-edit rows and the
+   * inline add row. Return a ReactNode to override the default EditableCell,
+   * or return null/undefined to fall through to the default rendering.
+   *
+   * @param col          - The column definition
+   * @param rowId        - String row ID, or '__new__' for the add row
+   * @param currentVal   - Current form value for this cell
+   * @param formSnapshot - Full current form for this row (read-only snapshot)
+   * @param setField     - Update a field: setField(key, value, rerender?)
+   * @param onEnter      - Call when Enter should trigger save
+   */

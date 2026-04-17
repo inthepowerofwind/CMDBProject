@@ -62,7 +62,6 @@ const isoToDisplay = (iso: string): string => {
 
 type Indexable<T> = T & { [key: string]: unknown }
 
-// accepts both date and string input
 interface TextDateCellProps {
   value: unknown
   field: string
@@ -98,7 +97,6 @@ function TextDateCell({ value, field, width, disabled, onChange, onEnter }: Text
 
   const dateInputRef = useRef<HTMLInputElement>(null)
 
-  // date input (chrome)
   useEffect(() => {
     const el = dateInputRef.current
     if (!el) return
@@ -125,7 +123,6 @@ function TextDateCell({ value, field, width, disabled, onChange, onEnter }: Text
       rightSectionWidth={localValue ? 44 : 24}
       rightSection={
         <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* Clear button — only shown when there is a value */}
           {localValue && !disabled && (
             <ActionIcon
               size={14}
@@ -138,7 +135,6 @@ function TextDateCell({ value, field, width, disabled, onChange, onEnter }: Text
               <IconX size={10} />
             </ActionIcon>
           )}
-
           <div style={{ position: 'relative', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <IconCalendar size={13} style={{ color: '#868e96', pointerEvents: 'none' }} />
             <input
@@ -166,9 +162,9 @@ function TextDateCell({ value, field, width, disabled, onChange, onEnter }: Text
   )
 }
 
-// Table Props
+// ─── TableView Props ──────────────────────────────────────────────────────────
+
 interface TableViewProps<T extends object, P extends object> {
-  // data
   rows: T[]
   total: number
   page: number
@@ -181,36 +177,32 @@ interface TableViewProps<T extends object, P extends object> {
   isArchiveView: boolean
   tableMinWidth: number
 
-  // selection
   selectedIds: Set<string>
   allSelected: boolean
   someSelected: boolean
   onSelectAll: () => void
   onRowClick: (id: string) => void
 
-  // grid edit
   isGridEditing: boolean
   editableIds: Set<string>
   editFormsRef: React.MutableRefObject<Record<string, Partial<P>>>
   booleanFields: string[]
   setGridField: (id: string, key: string, value: unknown, rerender?: boolean) => void
 
-  // add row
   isAdding: boolean
   newForm: P
   setNewField: (key: string, value: unknown) => void
 
-  // pagination
   onPageChange: (p: number) => void
-
-  // toolbar buttons
   toolbar: React.ReactNode
 
   setNewForm: React.Dispatch<React.SetStateAction<P>>
   newFormRef: React.MutableRefObject<P>
 
-  // save function key
-  onEnter?: () => void 
+  onEnter?: () => void
+
+  // Passed straight through from CITableProps
+  cellOverride?: CITableProps<T, P>['cellOverride']
 }
 
 function TableView<T extends object, P extends object>({
@@ -220,10 +212,10 @@ function TableView<T extends object, P extends object>({
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
   isAdding, newForm, setNewField, setNewForm, tableMinWidth,
   onPageChange, toolbar, newFormRef, onEnter,
+  cellOverride,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
 
-  // Resolve the inputType for EditableCell (excludes text-date fields)
   const resolveInputType = (colKey: string, colType?: string) => {
     if (DATE_FIELDS.has(colKey)) return 'date'
     if (colType === 'number') return 'number'
@@ -278,7 +270,15 @@ function TableView<T extends object, P extends object>({
             const val = (editFormsRef.current[rowId] as Indexable<P>)?.[col.key]
               ?? (row.original as Indexable<T>)[col.key]
 
-            // string and date input field for eol_date & license_expiry
+            // ── cellOverride hook (grid-edit rows) ─────────────────────────
+            if (cellOverride) {
+              const formSnap = editFormsRef.current[rowId] as Partial<T & P> | undefined
+              const setField = (key: string, value: unknown, rerender = false) =>
+                setGridField(rowId, key, value, rerender)
+              const override = cellOverride(col, rowId, val, formSnap, setField, onEnter)
+              if (override != null) return override
+            }
+
             if (TEXT_DATE_FIELDS.has(col.key)) {
               return (
                 <TextDateCell
@@ -373,7 +373,7 @@ function TableView<T extends object, P extends object>({
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      style={{ padding: '9px 16px', whiteSpace: 'nowrap',  borderBottom: '1px solid #F1F5F9', fontSize: 13, color: '#374151' }}
+                      style={{ padding: '9px 16px', whiteSpace: 'nowrap', borderBottom: '1px solid #F1F5F9', fontSize: 13, color: '#374151' }}
                       onClick={(e) => { if (isRowEditing) e.stopPropagation() }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -392,38 +392,54 @@ function TableView<T extends object, P extends object>({
                 <td key={col.key} style={{ padding: '8px 16px' }}>
                   {col.readOnly ? (
                     <Text size="xs" c="dimmed" fs="italic">Auto</Text>
-                  ) : TEXT_DATE_FIELDS.has(col.key) ? (
-                    <TextDateCell
-                      value={(newForm as Indexable<P>)[col.key] }
-                      field={col.key}
-                      width={col.width}
-                      disabled={col.disabled}
-                      onChange={(f, v) => setNewField(f, v)}
-                      onEnter={onEnter}
-                    />
-                  ) : (
-                    <EditableCell
-                      value={(newForm as Indexable<P>)[col.key]}
-                      field={col.key}
-                      type={resolveInputType(col.key, col.type)}
-                      options={col.type === 'boolean' ? ['Yes', 'No'] : col.options}
-                      isEditing
-                      onChange={(f, v) => setNewField(f, v)}
-                      onBlur={col.onBlur
-                        ? (value) => col.onBlur!(value, newFormRef.current as Partial<T>, (updater) => {
-                            const next = typeof updater === 'function'
-                              ? (updater as (prev: Partial<T>) => Partial<T>)(newFormRef.current as Partial<T>)
-                              : updater
-                            setNewForm((prev) => ({ ...prev, ...next } as P))
-                          })
-                        : undefined
-                      }
-                      booleanFields={booleanFields}
-                      width={col.width}
-                      disabled={col.disabled}
-                      onEnter={onEnter}
-                    />
-                  )}
+                  ) : (() => {
+                    const val = (newForm as Indexable<P>)[col.key]
+
+                    // ── cellOverride hook (add row) ──────────────────────────
+                    if (cellOverride) {
+                      const formSnap = newFormRef.current as Partial<T & P>
+                      const setField = (key: string, value: unknown) => setNewField(key, value)
+                      const override = cellOverride(col, '__new__', val, formSnap, setField, onEnter)
+                      if (override != null) return override
+                    }
+
+                    if (TEXT_DATE_FIELDS.has(col.key)) {
+                      return (
+                        <TextDateCell
+                          value={val}
+                          field={col.key}
+                          width={col.width}
+                          disabled={col.disabled}
+                          onChange={(f, v) => setNewField(f, v)}
+                          onEnter={onEnter}
+                        />
+                      )
+                    }
+
+                    return (
+                      <EditableCell
+                        value={val}
+                        field={col.key}
+                        type={resolveInputType(col.key, col.type)}
+                        options={col.type === 'boolean' ? ['Yes', 'No'] : col.options}
+                        isEditing
+                        onChange={(f, v) => setNewField(f, v)}
+                        onBlur={col.onBlur
+                          ? (value) => col.onBlur!(value, newFormRef.current as Partial<T>, (updater) => {
+                              const next = typeof updater === 'function'
+                                ? (updater as (prev: Partial<T>) => Partial<T>)(newFormRef.current as Partial<T>)
+                                : updater
+                              setNewForm((prev) => ({ ...prev, ...next } as P))
+                            })
+                          : undefined
+                        }
+                        booleanFields={booleanFields}
+                        width={col.width}
+                        disabled={col.disabled}
+                        onEnter={onEnter}
+                      />
+                    )
+                  })()}
                 </td>
               ))}
             </tr>
@@ -458,6 +474,8 @@ function TableView<T extends object, P extends object>({
   )
 }
 
+// ─── CITable ──────────────────────────────────────────────────────────────────
+
 export default function CITable<
   T extends object,
   P extends object
@@ -471,12 +489,11 @@ export default function CITable<
   addLabel = 'Add Item',
   searchPlaceholder = 'Search...',
   requiredFields = [],
+  cellOverride,                    // ← destructure here
 }: CITableProps<T, P>) {
 
-  // View state
   const [isArchiveView, setIsArchiveView] = useState(false)
 
-  // Main table state
   const [rows, setRows]                 = useState<T[]>([])
   const [total, setTotal]               = useState(0)
   const [page, setPage]                 = useState(1)
@@ -487,7 +504,6 @@ export default function CITable<
   const [filterStatus, setFilterStatus] = useState<string | null>(null)
   const [sorting, setSorting]           = useState<SortingState>([])
 
-  // Archive table state
   const [archiveRows, setArchiveRows]           = useState<T[]>([])
   const [archiveTotal, setArchiveTotal]         = useState(0)
   const [archivePage, setArchivePage]           = useState(1)
@@ -496,15 +512,12 @@ export default function CITable<
   const [archiveError, setArchiveError]         = useState('')
   const [archiveSearch, setArchiveSearch]       = useState('')
 
-  // Selection state (shared, resets on view switch)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
-  // Add state
   const [isAdding, setIsAdding] = useState(false)
   const [newForm, setNewForm]   = useState<P>(emptyForm())
   const [saving, setSaving]     = useState(false)
 
-  // Grid edit state
   const [isGridEditing, setIsGridEditing] = useState(false)
   const [editableIds, setEditableIds]     = useState<Set<string>>(new Set())
   const [editForms, setEditForms]         = useState<Record<string, Partial<P>>>({})
@@ -513,13 +526,11 @@ export default function CITable<
   useEffect(() => { newFormRef.current = newForm }, [newForm])
   const [editSaving, setEditSaving]       = useState(false)
 
-  // Delete confirm modal
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
   const sortBy  = sorting[0]?.id
   const sortDir = (sorting[0]?.desc ? 'desc' : 'asc') as 'asc' | 'desc'
 
-  // Fetch main rows
   const fetchRows = useCallback(async () => {
     setLoading(true)
     setError('')
@@ -542,7 +553,6 @@ export default function CITable<
 
   useEffect(() => { fetchRows() }, [fetchRows])
 
-  // Fetch archive rows
   const fetchArchiveRows = useCallback(async () => {
     if (!service.restore) return
     setArchiveLoading(true)
@@ -567,25 +577,23 @@ export default function CITable<
     if (isArchiveView) fetchArchiveRows()
   }, [isArchiveView, fetchArchiveRows])
 
-  // Reset selection on view/page/filter change
   useEffect(() => {
     setSelectedIds(new Set())
   }, [page, search, filterStatus, isArchiveView, archivePage, archiveSearch])
 
-  // Form helpers
-    const setNewField = (key: string, value: unknown) => {
+  const setNewField = (key: string, value: unknown) => {
     const col = colDefs.find((c) => c.key === key)
     const coerced = col?.type === 'number'
       ? (value === '' || value === null || value === undefined ? null : Number(value))
-      : (value === '' ? null : value)  // ← empty string → null for all text fields
+      : (value === '' ? null : value)
     setNewForm((f) => ({ ...f, [key]: coerced } as P))
   }
 
-    const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
+  const setGridField = (ciId: string, key: string, value: unknown, rerender = false) => {
     const col = colDefs.find((c) => c.key === key)
     const coerced = col?.type === 'number'
       ? (value === '' || value === null || value === undefined ? null : Number(value))
-      : (value === '' ? null : value)  // ← empty string → null for all text fields
+      : (value === '' ? null : value)
     editFormsRef.current = {
       ...editFormsRef.current,
       [ciId]: { ...editFormsRef.current[ciId], [key]: coerced },
@@ -593,7 +601,6 @@ export default function CITable<
     if (rerender) setEditForms({ ...editFormsRef.current })
   }
 
-  // Add
   const handleAdd = async () => {
     setSaving(true)
     try {
@@ -610,7 +617,6 @@ export default function CITable<
     }
   }
 
-  // Edit
   const handleStartEdit = () => {
     const idsToEdit = selectedIds.size > 0
       ? new Set(selectedIds)
@@ -663,7 +669,6 @@ export default function CITable<
     setEditForms({})
   }
 
-  // Delete (with confirm modal)
   const handleDeleteConfirm = async () => {
     setDeleteModalOpen(false)
     const ids = Array.from(selectedIds)
@@ -678,7 +683,6 @@ export default function CITable<
     }
   }
 
-  // Restore from archive
   const handleRestoreSelected = async () => {
     if (!service.restore) return
     const ids = Array.from(selectedIds)
@@ -695,7 +699,6 @@ export default function CITable<
     }
   }
 
-  // Row selection
   const currentRows = isArchiveView ? archiveRows : rows
 
   const handleRowClick = (id: string) => {
@@ -722,7 +725,6 @@ export default function CITable<
   const hasSelection = selectedIds.size > 0
   const hasArchive   = !!service.restore
 
-  // Toolbar for main view
   const mainToolbar = (
     <Group justify="space-between" mb="lg">
       <Group gap={8}>
@@ -807,7 +809,6 @@ export default function CITable<
     </Group>
   )
 
-  // Toolbar for archive view
   const archiveToolbar = (
     <Group justify="space-between" mb="lg">
       <Group gap={8}>
@@ -913,6 +914,7 @@ export default function CITable<
           tableMinWidth={900}
           newFormRef=   {newFormRef}
           onEnter={isAdding ? handleAdd : isGridEditing ? handleSaveEdit : undefined}
+          cellOverride= {cellOverride}
         />
       ) : (
         <TableView<T, P>
@@ -945,6 +947,7 @@ export default function CITable<
           tableMinWidth=  {900}
           newFormRef=     {newFormRef}
           onEnter={isAdding ? handleAdd : isGridEditing ? handleSaveEdit : undefined}
+          cellOverride=   {cellOverride}
         />
       )}
     </Box>

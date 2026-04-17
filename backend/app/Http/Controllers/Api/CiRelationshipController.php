@@ -216,4 +216,43 @@ class CiRelationshipController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    //Returns a flat list of { ci_id, ci_name } for every active (non-deleted) CI, optionally filtered to a single category.  Used to populate the Source / Target
+    //CI ID dropdowns in the Relationships module.
+    public function listCis(Request $request)
+    {
+        try {
+            $category = $request->get('category');
+
+            $categoryMap = [
+                'Server'         => \App\Models\Server::class,
+                'Network'        => \App\Models\NetworkDevice::class,
+                'Endpoints'      => \App\Models\Endpoint::class,
+                'Software'       => \App\Models\Software::class,
+                'Cloud Services' => \App\Models\CloudService::class,
+                'Database'       => \App\Models\CmdbDatabase::class,
+            ];
+
+            $modelsToQuery = $category && isset($categoryMap[$category])
+                ? [$category => $categoryMap[$category]]
+                : $categoryMap;
+
+            $results = [];
+
+            foreach ($modelsToQuery as $cat => $model) {
+                $ids = $model::orderBy('ci_id')->pluck('ci_id');
+                foreach ($ids as $id) {
+                    $results[] = $id;
+                }
+            }
+
+            sort($results);
+
+            return response()->json($results);
+
+        } catch (\Throwable $th) {
+            \Log::error('listCis error: ' . $th->getMessage());
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
 }
