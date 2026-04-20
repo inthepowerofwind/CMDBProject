@@ -99,6 +99,8 @@ export default function Network() {
       booleanFields={['baseline_applied', 'monitoring_siem']}
       addLabel="Add Network Device"
       searchPlaceholder="Search by ID, name, IP..."
+      requiredFields={['ci_name']}
+      requiredLabels={{ ci_name: 'CI Name' }}
     />
   )
 }

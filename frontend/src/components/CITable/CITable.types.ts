@@ -46,6 +46,7 @@ export interface CITableProps<
   searchPlaceholder?: string
   requiredFields?:    (keyof P & string)[]
   tableMinWidth?:     number
+  requiredLabels?:    Record<string, string>
   //
    cellOverride?: (
     col:          CIColumnDef<T>,

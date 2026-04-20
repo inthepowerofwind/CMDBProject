@@ -93,6 +93,8 @@ export default function Database() {
                     ]}
       addLabel="Add Database"
       searchPlaceholder="Search by ID, name, IP..."
+      requiredFields={[ 'database_name' ]}
+      requiredLabels={{  database_name: 'Database Name' }}
     />
   )
 }

@@ -493,6 +493,7 @@ export default function CITable<
   addLabel = 'Add Item',
   searchPlaceholder = 'Search...',
   requiredFields = [],
+  requiredLabels = {},
   cellOverride,
 }: CITableProps<T, P>) {
 
@@ -606,6 +607,15 @@ export default function CITable<
   }
 
   const handleAdd = async () => {
+    // Validate required CI Name field before saving
+    for (const f of requiredFields) {
+      if (!(newForm as Record<string, unknown>)[f]) {
+        const label = requiredLabels[f] ?? f
+        notifications.show({ color: 'red', message: `Failed to add. ${label} is required.` })
+        return
+      }
+    }
+
     setSaving(true)
     try {
       const created = await service.create(newForm)
@@ -639,6 +649,17 @@ export default function CITable<
   }
 
   const handleSaveEdit = async () => {
+    // Validate required fields across all rows being edited
+    for (const [rowId, form] of Object.entries(editFormsRef.current)) {
+      for (const f of requiredFields) {
+        if (!(form as Record<string, unknown>)[f]) {
+          const label = requiredLabels[f] ?? f
+          notifications.show({ color: 'red', message: `Failed to save. ${label} is required.` })
+          return
+        }
+      }
+    }
+
     setEditSaving(true)
     try {
       const current = editFormsRef.current

@@ -86,6 +86,8 @@ export default function Softwares() {
       booleanFields={['auto_update', 'asl_approved']}
       addLabel="Add Software"
       searchPlaceholder="Search by ID, name..."
+      requiredFields={['software_name']}
+      requiredLabels={{ software_name: 'Software Name' }}
     />
   )
 }

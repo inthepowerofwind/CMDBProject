@@ -97,6 +97,8 @@ export default function cloud_services() {
                     ]}
       addLabel="Add Cloud Service"
       searchPlaceholder="Search by ID, name..."
+      requiredFields={[ 'service_name' ]}
+      requiredLabels={{ service_name: 'Service Name' }}
     />
   )
 }

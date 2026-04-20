@@ -104,6 +104,8 @@ export default function Servers() {
       booleanFields={['virtualized', 'baseline_applied', 'backup_enabled', 'monitoring_siem']}
       addLabel="Add Server"
       searchPlaceholder="Search by ID, name, OS..."
+      requiredFields={['ci_name']}
+      requiredLabels={{ ci_name: 'CI Name' }}
     />
   )
 }

@@ -96,6 +96,8 @@ export default function Endpoint() {
       booleanFields={['mdm_enrolled', 'edr_agent', 'antivirus']}
       addLabel="Add Endpoint"
       searchPlaceholder="Search by ID, name, IP..."
+      requiredFields={[ 'ci_name' ]}
+      requiredLabels={{ ci_name: 'CI Name'}}
     />
   )
 }
