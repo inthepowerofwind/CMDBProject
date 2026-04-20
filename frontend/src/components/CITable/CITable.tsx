@@ -162,7 +162,7 @@ function TextDateCell({ value, field, width, disabled, onChange, onEnter }: Text
   )
 }
 
-// ─── TableView Props ──────────────────────────────────────────────────────────
+// TableViewProps
 
 interface TableViewProps<T extends object, P extends object> {
   rows: T[]
@@ -270,7 +270,7 @@ function TableView<T extends object, P extends object>({
             const val = (editFormsRef.current[rowId] as Indexable<P>)?.[col.key]
               ?? (row.original as Indexable<T>)[col.key]
 
-            // ── cellOverride hook (grid-edit rows) ─────────────────────────
+            // cellOverride hook (grid-edit rows)
             if (cellOverride) {
               const formSnap = editFormsRef.current[rowId] as Partial<T & P> | undefined
               const setField = (key: string, value: unknown, rerender = false) =>
@@ -395,7 +395,7 @@ function TableView<T extends object, P extends object>({
                   ) : (() => {
                     const val = (newForm as Indexable<P>)[col.key]
 
-                    // ── cellOverride hook (add row) ──────────────────────────
+                    // cellOverride hook (add row)
                     if (cellOverride) {
                       const formSnap = newFormRef.current as Partial<T & P>
                       const setField = (key: string, value: unknown) => setNewField(key, value)
@@ -474,7 +474,7 @@ function TableView<T extends object, P extends object>({
   )
 }
 
-// ─── CITable ──────────────────────────────────────────────────────────────────
+// CITable
 
 export default function CITable<
   T extends object,
@@ -489,7 +489,7 @@ export default function CITable<
   addLabel = 'Add Item',
   searchPlaceholder = 'Search...',
   requiredFields = [],
-  cellOverride,                    // ← destructure here
+  cellOverride,
 }: CITableProps<T, P>) {
 
   const [isArchiveView, setIsArchiveView] = useState(false)

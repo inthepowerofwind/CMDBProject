@@ -39,10 +39,6 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
     </Badge>
   ) : null
 
-// ─── CiIdSelect ───────────────────────────────────────────────────────────────
-// Key prop from parent forces remount when category changes,
-// so useEffect always fires with the correct category.
-
 interface CiIdSelectProps {
   value:     unknown
   category:  string
@@ -85,8 +81,6 @@ function CiIdSelect({ value, category, disabled, width, onSelect, onEnter }: CiI
   )
 }
 
-// ─── Columns ──────────────────────────────────────────────────────────────────
-
 const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'relationship_id',    header: 'Relationship ID',    readOnly: true },
   { key: 'source_ci_category', header: 'Source CI Category', type: 'text', width: 160, options: CI_CATEGORIES },
@@ -116,8 +110,6 @@ const emptyRelationshipForm = (): RelationshipsPayload => ({
   criticality:        'Critical',
 })
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function CIRelationships() {
   // Per-row category tracking — updated immediately on change, read on render
   // key: `${rowId}:source` or `${rowId}:target`
@@ -135,7 +127,7 @@ export default function CIRelationships() {
       requiredFields={['source_ci_id', 'source_ci_name', 'relationship_type', 'target_ci_id', 'target_ci_name']}
       cellOverride={(col, rowId, currentVal, formSnapshot, setField, onEnter) => {
 
-        // ── Seed categoryRef from snapshot on first render of each row ────
+        // Seed categoryRef from snapshot on first render of each row
         const srcKey = `${rowId}:source`
         const tgtKey = `${rowId}:target`
         if (formSnapshot) {
@@ -145,7 +137,7 @@ export default function CIRelationships() {
             categoryRef.current[tgtKey] = String(formSnapshot.target_ci_category)
         }
 
-        // ── Category columns ──────────────────────────────────────────────
+        // Category columns
         if (col.key === 'source_ci_category' || col.key === 'target_ci_category') {
           const isSource = col.key === 'source_ci_category'
           const refKey   = isSource ? srcKey   : tgtKey
@@ -173,7 +165,7 @@ export default function CIRelationships() {
           )
         }
 
-        // ── CI ID columns ─────────────────────────────────────────────────
+        // CI ID columns
         if (col.key !== 'source_ci_id' && col.key !== 'target_ci_id') return null
 
         const isSource = col.key === 'source_ci_id'
