@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Box, Card, Text, Grid, ActionIcon, Group,
-  TextInput, Button, Tooltip, Loader, Alert,
+  Box, Card, Text, Grid, ActionIcon, Group, Stack,
+  TextInput, Button, Tooltip, Loader, Alert, Modal
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import {
   IconTrash, IconPlus, IconCheck, IconX,
-  IconRefresh, IconAlertCircle,
+  IconRefresh, IconAlertCircle, IconAlertTriangle
 } from '@tabler/icons-react'
 import referenceService from '../api/referenceService'
 import { ReferenceTable, ReferenceRow } from '../api/referenceService'
@@ -184,6 +184,8 @@ export default function Reference() {
   const [tables, setTables]   = useState<ReferenceTable[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [pendingDelete, setPendingDelete]     = useState<{ tableId: string; rowId: string } | null>(null)
 
   const [savingTables, setSavingTables] = useState<Record<string, boolean>>({})
 
@@ -256,6 +258,18 @@ export default function Reference() {
     }
   }
 
+  function handleDeleteClick(tableId: string, rowId: string) {
+  setPendingDelete({ tableId, rowId })
+  setDeleteModalOpen(true)
+  }
+
+  async function handleDeleteConfirm() {
+    if (!pendingDelete) return
+    setDeleteModalOpen(false)
+    await handleDeleteRow(pendingDelete.tableId, pendingDelete.rowId)
+    setPendingDelete(null)
+  }
+
   async function handleAddRow(tableId: string) {
     const table = tables.find((t) => t.id === tableId)!
     const emptyRow: ReferenceRow = { id: generateTempId() }
@@ -284,9 +298,48 @@ export default function Reference() {
       </Box>
     )
   }
-
-  return (
+return (
     <Box p="xl">
+
+      {/* Delete Confirm Modal */}
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        withCloseButton={false}
+        centered
+        size="sm"
+        radius="md"
+        overlayProps={{ blur: 2, backgroundOpacity: 0.35 }}
+      >
+        <Stack align="center" gap="md">
+          <Box
+            style={{
+              width: 56, height: 56, borderRadius: '50%',
+              backgroundColor: '#FFF1F0',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <IconAlertTriangle size={26} color="#E03131" />
+          </Box>
+
+          <Stack align="center" gap={4}>
+            <Text fw={700} size="md" c="#0F172A">Confirm Delete</Text>
+            <Text size="sm" c="dimmed" ta="center">
+              Are you sure you want to delete <strong>this row</strong>? Once deleted, you cannot retrieve this anymore.
+            </Text>
+          </Stack>
+
+          <Group justify="center" gap="sm" w="100%" mt={4}>
+            <Button variant="default" size="sm" style={{ flex: 1 }} onClick={() => setDeleteModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button color="red" size="sm" style={{ flex: 1 }} onClick={handleDeleteConfirm}>
+              Yes, Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
       <Grid>
         <Grid.Col>
           {tables.map((table) => (
@@ -295,7 +348,7 @@ export default function Reference() {
               table={table}
               saving={savingTables[table.id] ?? false}
               onUpdateRow={handleUpdateRow}
-              onDeleteRow={handleDeleteRow}
+              onDeleteRow={handleDeleteClick}
               onAddRow={handleAddRow}
             />
           ))}
