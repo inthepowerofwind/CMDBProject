@@ -203,6 +203,8 @@ interface TableViewProps<T extends object, P extends object> {
 
   // Passed straight through from CITableProps
   cellOverride?: CITableProps<T, P>['cellOverride']
+
+  placeholder?: string
 }
 
 function TableView<T extends object, P extends object>({
@@ -306,6 +308,7 @@ function TableView<T extends object, P extends object>({
                 width={col.width}
                 disabled={col.disabled}
                 onEnter={onEnter}
+                placeholder={col.placeholder}
               />
             )
           },
@@ -437,6 +440,7 @@ function TableView<T extends object, P extends object>({
                         width={col.width}
                         disabled={col.disabled}
                         onEnter={onEnter}
+                        placeholder={col.placeholder}
                       />
                     )
                   })()}

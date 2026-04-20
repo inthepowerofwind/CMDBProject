@@ -28,7 +28,7 @@ const badge = (colorMap: Record<string,string>) => (value: unknown) =>
 
 const COLUMNS: CIColumnDef<Server>[] = [
   { key: 'ci_id',             header: 'CI ID',                     readOnly: true },
-  { key: 'ci_name',           header: 'CI Name',                   type: 'text',   width: 140 },
+  { key: 'ci_name',           header: 'CI Name',                   type: 'text',   width: 140, placeholder: 'Required' },
   { key: 'status',            header: 'Status',                    type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'ci_type',           header: 'CI Type',                   type: 'select', width: 180, options: ['File Server', 'Domain Controller', 'Application Server', 'Web Server', 'VM Host', 'Security / SIEM', 'Backup Server', 'Mail Server'] },
   { key: 'environment',       header: 'Environment',               type: 'select', width: 160, options: ['Production','Staging','Testing / QA','Development','DR / Failover'] },

@@ -13,6 +13,7 @@ interface EditableCellProps {
   disabled?:      boolean
   onBlur?: (value: unknown) => void
   onEnter?: () => void
+  placeholder?: string
 }
 
 export function EditableCell({
@@ -27,6 +28,7 @@ export function EditableCell({
   disabled = false,
   onBlur,
   onEnter,
+  placeholder,
 }: EditableCellProps) {
 
   const toStr = (v: unknown): string => {
@@ -103,6 +105,7 @@ export function EditableCell({
       }}
       style={{ minWidth: width ?? 100 }}
       autoComplete="off"
+      placeholder={placeholder}
     />
   )
 }

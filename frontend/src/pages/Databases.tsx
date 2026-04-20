@@ -27,7 +27,7 @@ const badge = (colorMap: Record<string, string>) => (value: unknown) =>
 
 const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
-  { key: 'database_name',     header: 'Database Name',              type: 'text',   width: 140 },
+  { key: 'database_name',     header: 'Database Name',              type: 'text',   width: 140, placeholder: 'Required' },
   { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'db_type',           header: 'DB Type',                    type: 'select', width: 180, options: ['Microsoft SQL Server', 'MySQL', 'PostgreSQL', 'Oracle Database', 'Elasticsearch'] },
   { key: 'version',           header: 'Version',                    type: 'text' },

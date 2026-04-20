@@ -12,6 +12,7 @@ export interface CIColumnDef<T> {
   readOnly?: boolean
   onBlur?: (value: unknown, formValues: Partial<T>, setFormValues: React.Dispatch<React.SetStateAction<Partial<T>>>) => void
   disabled?: boolean
+  placeholder?: string
 }
 
 export interface CIService<T, P> {
