@@ -166,7 +166,7 @@ function LogRow({ log, index, isOpen, onToggle }: {
                       key={t}
                       variant="light"
                       size="sm"
-                      color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
+                      color={getChangeTypeColor(t)}
                       style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}
                     >
                       {t}
@@ -226,13 +226,14 @@ export default function ChangeLog() {
   const [search, setSearch]           = useState('')
   const [filterTable, setFilterTable] = useState<string | null>(null)
   const [expandedId, setExpandedId]   = useState<string | null>(null)
+  const [perPage, setPerPage]         = useState<number>(15)
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
       const params: ChangeLogListParams = {
-        page, per_page: 14,
+        per_page: perPage === 0 ? 99999 : perPage,
         search:      search      || undefined,
         ci_table:    filterTable || undefined,
         sort_by: 'created_at', sort_dir: 'desc',
@@ -247,16 +248,14 @@ export default function ChangeLog() {
     } finally {
       setLoading(false)
     }
-  }, [page, search, filterTable])
+  }, [page, search, filterTable, perPage])
 
   useEffect(() => { fetchLogs() }, [fetchLogs])
 
   // Table column headers
   const HEADERS = [
-    'Log ID', 'CI ID', 'CI Name', 'CI Table',
-    'Change Type', 'Description', 'Changed By',
-    // 'RFS Reference', 'Approved By',
-    'Date & Time',
+    'Log ID', 'CI ID', 'CI Name', 'CI Table', 'Change Type',
+    'Description', 'Changed By', 'Date & Time',
   ]
 
   return (
@@ -354,9 +353,23 @@ export default function ChangeLog() {
       )}
 
       {/* Pagination */}
-      {lastPage > 1 && (
-        <Group justify="center" mt="md">
-          <Pagination value={page} onChange={setPage} total={lastPage} color="blue" size="sm" />
+      {(lastPage > 1 || true) && (
+        <Group justify="center" mt="md" align="center">
+          <Select
+            value={String(perPage)}
+            onChange={(v) => { setPerPage(Number(v ?? 15)); setPage(1) }}
+            data={[
+              { value: '15', label: '15 / page' },
+              { value: '30', label: '30 / page' },
+              { value: '60', label: '60 / page' },
+              { value: '0',  label: 'All' },
+            ]}
+            size="xs" style={{ width: 110 }}
+            allowDeselect={false}
+          />
+          {lastPage > 1 && (
+            <Pagination value={page} onChange={setPage} total={lastPage} color="blue" size="sm" />
+          )}
         </Group>
       )}
     </Box>
