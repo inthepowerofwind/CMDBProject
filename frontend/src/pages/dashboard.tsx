@@ -148,7 +148,7 @@ function ChangeRow({ log }: { log: ChangeLogEntry }) {
               {visible.map((t) => (
                 <Badge
                   key={t}
-                  color={CHANGE_TYPE_COLOR[t] ?? 'blue'}
+                  color={getChangeTypeColor(t)}
                   variant="light"
                   size="sm"
                   style={{ whiteSpace: 'nowrap' }}
