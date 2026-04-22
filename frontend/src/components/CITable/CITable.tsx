@@ -14,6 +14,7 @@ import {
 import {
   useReactTable,
   getCoreRowModel,
+  getSortedRowModel,
   flexRender,
   createColumnHelper,
   SortingState,
@@ -205,6 +206,10 @@ interface TableViewProps<T extends object, P extends object> {
   cellOverride?: CITableProps<T, P>['cellOverride']
 
   placeholder?: string
+
+  // Sorting table 
+  sorting: SortingState
+  onSortingChange: React.Dispatch<React.SetStateAction<SortingState>>
 }
 
 function TableView<T extends object, P extends object>({
@@ -214,7 +219,7 @@ function TableView<T extends object, P extends object>({
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
   isAdding, newForm, setNewField, setNewForm, tableMinWidth,
   onPageChange, toolbar, newFormRef, onEnter,
-  cellOverride,
+  cellOverride, sorting, onSortingChange,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
 
@@ -323,6 +328,9 @@ function TableView<T extends object, P extends object>({
     data: rows,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange,
+    state: { sorting },
   })
 
   const renderTableContent = () => (
@@ -332,14 +340,21 @@ function TableView<T extends object, P extends object>({
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id} style={{ backgroundColor: '#F8FAFC' }}>
               {hg.headers.map((header) => (
-                <th key={header.id} style={{
-                  padding: '10px 16px', textAlign: 'left', whiteSpace: 'nowrap',
-                  borderBottom: '1px solid #E3E8EF', userSelect: 'none',
-                }}>
+                <th
+                  key={header.id}
+                  style={{
+                    padding: '10px 16px', textAlign: 'left', whiteSpace: 'nowrap',
+                    borderBottom: '1px solid #E3E8EF', userSelect: 'none',
+                    cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                  }}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
                   <Group gap={4} wrap="nowrap">
                     <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </Text>
+                    {header.column.getIsSorted() === 'asc'  && <Text size="xs" c="dimmed">↑</Text>}
+                    {header.column.getIsSorted() === 'desc' && <Text size="xs" c="dimmed">↓</Text>}
                   </Group>
                 </th>
               ))}
@@ -525,9 +540,10 @@ export default function CITable<
 
   const [isGridEditing, setIsGridEditing] = useState(false)
   const [editableIds, setEditableIds]     = useState<Set<string>>(new Set())
-  const [editForms, setEditForms]         = useState<Record<string, Partial<P>>>({})
+  const [_editForms, setEditForms]         = useState<Record<string, Partial<P>>>({})
   const editFormsRef                      = useRef<Record<string, Partial<P>>>({})
   const newFormRef                        = useRef<P>(emptyForm())
+  
   useEffect(() => { newFormRef.current = newForm }, [newForm])
   const [editSaving, setEditSaving]       = useState(false)
 
@@ -650,7 +666,7 @@ export default function CITable<
 
   const handleSaveEdit = async () => {
     // Validate required fields across all rows being edited
-    for (const [rowId, form] of Object.entries(editFormsRef.current)) {
+    for (const [_rowId, form] of Object.entries(editFormsRef.current)) {
       for (const f of requiredFields) {
         if (!(form as Record<string, unknown>)[f]) {
           const label = requiredLabels[f] ?? f
@@ -940,6 +956,8 @@ export default function CITable<
           newFormRef=   {newFormRef}
           onEnter={isAdding ? handleAdd : isGridEditing ? handleSaveEdit : undefined}
           cellOverride= {cellOverride}
+          sorting=        {sorting}
+          onSortingChange={setSorting}
         />
       ) : (
         <TableView<T, P>
@@ -973,6 +991,8 @@ export default function CITable<
           newFormRef=     {newFormRef}
           onEnter={isAdding ? handleAdd : isGridEditing ? handleSaveEdit : undefined}
           cellOverride=   {cellOverride}
+          sorting=        {sorting}
+          onSortingChange={setSorting}
         />
       )}
     </Box>
