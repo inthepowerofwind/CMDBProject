@@ -150,7 +150,7 @@ class CiObserver
         'service_name'                      => 'Rename',
         'software_name'                     => 'Rename',
         'database_name'                     => 'Rename',
-        'hostname'                          => 'Rename',
+        'hostname'                          => 'Hostname',
     ];
 
     private function formatValue(mixed $value): string
