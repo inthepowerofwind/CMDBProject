@@ -14,7 +14,7 @@ class CloudService extends Model
 
     protected function monthlyCost(): Attribute
     {
-        return Attribute::make(
+        return Attribute::make( 
             get: fn ($value) => $value !== null ? '$' . number_format($value, 2) : null,
             set: fn ($value) => is_string($value)
                 ? preg_replace('/[^0-9.]/', '', $value)

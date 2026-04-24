@@ -15,73 +15,31 @@ class CiObserver
     ];
 
     private array $fieldLabels = [
-        
-        'ci_id'                             => 'CI ID',
-        'ci_name'                           => 'CI Name',
-        'ci_type'                           => 'CI Type',
-        'status'                            => 'Status',
-        'criticality'                       => 'Criticality',
-        'notes'                             => 'Notes',
-        'environment'                       => 'Environment',
-        'department'                        => 'Department',
-        'assigned_owner'                    => 'Assigned Owner',
-        'assigned_user'                     => 'Assigned User',
-        'business_owner'                    => 'Business Owner',
-        'it_owner'                          => 'IT Owner',
-        'employee_id'                       => 'Employee ID',
-        'hostname'                          => 'Hostname',
-        'ip_address'                        => 'IP Address',
-        'operating_system'                  => 'Operating System',
-        'os_version'                        => 'OS Version',
-        'patch_level'                       => 'Patch Level',
-        'cpu'                               => 'CPU',
+        //server
         'cpu_cores'                         => 'CPU Cores',
-        'ram_gb'                            => 'RAM (GB)',
-        'storage_gb'                        => 'Storage (GB)',
         'storage_tb'                        => 'Storage (TB)',
         'virtualized'                       => 'Virtualized',
-        'manufacturer'                      => 'Manufacturer',
-        'model'                             => 'Model',
-        'serial_number'                     => 'Serial Number',
-        'asset_tag'                         => 'Asset Tag',
-        'purchase_date'                     => 'Purchase Date',
-        'warranty_expiry'                   => 'Warranty Expiry',
-        'eol_date'                          => 'EOL Date',
-        'location'                          => 'Location / Data Center',
-        'location_floor'                    => 'Location / Floor',
-        'rack_slot'                         => 'Rack Slot',
-        'rack_position'                     => 'Rack Position',
+ 
+        //network
+        'firmware_version'                  => 'Firmware Version',
+        'redundancy_ha'                     => 'Redundancy / HA',
         'mac_address'                       => 'MAC Address',
         'vlan_segment'                      => 'VLAN / Segment',
         'ports_interfaces'                  => 'Ports / Interfaces',
-        'baseline_applied'                  => 'Baseline Applied',
-        'backup_enabled'                    => 'Backup Enabled',
-        'monitoring_siem'                   => 'SIEM Monitoring',
+ 
+        //endpoint
+        'assigned_user'                     => 'Assigned User',
+        'employee_id'                       => 'Employee ID',
+        'cpu'                               => 'CPU',
+        'storage_gb'                        => 'Storage (GB)',
+        'location_floor'                    => 'Location / Floor',
         'encryption'                        => 'Encryption',
         'mdm_enrolled'                      => 'MDM Enrolled',
         'edr_agent'                         => 'EDR Agent',
         'antivirus'                         => 'Antivirus',
         'last_login'                        => 'Last Login',
-        'service_name'                      => 'Service Name',
-        'service_type'                      => 'Service Type',
-        'cloud_model'                       => 'Cloud Model',
-        'provider'                          => 'Provider',
-        'region_data_recidency'             => 'Region/Data Residency',
-        'service_tier'                      => 'Service Tier',
-        'account_subscription_id'           => 'Subscription ID',
-        'data_classification'               => 'Data Classification',
-        'monthly_cost'                      => 'Monthly Cost',
-        'sla_uptime'                        => 'SLA Uptime',
-        'mfa_enforced'                      => 'MFA Enforced',
-        'sso_integrated'                    => 'SSO Integrated',
-        'encryption_at_rest'                => 'Encryption at Rest',
-        'encryption_in_transit'             => 'Encryption in Transit',
-        'dlp_monitored'                     => 'DLP Monitored',
-        'logging_to_siem'                   => 'Logging to SIEM',
-        'soc_2_certified'                   => 'SOC 2 Certified',
-        'contact_expiry'                    => 'Contact Expiry',
-        'shared_responsibility_documented'  => 'Shared Responsibility Documented',
-        'last_security_review'              => 'Last Security Review',
+ 
+        //software
         'software_name'                     => 'Software Name',
         'software_type'                     => 'Software Type',
         'version'                           => 'Version',
@@ -99,6 +57,29 @@ class CiObserver
         'procurement_date'                  => 'Procurement Date',
         'license_expiry'                    => 'License Expiry',
         'last_review'                       => 'Last Review',
+ 
+        //cloud service
+        'business_owner'                    => 'Business Owner',
+        'it_owner'                          => 'IT Owner',
+        'service_name'                      => 'Service Name',
+        'service_type'                      => 'Service Type',
+        'cloud_model'                       => 'Cloud Model',
+        'provider'                          => 'Provider',
+        'region_data_recidency'             => 'Region/Data Residency',
+        'service_tier'                      => 'Service Tier',
+        'account_subscription_id'           => 'Subscription ID',
+        'monthly_cost'                      => 'Monthly Cost',
+        'sla_uptime'                        => 'SLA Uptime',
+        'mfa_enforced'                      => 'MFA Enforced',
+        'sso_integrated'                    => 'SSO Integrated',
+        'dlp_monitored'                     => 'DLP Monitored',
+        'logging_to_siem'                   => 'Logging to SIEM',
+        'soc_2_certified'                   => 'SOC 2 Certified',
+        'contract_expiry'                   => 'Contract Expiry',
+        'shared_responsibility_documented'  => 'Shared Responsibility Documented',
+        'last_security_review'              => 'Last Security Review',
+ 
+        //database
         'database_name'                     => 'Database Name',
         'db_type'                           => 'DB Type',
         'host_server_ci'                    => 'Host Server CI',
@@ -110,14 +91,75 @@ class CiObserver
         'access_control'                    => 'Access Control',
         'monitoring'                        => 'Monitoring',
         'db_owner'                          => 'DB Owner',
+        'business_application'              => 'Business Application',
+ 
+        //relationships
         'relationship_id'                   => 'Relationship ID',
         'source_ci_category'                => 'Source CI Category',
-        'target_ci_category'                => 'Target CI Category',
         'source_ci_id'                      => 'Source CI ID',
+        'source_ci_name'                    => 'Source CI Name',
+        'target_ci_category'                => 'Target CI Category',
         'target_ci_id'                      => 'Target CI ID',
+        'target_ci_name'                    => 'Target CI Name',
         'relationship_type'                 => 'Relationship Type',
         'description'                       => 'Description',
-        'business_application'              => 'Business Application',
+ 
+        //server, network, endpoint
+        'ci_id'                             => 'CI ID',
+        'ci_name'                           => 'CI Name',
+        'ci_type'                           => 'CI Type',
+ 
+        //server, network, endpoint, software, cloudservice, database
+        'status'                            => 'Status',
+        'notes'                             => 'Notes',
+ 
+        //server, network, endpoint, software, database
+        'environment'                       => 'Environment',
+        'eol_date'                          => 'EOL Date',
+ 
+        //server, network, software, database, relationship
+        'criticality'                       => 'Criticality',
+ 
+        //server, network, endpoint
+        'department'                        => 'Department',
+        'manufacturer'                      => 'Manufacturer',
+        'model'                             => 'Model',
+        'serial_number'                     => 'Serial Number',
+        'asset_tag'                         => 'Asset Tag',
+        'purchase_date'                     => 'Purchase Date',
+        'warranty_expiry'                   => 'Warranty Expiry',
+ 
+        //server, network
+        'business_service'                  => 'Business Service',
+        'last_config_review'                => 'Last Config Review',
+        'assigned_owner'                    => 'Assigned Owner',
+ 
+        //server, endpoint
+        'hostname'                          => 'Hostname',
+        'operating_system'                  => 'Operating System',
+        'os_version'                        => 'OS Version',
+        'ram_gb'                            => 'RAM (GB)',
+ 
+        //network, endpoint, database
+        'ip_address'                        => 'IP Address',
+ 
+        //server, network, endpoint, database
+        'patch_level'                       => 'Patch Level',
+ 
+        //server, network
+        'location'                          => 'Location / Data Center',
+        'rack_slot'                         => 'Rack Slot',
+        'rack_position'                     => 'Rack Position',
+        'baseline_applied'                  => 'Baseline Applied',
+        'monitoring_siem'                   => 'SIEM Monitoring',
+        'backup_enabled'                    => 'Backup Enabled',
+ 
+        //software, cloud service, database
+        'data_classification'               => 'Data Classification',
+ 
+        //cloud service, database
+        'encryption_at_rest'                => 'Encryption at Rest',
+        'encryption_in_transit'             => 'Encryption in Transit',
     ];
 
     private array $changeTypeHints = [
