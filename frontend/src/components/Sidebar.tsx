@@ -71,6 +71,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
             style={{
               width: collapsed ? 30 : 34,
               height: collapsed ? 30 : 34,
+              marginLeft: collapsed ? 10 : 7,
               objectFit: 'contain',
               flexShrink: 0,
               transition: 'width 220ms ease, height 220ms ease',

@@ -109,7 +109,7 @@ class CiObserver
         'ci_name'                           => 'CI Name',
         'ci_type'                           => 'CI Type',
  
-        //server, network, endpoint, software, cloudservice, database
+        //server, network, endpoint, software, cloud service, database
         'status'                            => 'Status',
         'notes'                             => 'Notes',
  
@@ -193,7 +193,7 @@ class CiObserver
         'service_name'                      => 'Rename',
         'software_name'                     => 'Rename',
         'database_name'                     => 'Rename',
-        'hostname'                          => 'Hostname',
+        'hostname'                          => 'Hostname Update',
     ];
 
     private function formatValue(mixed $value): string
