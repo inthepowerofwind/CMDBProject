@@ -47,13 +47,13 @@ class CiObserver
         'purchase_date'                     => 'Purchase Date',
         'warranty_expiry'                   => 'Warranty Expiry',
         'eol_date'                          => 'EOL Date',
-        'location'                          => 'Location',
-        'location_floor'                    => 'Location/Floor',
+        'location'                          => 'Location / Data Center',
+        'location_floor'                    => 'Location / Floor',
         'rack_slot'                         => 'Rack Slot',
         'rack_position'                     => 'Rack Position',
         'mac_address'                       => 'MAC Address',
-        'vlan_segment'                      => 'VLAN/Segment',
-        'ports_interfaces'                  => 'Ports/Interfaces',
+        'vlan_segment'                      => 'VLAN / Segment',
+        'ports_interfaces'                  => 'Ports / Interfaces',
         'baseline_applied'                  => 'Baseline Applied',
         'backup_enabled'                    => 'Backup Enabled',
         'monitoring_siem'                   => 'SIEM Monitoring',
@@ -94,7 +94,7 @@ class CiObserver
         'installed_on'                      => 'Installed On',
         'auto_update'                       => 'Auto Update',
         'asl_approved'                      => 'ASL Approved',
-        'sast_dast_tested'                  => 'SAST/DAST Tested',
+        'sast_dast_tested'                  => 'SAST / DAST Tested',
         'license_key_location'              => 'License Key Location',
         'procurement_date'                  => 'Procurement Date',
         'license_expiry'                    => 'License Expiry',
@@ -113,11 +113,11 @@ class CiObserver
         'relationship_id'                   => 'Relationship ID',
         'source_ci_category'                => 'Source CI Category',
         'target_ci_category'                => 'Target CI Category',
-        'source_ci_id'                      => 'Source CI',
-        'target_ci_id'                      => 'Target CI',
+        'source_ci_id'                      => 'Source CI ID',
+        'target_ci_id'                      => 'Target CI ID',
         'relationship_type'                 => 'Relationship Type',
         'description'                       => 'Description',
-        'bussiness_application'             => 'Business Application',
+        'business_application'              => 'Business Application',
     ];
 
     private array $changeTypeHints = [
@@ -131,16 +131,17 @@ class CiObserver
         'data_classification'               => 'Classification Change',
         'environment'                       => 'Environment Change',
         'location'                          => 'Location Change',
+        'location_floor'                    => 'Location Change',
         'service_tier'                      => 'Tier Change',
         'assigned_owner'                    => 'Ownership Change',
         'assigned_user'                     => 'Ownership Change',
         'business_owner'                    => 'Ownership Change',
         'it_owner'                          => 'Ownership Change',
-        'monthly_cost'                      => 'Cost Update',
+        'monthly_cost'                      => 'Monthly Cost Update',
         'license_count'                     => 'License Update',
         'licenses_deployed'                 => 'License Update',
         'license_expiry'                    => 'License Update',
-        'compliance_status'                 => 'Compliance Update',
+        'compliance_status'                 => 'Compliance Status Update',
         'sla_uptime'                        => 'SLA Update',
         'last_security_review'              => 'Security Review Update',
         'last_config_review'                => 'Config Review Update',
@@ -315,7 +316,6 @@ class CiObserver
 
     public function updated(Model $m): void
     {
-        // Skip the updated event if this is a restore operation
         // (deleted_at changing from a value to null = restore)
         $changes = $m->getChanges();
         if (array_key_exists('deleted_at', $changes) && is_null($changes['deleted_at'])) {
