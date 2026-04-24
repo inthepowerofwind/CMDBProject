@@ -246,7 +246,7 @@ class CiObserver
                 ?? $model->service_name
                 ?? $model->software_name
                 ?? $model->database_name
-                ?? 'Unknown';
+                ?? 'Relationship';
 
         $table = $model->getTable();
 

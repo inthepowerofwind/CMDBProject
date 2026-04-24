@@ -41,7 +41,7 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
   'Location Change':       'blue',
   'Environment Change':    'blue',
   'Criticality Change':    'violet',
-  'Classification Change': 'grape',
+  'Classification Change': 'violet',
   'Tier Change':           'violet',
   'Cost Update':           'yellow',
   'License Update':        'yellow',
