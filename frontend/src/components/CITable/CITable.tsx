@@ -635,11 +635,16 @@ export default function CITable<
     setSaving(true)
     try {
       const created = await service.create(newForm)
-      setRows((prev) => [...prev, created])
-      setTotal((t) => t + 1)
       setNewForm(emptyForm())
       setIsAdding(false)
       notifications.show({ color: 'green', message: `${String((created as Indexable<T>)[idField])} added.` })
+
+      const newLastPage = Math.ceil((total + 1) / PER_PAGE)
+      if (newLastPage !== page) {
+        setPage(newLastPage)
+      } else {
+        fetchRows()
+      }
     } catch {
       notifications.show({ color: 'red', message: 'Failed to add.' })
     } finally {
@@ -715,10 +720,18 @@ export default function CITable<
     const ids = Array.from(selectedIds)
     try {
       await Promise.all(ids.map((id) => service.delete(id)))
-      setRows((prev) => prev.filter((r) => !selectedIds.has(String((r as Indexable<T>)[idField]))))
-      setTotal((t) => t - ids.length)
       setSelectedIds(new Set())
       notifications.show({ color: 'orange', message: `${ids.length} item(s) moved to Archive.` })
+
+      const newTotal = total - ids.length
+      const newLastPage = Math.max(1, Math.ceil(newTotal / PER_PAGE))
+      const targetPage = Math.min(page, newLastPage)
+
+      if (targetPage !== page) {
+        setPage(targetPage)
+      } else {
+        fetchRows()
+      }
     } catch {
       notifications.show({ color: 'red', message: 'Failed to delete.' })
     }
