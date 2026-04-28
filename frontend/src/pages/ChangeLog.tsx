@@ -233,6 +233,7 @@ export default function ChangeLog() {
     setError('')
     try {
       const params: ChangeLogListParams = {
+        page,
         per_page: perPage === 0 ? 99999 : perPage,
         search:      search      || undefined,
         ci_table:    filterTable || undefined,
