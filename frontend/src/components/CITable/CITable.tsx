@@ -24,7 +24,7 @@ import {
 import { EditableCell } from './EditableCell'
 import { CITableProps, CIColumnDef } from './CITable.types'
 
-const PER_PAGE = 15
+const DEFAULT_PER_PAGE = 15
 
 const DATE_FIELDS = new Set([
   'purchase_date',
@@ -210,16 +210,20 @@ interface TableViewProps<T extends object, P extends object> {
   // Sorting table 
   sorting: SortingState
   onSortingChange: React.Dispatch<React.SetStateAction<SortingState>>
+
+  perPage: number
+  onPerPageChange: (value: number) => void
 }
 
 function TableView<T extends object, P extends object>({
-  rows, page, lastPage, loading, error,
+  rows, page, total, lastPage, loading, error,
   idField, colDefs, addLabel, isArchiveView,
   selectedIds, allSelected, someSelected, onSelectAll, onRowClick,
   isGridEditing, editableIds, editFormsRef, booleanFields, setGridField,
   isAdding, newForm, setNewField, setNewForm, tableMinWidth,
   onPageChange, toolbar, newFormRef, onEnter,
   cellOverride, sorting, onSortingChange,
+  perPage, onPerPageChange,
 }: TableViewProps<T, P>) {
   const columnHelper = createColumnHelper<T>()
 
@@ -484,9 +488,23 @@ function TableView<T extends object, P extends object>({
         </>
       ) : renderTableContent()}
 
-      {lastPage > 1 && (
-        <Group justify="center" mt="md">
-          <Pagination value={page} onChange={onPageChange} total={lastPage} color="#5375BF" size="sm" />
+      {total > 15 && (
+        <Group justify="center" mt="md" align="center">
+          <Select
+            value={String(perPage)}
+            onChange={(v) => { onPerPageChange(Number(v ?? 15)) }}
+            data={[
+              { value: '15', label: '15 / page' },
+              { value: '30', label: '30 / page' },
+              { value: '60', label: '60 / page' },
+              { value: '0',  label: 'All' },
+            ]}
+            size="xs" style={{ width: 110 }}
+            allowDeselect={false}
+          />
+          {lastPage > 1 && (
+            <Pagination value={page} onChange={onPageChange} total={lastPage} color="#5375BF" size="sm" />
+          )}
         </Group>
       )}
     </>
@@ -513,6 +531,7 @@ export default function CITable<
 }: CITableProps<T, P>) {
 
   const [isArchiveView, setIsArchiveView] = useState(false)
+  const [perPage, setPerPage] = useState(DEFAULT_PER_PAGE)
 
   const [rows, setRows]                 = useState<T[]>([])
   const [total, setTotal]               = useState(0)
@@ -557,7 +576,7 @@ export default function CITable<
     setError('')
     try {
       const result = await service.list({
-        page, per_page: PER_PAGE,
+        page, per_page: perPage === 0 ? 99999 : perPage,
         search: search || undefined,
         status: filterStatus || undefined,
         sort_by: sortBy, sort_dir: sortDir,
@@ -570,7 +589,7 @@ export default function CITable<
     } finally {
       setLoading(false)
     }
-  }, [page, search, filterStatus, sortBy, sortDir])
+  }, [page, search, filterStatus, sortBy, sortDir, perPage])
 
   useEffect(() => { fetchRows() }, [fetchRows])
 
@@ -580,7 +599,7 @@ export default function CITable<
     setArchiveError('')
     try {
       const result = await service.list({
-        page: archivePage, per_page: PER_PAGE,
+        page: archivePage, per_page: perPage === 0 ? 99999 : perPage,
         search: archiveSearch || undefined,
         archived: true,
       })
@@ -592,7 +611,7 @@ export default function CITable<
     } finally {
       setArchiveLoading(false)
     }
-  }, [archivePage, archiveSearch])
+  }, [archivePage, archiveSearch, perPage])
 
   useEffect(() => {
     if (isArchiveView) fetchArchiveRows()
@@ -639,7 +658,7 @@ export default function CITable<
       setIsAdding(false)
       notifications.show({ color: 'green', message: `${String((created as Indexable<T>)[idField])} added.` })
 
-      const newLastPage = Math.ceil((total + 1) / PER_PAGE)
+      const newLastPage = Math.ceil((total + 1) / (perPage === 0 ? 99999 : perPage))
       if (newLastPage !== page) {
         setPage(newLastPage)
       } else {
@@ -724,7 +743,7 @@ export default function CITable<
       notifications.show({ color: 'orange', message: `${ids.length} item(s) moved to Archive.` })
 
       const newTotal = total - ids.length
-      const newLastPage = Math.max(1, Math.ceil(newTotal / PER_PAGE))
+      const newLastPage = Math.max(1, Math.ceil(newTotal / (perPage === 0 ? 99999 : perPage)))
       const targetPage = Math.min(page, newLastPage)
 
       if (targetPage !== page) {
@@ -741,13 +760,13 @@ export default function CITable<
     if (!service.restore) return
     const ids = Array.from(selectedIds)
     try {
-      const restored = await Promise.all(ids.map((id) => service.restore!(id)))
-      setArchiveRows((prev) => prev.filter((r) => !selectedIds.has(String((r as Indexable<T>)[idField]))))
-      setArchiveTotal((t) => t - ids.length)
+      await Promise.all(ids.map((id) => service.restore!(id)))
       setSelectedIds(new Set())
-      setRows((prev) => [...prev, ...restored])
-      setTotal((t) => t + ids.length)
       notifications.show({ color: 'green', message: `${ids.length} item(s) restored.` })
+
+      // automatic fetching of records in both archive and main table
+      fetchArchiveRows()
+      fetchRows()
     } catch {
       notifications.show({ color: 'red', message: 'Failed to restore.' })
     }
@@ -971,6 +990,8 @@ export default function CITable<
           cellOverride= {cellOverride}
           sorting=        {sorting}
           onSortingChange={setSorting}
+          perPage=        {perPage}
+          onPerPageChange={(v) => { setPerPage(v); setArchivePage(1) }}
         />
       ) : (
         <TableView<T, P>
@@ -1006,6 +1027,8 @@ export default function CITable<
           cellOverride=   {cellOverride}
           sorting=        {sorting}
           onSortingChange={setSorting}
+          perPage=        {perPage}
+          onPerPageChange={(v) => { setPerPage(v); setPage(1) }}
         />
       )}
     </Box>
