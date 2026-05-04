@@ -207,7 +207,7 @@ interface TableViewProps<T extends object, P extends object> {
 
   placeholder?: string
 
-  // Sorting table 
+  // Sorting table
   sorting: SortingState
   onSortingChange: React.Dispatch<React.SetStateAction<SortingState>>
 
@@ -278,8 +278,10 @@ function TableView<T extends object, P extends object>({
               return <Text size="sm">{(raw as string) ?? '—'}</Text>
             }
 
-            const val = (editFormsRef.current[rowId] as Indexable<P>)?.[col.key]
-              ?? (row.original as Indexable<T>)[col.key]
+            const editForm = editFormsRef.current[rowId] as Indexable<P> | undefined
+            const val = (editForm && col.key in editForm)
+              ? editForm[col.key]
+              : (row.original as Indexable<T>)[col.key]
 
             // cellOverride hook (grid-edit rows)
             if (cellOverride) {
@@ -633,7 +635,7 @@ export default function CITable<
     const col = colDefs.find((c) => c.key === key)
     const coerced = col?.type === 'number'
       ? (value === '' || value === null || value === undefined ? null : Number(value))
-      : (value === '' ? null : value)
+      : value
     editFormsRef.current = {
       ...editFormsRef.current,
       [ciId]: { ...editFormsRef.current[ciId], [key]: coerced },

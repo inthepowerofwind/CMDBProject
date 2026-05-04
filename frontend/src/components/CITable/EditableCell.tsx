@@ -13,7 +13,7 @@ interface EditableCellProps {
   disabled?:      boolean
   onBlur?: (value: unknown) => void
   onEnter?: () => void
-  placeholder?: string
+  placeholder?:   string
 }
 
 export function EditableCell({
@@ -30,7 +30,6 @@ export function EditableCell({
   onEnter,
   placeholder,
 }: EditableCellProps) {
-
   const toStr = (v: unknown): string => {
     if (typeof v === 'boolean') return v ? 'Yes' : 'No'
     if (!v && v !== 0) return ''
@@ -41,14 +40,15 @@ export function EditableCell({
 
   const [localValue, setLocalValue]   = useState<string>(toStr(value))
   const [selectValue, setSelectValue] = useState<string>(toStr(value))
-
   const isFocused = useRef(false)
+
   useEffect(() => {
     if (isEditing && !isFocused.current) {
-    setLocalValue(toStr(value))
-    setSelectValue(toStr(value))
-  }
-}, [value])
+      setLocalValue(toStr(value))
+      setSelectValue(toStr(value))
+    }
+  }, [value])
+
   if (!isEditing) {
     if (typeof value === 'boolean') return <Text size="sm">{value ? 'Yes' : 'No'}</Text>
     const display = toStr(value)
@@ -76,7 +76,6 @@ export function EditableCell({
         onBlur={() => {
           isFocused.current = false
           onBlur?.(selectValue)
-        
         }}
       />
     )
@@ -94,7 +93,7 @@ export function EditableCell({
         if (type === 'number') {
           onChange(field, raw ? Number(raw) : null, false)
         } else {
-          onChange(field, raw || '', true)
+          onChange(field, raw || '', false)
         }
       }}
       onKeyDown={(e) => { if (e.key === 'Enter') onEnter?.() }}
