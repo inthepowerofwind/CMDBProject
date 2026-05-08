@@ -3,6 +3,7 @@ import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { softwareService, Software, SoftwarePayload } from '../api/softwareService'
 
+// Status color based on the Reference
 const STATUS_COLOR: Record<string, string> = {
   Active: 'green', 
   Decommissioned: 'gray', 
@@ -12,18 +13,22 @@ const STATUS_COLOR: Record<string, string> = {
   Maintenance: 'yellow',
 }
 
+// Criticality color based on the Reference
 const CRIT_COLOR: Record<string, string> = {
   Critical: 'red', High: 'orange', Medium: 'yellow', Low: 'blue',
 }
 
+// Status options based on the Reference
 const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
 
+// Status color badge
 const badge = (colorMap: Record<string, string>) => (value: unknown) =>
   value
     ? <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
         style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
     : null
 
+// Software Table Column Header, keys, and types
 const COLUMNS: CIColumnDef<Software>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'software_name',     header: 'Software Name',              type: 'text',   width: 140, placeholder: 'Required' },
@@ -51,6 +56,7 @@ const COLUMNS: CIColumnDef<Software>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
+// Software form - displays as default when adding a record
 const emptySoftwareForm = (): SoftwarePayload => ({
   software_name: '', 
   status: 'Active', 

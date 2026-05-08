@@ -14,6 +14,7 @@ export default function Login({ onLogin }: LoginProps) {
   const [error, setError]     = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
+  // login validation
   async function handleSubmit() {
     setError('')
     if (!email || !password) {

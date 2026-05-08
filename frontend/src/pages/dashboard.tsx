@@ -17,6 +17,8 @@ interface DashboardProps {
   onNavigate: (page: string) => void
 }
 
+// Change type color - displays in the Recent Change Logs
+// based on the Change Log module
 const CHANGE_TYPE_COLOR: Record<string, string> = {
   'Created':               'green',
   'Deleted':               'red',
@@ -40,6 +42,7 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
   'Rename':                'blue',
 }
 
+// Stores the CMDB Overview table data
 const tableData: TableData = {
   body: [
     ['Organization',        'Sample Organization Inc.'],
@@ -52,6 +55,7 @@ const tableData: TableData = {
   ],
 }
 
+// Stores the Workbook Navigation table data
 const tableWorkbook: TableData = {
   head: [['Sheet'], ['Contents'], ['CI Types Covered']],
   body: [
@@ -67,6 +71,7 @@ const tableWorkbook: TableData = {
   ],
 }
 
+// Status card display layout: Total CIs, Active, Decommissioned, EOL/At Risk, and Archive
 function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps) {
   return (
     <Card shadow="sm" radius="md" withBorder style={{ minHeight: 100 }}>
@@ -83,6 +88,7 @@ function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps)
   )
 }
 
+// Recent Changes change type color; blue color as default
 function getChangeTypeColor(changeType: string): string {
   if (CHANGE_TYPE_COLOR[changeType]) return CHANGE_TYPE_COLOR[changeType]
   const parts = changeType.split(',').map((s) => s.trim())
@@ -137,7 +143,7 @@ function ChangeRow({ log }: { log: ChangeLogEntry }) {
         </Box>
       </Group>
 
-     {/* displays enough change type to avoid overflowing */}
+     {/* displays one change type to avoid overflowing; + symbol for additional change type */}
       <Group gap={4} style={{ flexShrink: 0 }}>
         {(() => {
           const types = log.change_type.split(',').map((s) => s.trim())
@@ -224,6 +230,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <Box p="xl" mt="xl">
+      {/* Total records and Status card display */}
       <Grid mb="xl">
         <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
           <StatCard title="Total CIs"      value={totalCIs}      color="black" iconColor="blue"   icon={IconServer} />
@@ -243,6 +250,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       </Grid>
 
       <Grid mt="lg">
+        {/* CI Category Summary */}
         <Grid.Col span={7}>
           <Card shadow="sm" radius="md" withBorder h="100%">
             <Text fw={600} mb={4} c="#1a2b4a">CI Category Summary</Text>
@@ -299,6 +307,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           </Card>
         </Grid.Col>
 
+       {/* Recent Changes display */}
         <Grid.Col>
           <Card shadow="sm" radius="md" withBorder mt="lg">
             <Group justify="space-between" mb="md">

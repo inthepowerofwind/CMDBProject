@@ -3,6 +3,7 @@ import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { endpointService, Endpoints, EndpointsPayload } from '../api/endpointService'
 
+// Status color based on the Reference
 const STATUS_COLOR: Record<string, string> = {
   Active: 'green', 
   Decommissioned: 'gray', 
@@ -12,14 +13,17 @@ const STATUS_COLOR: Record<string, string> = {
   Maintenance: 'yellow',
 }
 
+// Status options based on the Reference
 const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
 
+// Status color badge
 const badge = (colorMap: Record<string, string>) => (value: unknown) =>
   value
     ? <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
         style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
     : null
 
+// Endpoints Table Column Header, keys, and types
 const COLUMNS: CIColumnDef<Endpoints>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'ci_name',           header: 'CI Name',                    type: 'text',   width: 140, placeholder: 'Required' },
@@ -53,6 +57,7 @@ const COLUMNS: CIColumnDef<Endpoints>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
+// Endpoints form - displays as default when adding a record
 const emptyEndpointsForm = (): EndpointsPayload => ({
   ci_name: '', 
   status: 'Active', 

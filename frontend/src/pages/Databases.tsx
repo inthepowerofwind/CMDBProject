@@ -3,6 +3,7 @@ import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { databasesService, Databases, DatabasesPayload } from '../api/databasesService'
 
+// Status color based on the Reference
 const STATUS_COLOR: Record<string, string> = {
   Active: 'green', 
   Decommissioned: 'gray', 
@@ -11,20 +12,26 @@ const STATUS_COLOR: Record<string, string> = {
   'In Deployment': 'blue', 
   Maintenance: 'yellow',
 }
+
+// Criticality color based on the Reference
 const CRIT_COLOR: Record<string, string> = {
   Critical: 'red', 
   High: 'orange', 
   Medium: 'yellow', 
   Low: 'blue',
 }
+
+// Status options based on the Reference
 const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
 
+// Status color badge 
 const badge = (colorMap: Record<string, string>) => (value: unknown) =>
   value
     ? <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
         style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
     : null
 
+// Database Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'database_name',     header: 'Database Name',              type: 'text',   width: 140, placeholder: 'Required' },
@@ -53,6 +60,7 @@ const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
+// Database form - displays as default when adding a record
 const emptyDatabaseForm = (): DatabasesPayload => ({
   database_name: '', 
   status: 'Active', 

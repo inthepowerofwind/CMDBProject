@@ -3,6 +3,7 @@ import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { serverService, Server, ServerPayload } from '../api/serverService'
 
+// Status color based on the Reference
 const STATUS_COLOR: Record<string, string> = {
   Active: 'green', 
   Decommissioned: 'gray', 
@@ -12,20 +13,25 @@ const STATUS_COLOR: Record<string, string> = {
   Maintenance: 'yellow',
 }
 
+// Criticality color based on the Reference
 const CRIT_COLOR: Record<string, string> = {
   Critical: 'red', 
   High: 'orange', 
   Medium: 'yellow', 
   Low: 'blue',
 }
+
+// Status options based on the Reference
 const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
 
+// Status color badge
 const badge = (colorMap: Record<string,string>) => (value: unknown) =>
   value
     ? <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
         style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
     : null
 
+// Server Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<Server>[] = [
   { key: 'ci_id',             header: 'CI ID',                     readOnly: true },
   { key: 'ci_name',           header: 'CI Name',                   type: 'text',   width: 140, placeholder: 'Required' },
@@ -60,6 +66,7 @@ const COLUMNS: CIColumnDef<Server>[] = [
   { key: 'notes',             header: 'Notes',                     type: 'text',   width: 200 },
 ]
 
+// Server form - displays as default when adding a record
 const emptyServerForm = (): ServerPayload => ({
   ci_name: '', 
   status: 'Active', 

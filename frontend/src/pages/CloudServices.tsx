@@ -3,6 +3,7 @@ import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { cloud_servicesService, CloudServices, CloudServicesPayload } from '../api/cloud_servicesService'
 
+// Status color based on the Reference
 const STATUS_COLOR: Record<string, string> = {
   Active: 'green', 
   Decommissioned: 'gray', 
@@ -12,6 +13,7 @@ const STATUS_COLOR: Record<string, string> = {
   Maintenance: 'yellow',
 }
 
+// Criticality color based on the Reference
 const CRIT_COLOR: Record<string, string> = {
   Critical: 'red', 
   High: 'orange', 
@@ -19,14 +21,17 @@ const CRIT_COLOR: Record<string, string> = {
   Low: 'blue',
 }
 
+// Status options based on the Reference
 const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
 
+// Status color badge
 const badge = (colorMap: Record<string, string>) => (value: unknown) =>
   value
     ? <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
         style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
     : null
 
+// Cloud Services Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<CloudServices>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
   { key: 'service_name',      header: 'Service Name',               type: 'text',   width: 140, placeholder: 'Required' },
@@ -56,7 +61,8 @@ const COLUMNS: CIColumnDef<CloudServices>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
-const emptyEndpointsForm = (): CloudServicesPayload => ({
+// Cloud Services form - displays as default when adding a record
+const emptyCloudServicesForm = (): CloudServicesPayload => ({
   service_name: '', 
   status: 'Active', 
   service_type: 'IaaS', 
@@ -90,7 +96,7 @@ export default function cloud_services() {
       idField="ci_id"
       columns={COLUMNS}
       service={cloud_servicesService}
-      emptyForm={emptyEndpointsForm}
+      emptyForm={emptyCloudServicesForm}
       statusOptions={STATUS_OPTIONS}
       booleanFields={['mfa_enforced', 'sso_integrated', 'encryption_at_rest', 'encryption_in_transit',
                       'dlp_monitored', 'logging_to_siem', 'soc_2_certified', 'shared_responsibility_documented'

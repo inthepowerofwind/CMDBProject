@@ -10,8 +10,10 @@ import {
   CiOption,
 } from '../api/relationshipService'
 
+// list of all the CI Categories for the dropdown options
 const CI_CATEGORIES = ['Server', 'Network', 'Endpoints', 'Software', 'Cloud Services', 'Database']
 
+// Relationship types based on the Reference
 const RELATIONSHIP_TYPES = [
   'Runs On / Hosted By',
   'Uses / Depends On',
@@ -24,6 +26,7 @@ const RELATIONSHIP_TYPES = [
   'Contains PII For',
 ]
 
+// Criticality color based on the Reference
 const CRIT_COLOR: Record<string, string> = {
   Critical: 'red',
   High:     'orange',
@@ -31,6 +34,7 @@ const CRIT_COLOR: Record<string, string> = {
   Low:      'blue',
 }
 
+// Status color badge 
 const badge = (colorMap: Record<string, string>) => (value: unknown) =>
   value ? (
     <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
@@ -81,6 +85,7 @@ function CiIdSelect({ value, category, disabled, width, onSelect, onEnter }: CiI
   )
 }
 
+// Relationships Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'relationship_id',    header: 'Relationship ID',    readOnly: true },
   { key: 'source_ci_category', header: 'Source CI Category', type: 'text', width: 160, options: CI_CATEGORIES },
@@ -92,12 +97,10 @@ const COLUMNS: CIColumnDef<Relationships>[] = [
   { key: 'target_ci_name',     header: 'Target CI Name',     type: 'text', width: 160, disabled: true },
   { key: 'description',        header: 'Description',        type: 'text', width: 200 },
   {
-    key: 'criticality', header: 'Criticality', type: 'select', width: 120,
-    options: ['Critical', 'High', 'Medium', 'Low'],
-    render: badge(CRIT_COLOR),
-  },
+    key: 'criticality',        header: 'Criticality',        type: 'select', width: 120, options: ['Critical', 'High', 'Medium', 'Low'], render: badge(CRIT_COLOR), },
 ]
 
+// Relationships form - displays as default when adding a record
 const emptyRelationshipForm = (): RelationshipsPayload => ({
   source_ci_id:       '',
   source_ci_category: 'Server',
@@ -111,7 +114,7 @@ const emptyRelationshipForm = (): RelationshipsPayload => ({
 })
 
 export default function CIRelationships() {
-  // Per-row category tracking — updated immediately on change, read on render
+  // Per-row category tracking - updated immediately on change, read on render
   // key: `${rowId}:source` or `${rowId}:target`
   const categoryRef = useRef<Record<string, string>>({})
 
@@ -152,7 +155,7 @@ export default function CIRelationships() {
               options={CI_CATEGORIES}
               isEditing
               onChange={(f, v, _r) => {
-                // Update ref immediately — before re-render
+                // Update ref immediately - before re-render
                 categoryRef.current[refKey] = v as string
                 setField(f,       v,  true)
                 setField(idKey,   '', true)
@@ -172,7 +175,7 @@ export default function CIRelationships() {
         const refKey   = isSource ? srcKey   : tgtKey
         const nameKey  = isSource ? 'source_ci_name' : 'target_ci_name'
 
-        // Always read from ref — never stale
+        // Always read from ref - never stale
         const category = categoryRef.current[refKey]
           ?? String(formSnapshot?.[isSource ? 'source_ci_category' : 'target_ci_category'] ?? '')
 
