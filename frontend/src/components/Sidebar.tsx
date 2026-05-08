@@ -33,6 +33,7 @@ const navItems: NavItem[] = [
   { label: 'Reference',      icon: IconBook,            path: 'reference'     },
 ]
 
+// Sidebar layout both when collapsed and expanded
 export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarProps) {
   return (
     <Box
@@ -50,6 +51,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
         overflow: 'hidden',
       }}
     >
+      {/* Logo area - shows icon only when collapsed, full logo + title when expanded */}
       <Box
         style={{
           height: 58,
@@ -79,6 +81,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
           />
         </Tooltip>
 
+        {/* fades out and collapses when sidebar is collapsed */}
         <Box
           style={{
             opacity: collapsed ? 0 : 1,
@@ -103,6 +106,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
           const Icon = item.icon
           const isActive = activePage === item.path
 
+          // Sidebar nav buttons or pages layout
           const button = (
             <UnstyledButton
               key={item.path}
@@ -135,6 +139,8 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
               }}>
                 <Icon size={17} />
               </Box>
+
+              {/* label fades out when collapsed */}
               <Box style={{
                 opacity: collapsed ? 0 : 1,
                 maxWidth: collapsed ? 0 : 200,
@@ -148,6 +154,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
             </UnstyledButton>
           )
 
+          // wrap with tooltip showing the label when sidebar is collapsed
           return collapsed ? (
             <Tooltip key={item.path} label={item.label} position="right" withArrow>
               {button}

@@ -21,6 +21,8 @@ export interface DashboardData {
   total_archive:   number
 }
 
+// dashboard service
+
 export const dashboardService = {
   async get(): Promise<DashboardData> {
     const { data } = await api.get('/dashboard')

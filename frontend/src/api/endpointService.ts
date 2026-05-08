@@ -14,7 +14,7 @@ export interface Endpoints {
   patch_level:        string | null
   assigned_user:      string | null
   employee_id:        string | null
-  department:         string | null
+  department:         'IT' | 'Finance' | 'Marketing' | 'Operations' | 'HR' | 'Sales' | 'Development' | 'Executive'
   location_floor:     string | null
   manufacturer:       string | null
   model:              string | null
@@ -55,6 +55,8 @@ export interface PaginatedEndpoints {
   per_page:     number
   total:        number
 }
+
+// endpoint service
 
 export const endpointService = {
   async list(params?: EndpointsListParams): Promise<PaginatedEndpoints> {

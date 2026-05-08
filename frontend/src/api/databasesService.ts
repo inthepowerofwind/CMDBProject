@@ -51,6 +51,8 @@ export interface PaginatedDatabase {
   total:        number
 }
 
+// database service
+
 export const databasesService = {
   async list(params?: DatabasesListParams): Promise<PaginatedDatabase> {
     const { data } = await api.get<PaginatedDatabase>('/databases', { params })

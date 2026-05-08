@@ -51,6 +51,8 @@ export interface PaginatedSoftware {
   total:        number
 }
 
+// software service
+
 export const softwareService = {
   async list(params?: SoftwareListParams): Promise<PaginatedSoftware> {
     const { data } = await api.get<PaginatedSoftware>('/software', { params })

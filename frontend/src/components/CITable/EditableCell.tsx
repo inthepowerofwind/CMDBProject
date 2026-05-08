@@ -30,6 +30,7 @@ export function EditableCell({
   onEnter,
   placeholder,
 }: EditableCellProps) {
+  // converts any value to a display string; strips time from ISO datetimes
   const toStr = (v: unknown): string => {
     if (typeof v === 'boolean') return v ? 'Yes' : 'No'
     if (!v && v !== 0) return ''
@@ -40,8 +41,11 @@ export function EditableCell({
 
   const [localValue, setLocalValue]   = useState<string>(toStr(value))
   const [selectValue, setSelectValue] = useState<string>(toStr(value))
+
+  // tracks focus state to avoid overwriting user input when the parent value updates
   const isFocused = useRef(false)
 
+  // sync local state when value changes externally, but only if the cell isn't focused
   useEffect(() => {
     if (isEditing && !isFocused.current) {
       setLocalValue(toStr(value))
@@ -55,6 +59,7 @@ export function EditableCell({
     return <Text size="sm">{display || '—'}</Text>
   }
 
+  // dropdown for fields with predefined options
   if (options) {
     return (
       <Select
@@ -63,6 +68,7 @@ export function EditableCell({
         onChange={(v) => {
           const next = v ?? ''
           setSelectValue(next)
+          // boolean fields store true/false instead of "Yes"/"No" strings
           if (booleanFields.includes(field)) {
             onChange(field, next === 'Yes', true)
           } else {
@@ -90,6 +96,7 @@ export function EditableCell({
       onChange={(e) => {
         const raw = e.target.value
         setLocalValue(raw)
+        // number fields send null instead of empty string when cleared
         if (type === 'number') {
           onChange(field, raw ? Number(raw) : null, false)
         } else {

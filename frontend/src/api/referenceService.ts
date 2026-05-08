@@ -20,6 +20,8 @@ interface ColumnMeta {
   fields:  string[]
 }
 
+// default reference table data
+
 export const TABLE_META: Record<string, ColumnMeta> = {
   ci_status: {
     title:   'CI Status Values',
@@ -79,6 +81,8 @@ function transformResponse(data: BackendData): ReferenceTable[] {
     rows:    (data[tableKey] ?? []).map((row, i) => toFrontendRow(row, meta, i)),
   }))
 }
+
+// reference service
 
 const referenceService = {
   async getAll(): Promise<ReferenceTable[]> {

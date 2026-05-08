@@ -44,7 +44,7 @@ export interface PaginatedChangeLogs {
   total:        number
 }
 
-// Service
+// change log service
 
 export const changeLogService = {
 

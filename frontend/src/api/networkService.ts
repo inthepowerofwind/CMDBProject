@@ -19,7 +19,7 @@ export interface NetworkDevice {
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
   business_service:   string | null
   assigned_owner:     string | null
-  department:         string | null
+  department:         'IT' | 'Finance' | 'Marketing' | 'Operations' | 'HR' | 'Sales' | 'Development' | 'Executive'
   manufacturer:       string | null
   model:              string | null
   serial_number:      string | null
@@ -54,6 +54,8 @@ export interface PaginatedNetwork {
   per_page:     number
   total:        number
 }
+
+// network service
 
 export const networkService = {
   async list(params?: NetworkListParams): Promise<PaginatedNetwork> {

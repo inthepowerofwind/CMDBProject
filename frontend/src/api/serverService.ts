@@ -20,7 +20,7 @@ export interface Server {
   criticality:        'Critical' | 'High' | 'Medium' | 'Low'
   business_service:   string | null
   assigned_owner:     string | null
-  department:         string | null
+  department:         'IT' | 'Finance' | 'Marketing' | 'Operations' | 'HR' | 'Sales' | 'Development' | 'Executive'
   manufacturer:       string | null
   model:              string | null
   serial_number:      string | null
@@ -57,6 +57,8 @@ export interface PaginatedServers {
   per_page: number
   total: number
 }
+
+// server service
 
 export const serverService = {
   async list(params?: ServerListParams): Promise<PaginatedServers> {

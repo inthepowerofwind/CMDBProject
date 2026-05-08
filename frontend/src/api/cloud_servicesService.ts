@@ -52,6 +52,8 @@ export interface PaginatedCloudServices {
   total:        number
 }
 
+// cloud services service
+
 export const cloud_servicesService = {
   async list(params?: CloudServicesListParams): Promise<PaginatedCloudServices> {
     const { data } = await api.get<PaginatedCloudServices>('/cloud-services', { params })

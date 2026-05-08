@@ -47,12 +47,14 @@ export interface PaginatedRelationships {
   total:        number
 }
 
-//
+
 export interface CiOption {
   ci_id:    string
   ci_name:  string
   category: string
 }
+
+// relationship service
 
 export const relationshipService = {
   async list(params?: RelationshipsListParams): Promise<PaginatedRelationships> {
@@ -87,8 +89,8 @@ export const relationshipService = {
     }
   },
 
-  //Fetch all CI IDs + names, optionally filtered by category.
-  //Used to populate the Source / Target CI ID dropdowns.
+  // Fetch all CI IDs + names, optionally filtered by category.
+  // Used to populate the Source / Target CI ID dropdowns.
   async listCis(category?: string): Promise<CiOption[]> {
     const params = category ? { category } : {}
     const { data } = await api.get<string[]>('/ci-list', { params })
