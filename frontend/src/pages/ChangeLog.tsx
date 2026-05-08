@@ -17,16 +17,11 @@ import {
 function getChangeTypeColor(changeType: string): string {
   // Direct match first
   if (CHANGE_TYPE_COLOR[changeType]) return CHANGE_TYPE_COLOR[changeType]
-
-  // Split combined types like "Criticality Change, Location Change"
-  const parts = changeType.split(',').map((s) => s.trim())
-  for (const part of parts) {
-    if (CHANGE_TYPE_COLOR[part]) return CHANGE_TYPE_COLOR[part]
-  }
-
+  // default color
   return 'blue'
 }
 
+// Change Type color; blue for not specified change type
 const CHANGE_TYPE_COLOR: Record<string, string> = {
   'Created':               'green',
   'Deleted':               'red',
@@ -55,6 +50,8 @@ const CI_TABLES = [
   'Software', 'Cloud_Services', 'Databases',
 ]
 
+// formats ISO date strings to MM/DD/YYYY; returns a dash if empty
+// timestamp splitting
 const formatLogValue = (v: unknown): string => {
   if (v === null || v === undefined) return '—'
   const s = String(v)
@@ -65,6 +62,7 @@ const formatLogValue = (v: unknown): string => {
   return s
 }
 
+// Field Changes table - shows the changes (previous and new data) when expanded
 function DiffTable({ prev, next }: {
   prev: Record<string, unknown> | null
   next: Record<string, unknown> | null
@@ -133,6 +131,7 @@ function LogRow({ log, index, isOpen, onToggle }: {
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'white' : '#FAFBFC')}
         onClick={() => hasDiff && onToggle()}
       >
+        {/* Field Change expand */}
         <td style={tdStyle}>
           <Group gap={4} wrap="nowrap">
             {hasDiff && (
@@ -153,7 +152,7 @@ function LogRow({ log, index, isOpen, onToggle }: {
           </Badge>
         </td>
         <td style={tdStyle}>
-          {/* when change types overflow; limits the displays and an option to show more */}
+          {/* when change types overflow; shows one change type and + icon and number for addtional change types */}
           <Group gap={4} wrap="nowrap">
             {(() => {
               const types = log.change_type.split(',').map((s) => s.trim())
@@ -201,7 +200,7 @@ function LogRow({ log, index, isOpen, onToggle }: {
         </td>
       </tr>
 
-      {/* Expandable diff row — shows field-level changes */}
+      {/* Expandable diff row - shows field-level changes, previous and new data */}
       {isOpen && hasDiff && (
         <tr style={{ backgroundColor: '#F8FAFC' }}>
           <td colSpan={10} style={{ padding: '12px 24px', borderBottom: '1px solid #F1F5F9' }}>
@@ -216,6 +215,7 @@ function LogRow({ log, index, isOpen, onToggle }: {
   )
 }
 
+// Change Log
 export default function ChangeLog() {
   const [logs, setLogs]               = useState<ChangeLogEntry[]>([])
   const [total, setTotal]             = useState(0)
@@ -283,7 +283,7 @@ export default function ChangeLog() {
         </Group>
       </Group>
 
-{/* Table */}
+      {/* Table */}
       {loading ? (
         <Box style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
           <Loader color="#5375BF" />
