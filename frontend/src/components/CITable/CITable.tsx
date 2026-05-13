@@ -595,6 +595,7 @@ export default function CITable<
   const [editSaving, setEditSaving]       = useState(false)
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [restoreModalOpen, setRestoreModalOpen] = useState(false)
 
   // derived sort fields from sorting state, passed to the API
   const sortBy  = sorting[0]?.id
@@ -957,7 +958,7 @@ export default function CITable<
             <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={() => setSelectedIds(new Set())}>
               Cancel
             </Button>
-            <Button size="sm" variant="light" color="green" leftSection={<IconArchiveOff size={14} />} onClick={handleRestoreSelected}>
+            <Button size="sm" variant="light" color="green" leftSection={<IconArchiveOff size={14} />} onClick={() => setRestoreModalOpen(true)}>
               Restore ({selectedIds.size})
             </Button>
           </>
@@ -1004,6 +1005,46 @@ export default function CITable<
             </Button>
             <Button color="red" size="sm" style={{ flex: 1 }} onClick={handleDeleteConfirm}>
               Yes, Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Restore confirmation modal */}
+      <Modal
+        opened={restoreModalOpen}
+        onClose={() => setRestoreModalOpen(false)}
+        withCloseButton={false}
+        centered
+        size="sm"
+        radius="md"
+        overlayProps={{ blur: 2, backgroundOpacity: 0.35 }}
+      >
+        <Stack align="center" gap="md">
+          <Box
+            style={{
+              width: 56, height: 56, borderRadius: '50%',
+              backgroundColor: '#F0FFF4',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <IconArchiveOff size={26} color="#2F9E44" />
+          </Box>
+
+          <Stack align="center" gap={4}>
+            <Text fw={700} size="md" c="#0F172A">Confirm Restore</Text>
+            <Text size="sm" c="dimmed" ta="center">
+              Are you sure you want to restore <strong>{selectedIds.size} item(s)</strong>?
+              They will be moved back to the main table.
+            </Text>
+          </Stack>
+
+          <Group justify="center" gap="sm" w="100%" mt={4}>
+            <Button variant="default" size="sm" style={{ flex: 1 }} onClick={() => setRestoreModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button color="green" size="sm" style={{ flex: 1 }} onClick={() => { setRestoreModalOpen(false); handleRestoreSelected() }}>
+              Yes, Restore
             </Button>
           </Group>
         </Stack>
