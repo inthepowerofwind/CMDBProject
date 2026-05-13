@@ -355,6 +355,7 @@ function TableView<T extends object, P extends object>({
     state: { sorting },
   })
 
+  // Table records/data
   const renderTableContent = () => (
     <ScrollArea scrollbarSize={8}>
       <table style={{ minWidth: tableMinWidth, width: '100%', borderCollapse: 'collapse' }}>

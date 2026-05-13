@@ -269,6 +269,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               ))}
             </Group>
 
+            {/* Responsive bar chart layout */}
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={dashData.ci_per_category} margin={{ left: -20, bottom: 5 }}>
                 <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.06)" strokeDasharray="4 4" />
@@ -290,7 +291,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </ResponsiveContainer>
           </Card>
         </Grid.Col>
-
+        
+        {/* CMDB Overview */}
         <Grid.Col span={5}>
           <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
             <Text fw={600} mb="md" c="#1a2b4a">CMDB Overview</Text>
@@ -299,6 +301,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </Table.ScrollContainer>
           </Card>
 
+          {/* Workbook Navigation */}
           <Card shadow="sm" radius="md" withBorder h="230">
             <Text fw={600} mb="md" c="#1a2b4a">Workbook Navigation</Text>
             <Table.ScrollContainer minWidth={500} maxHeight={300}>

@@ -14,6 +14,7 @@ import {
   ChangeLogListParams,
 } from '../api/changeLogService'
 
+// Change Type color
 function getChangeTypeColor(changeType: string): string {
   // Direct match first
   if (CHANGE_TYPE_COLOR[changeType]) return CHANGE_TYPE_COLOR[changeType]
@@ -296,6 +297,7 @@ export default function ChangeLog() {
           </Text>
         </>
       ) : (
+        // Change Log table
         <ScrollArea scrollbarSize={8}>
           <table style={{ minWidth: 1000, borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <colgroup>

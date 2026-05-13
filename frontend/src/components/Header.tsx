@@ -30,7 +30,7 @@ const pageTitles: Record<string, string> = {
   cloudservices: 'Cloud Services',
   databases:     'Databases',
   relationships: 'CI Relationship Register',
-  changelog:     'CI Change Log',
+  changelog:     'Change Log',
   reference:     'Reference / Lookup Tables',
 }
 

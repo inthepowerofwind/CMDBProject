@@ -162,6 +162,7 @@ class CiObserver
         'encryption_in_transit'             => 'Encryption in Transit',
     ];
 
+    // change log types and hints
     private array $changeTypeHints = [
         'patch_level'                       => 'Patch Update',
         'firmware_version'                  => 'Firmware Update',

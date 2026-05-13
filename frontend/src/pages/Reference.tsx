@@ -325,7 +325,7 @@ return (
           <Stack align="center" gap={4}>
             <Text fw={700} size="md" c="#0F172A">Confirm Delete</Text>
             <Text size="sm" c="dimmed" ta="center">
-              Are you sure you want to delete <strong>this row</strong>? Once deleted, you cannot retrieve this anymore.
+              Are you sure you want to delete <strong>this row</strong>? Once deleted, you cannot restore this anymore.
             </Text>
           </Stack>
 
