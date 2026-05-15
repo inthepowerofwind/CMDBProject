@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Badge, Loader, Select } from '@mantine/core'
+import { Loader, Select } from '@mantine/core'
 import CITable from '../components/CITable/CITable'
 import { EditableCell } from '../components/CITable/EditableCell'
 import { CIColumnDef } from '../components/CITable/CITable.types'
@@ -9,6 +9,11 @@ import {
   RelationshipsPayload,
   CiOption,
 } from '../api/relationshipService'
+import {
+  CRIT_COLOR,
+  badge,
+} from '../utils/ciTableHelpers'
+
 
 // list of all the CI Categories for the dropdown options
 const CI_CATEGORIES = ['Server', 'Network', 'Endpoints', 'Software', 'Cloud Services', 'Database']
@@ -26,23 +31,7 @@ const RELATIONSHIP_TYPES = [
   'Contains PII For',
 ]
 
-// Criticality color based on the Reference
-const CRIT_COLOR: Record<string, string> = {
-  Critical: 'red',
-  High:     'orange',
-  Medium:   'yellow',
-  Low:      'blue',
-}
-
-// Status color badge 
-const badge = (colorMap: Record<string, string>) => (value: unknown) =>
-  value ? (
-    <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
-      style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>
-      {value as string}
-    </Badge>
-  ) : null
-
+// CI ID Props
 interface CiIdSelectProps {
   value:     unknown
   category:  string

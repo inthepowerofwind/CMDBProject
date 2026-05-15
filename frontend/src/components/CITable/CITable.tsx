@@ -227,7 +227,7 @@ interface TableViewProps<T extends object, P extends object> {
 }
 
 // handles all table UI - toolbar, headers, rows, inline add row, pagination
-// all state and logic lives in CITable; this is just the display layer
+// all state and logic lives in components -> CITable; this is just the display layer
 function TableView<T extends object, P extends object>({
   rows, page, total, lastPage, loading, error,
   idField, colDefs, addLabel, isArchiveView,
@@ -554,6 +554,7 @@ export default function CITable<
 }: CITableProps<T, P>) {
 
   const [isArchiveView, setIsArchiveView] = useState(false)
+
   const [perPage, setPerPage] = useState(DEFAULT_PER_PAGE)
 
   // main table data
@@ -586,6 +587,8 @@ export default function CITable<
   // grid edit state - tracks which rows are being edited and their draft values
   const [isGridEditing, setIsGridEditing] = useState(false)
   const [editableIds, setEditableIds]     = useState<Set<string>>(new Set())
+  
+  // re-render trigger
   const [_editForms, setEditForms]         = useState<Record<string, Partial<P>>>({})
   // ref mirrors editForms for synchronous reads inside event handlers without triggering re-renders
   const editFormsRef                      = useRef<Record<string, Partial<P>>>({})

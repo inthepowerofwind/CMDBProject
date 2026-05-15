@@ -17,6 +17,7 @@ export interface AuthResponse {
   token: string
 }
 
+// Authentication for user login and logout
 export const authService = {
 
   async login(payload: LoginPayload): Promise<AuthResponse> {
@@ -41,6 +42,7 @@ export const authService = {
     return !!localStorage.getItem('token')
   },
 
+  // Update profile name
   async updateUsername(name: string): Promise<AuthUser> {
     const { data } = await api.patch<{ message: string; user: AuthUser }>('/auth/username', { name })
     localStorage.setItem('user', JSON.stringify(data.user))

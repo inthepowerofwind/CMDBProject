@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\{
     SoftwareController
 };
 
-// ─── Authentication ───────────────────────────────────────────────────────────
+// Authentication
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login',    [AuthController::class, 'login']);

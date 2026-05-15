@@ -1,35 +1,13 @@
-import { Badge } from '@mantine/core'
+
 import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { databasesService, Databases, DatabasesPayload } from '../api/databasesService'
-
-// Status color based on the Reference
-const STATUS_COLOR: Record<string, string> = {
-  Active: 'green', 
-  Decommissioned: 'gray', 
-  EOL: 'red',
-  'In Procurement': 'orange', 
-  'In Deployment': 'blue', 
-  Maintenance: 'yellow',
-}
-
-// Criticality color based on the Reference
-const CRIT_COLOR: Record<string, string> = {
-  Critical: 'red', 
-  High: 'orange', 
-  Medium: 'yellow', 
-  Low: 'blue',
-}
-
-// Status options based on the Reference
-const STATUS_OPTIONS = ['Active','Decommissioned','EOL','In Procurement','In Deployment','Maintenance']
-
-// Status color badge 
-const badge = (colorMap: Record<string, string>) => (value: unknown) =>
-  value
-    ? <Badge color={colorMap[value as string] ?? 'gray'} variant="light" size="sm"
-        style={{ whiteSpace: 'nowrap', display: 'inline-flex' }}>{value as string}</Badge>
-    : null
+import {
+  STATUS_COLOR,
+  STATUS_OPTIONS,
+  CRIT_COLOR,
+  badge,
+} from '../utils/ciTableHelpers'
 
 // Database Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<Databases>[] = [
