@@ -39,7 +39,7 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
   'License Update':        'yellow',
   'Compliance Update':     'yellow',
   'SLA Update':            'yellow',
-  'Rename':                'blue',
+  'Renamed':                'blue',
 }
 
 // Stores the CMDB Overview table data

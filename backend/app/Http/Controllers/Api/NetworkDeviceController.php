@@ -34,7 +34,9 @@ class NetworkDeviceController extends Controller
                 $query->where(function ($q) use ($s) {
                     $q->where('ci_id', 'like', "%{$s}%")
                     ->orWhere('ci_name', 'like', "%{$s}%")
-                    ->orWhere('operating_system', 'like', "%{$s}%")
+                    ->orWhere('ip_address',  'like', "%{$s}%")
+                    ->orWhere('mac_address', 'like', "%{$s}%")
+                    ->orWhere('location',    'like', "%{$s}%")
                     ->orWhere('status', 'like', "%{$s}%");
                 });
             }

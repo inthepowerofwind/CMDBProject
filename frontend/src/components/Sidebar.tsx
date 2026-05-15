@@ -5,7 +5,7 @@ import {
   IconDatabase, IconArrowsLeftRight,
   IconClipboard, IconBook,
 } from '@tabler/icons-react'
-import { ComponentType, useState } from 'react'
+import { ComponentType, forwardRef, useState } from 'react'
 import CMDBLogo from '../assets/CMDB_LogoIcon.png'
 
 interface NavItem {
@@ -42,33 +42,34 @@ interface NavButtonProps {
 }
 
 // Sidebar display style
-function NavButton({ item, isActive, collapsed, onNavigate }: NavButtonProps) {
-  const [hovered, setHovered] = useState(false)
-  const Icon = item.icon
+const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
+  ({ item, isActive, collapsed, onNavigate }, ref) => {
+    const [hovered, setHovered] = useState(false)
+    const Icon = item.icon
 
-  return (
-    <UnstyledButton
-      key={item.path}
-      onClick={() => onNavigate(item.path)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: collapsed ? 'center' : 'flex-start',
-        gap: collapsed ? 0 : 10,
-        padding: collapsed ? 0 : '7px 8px',
-        borderRadius: 6,
-        width: collapsed ? 40 : '100%',
-        height: collapsed ? 34 : 'auto',
-        marginLeft: collapsed ? 'auto' : 0,
-        marginRight: collapsed ? 'auto' : 0,
-        color: isActive ? '#5375BF' : hovered ? '#5375BF' : '#585c64',
-        backgroundColor: isActive ? '#DEE9FC' : hovered ? '#F0F4FF' : 'transparent',
-        cursor: 'pointer',
-        transition: 'background-color 150ms ease, width 220ms ease, color 150ms ease',
-      }}
-    >
+    return (
+      <UnstyledButton
+        ref={ref}
+        onClick={() => onNavigate(item.path)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display:         'flex',
+          alignItems:      'center',
+          justifyContent:  collapsed ? 'center' : 'flex-start',
+          gap:             collapsed ? 0 : 10,
+          padding:         collapsed ? 0 : '7px 8px',
+          borderRadius:    6,
+          width:           collapsed ? 40 : '100%',
+          height:          collapsed ? 34 : 'auto',
+          marginLeft:      collapsed ? 'auto' : 0,
+          marginRight:     collapsed ? 'auto' : 0,
+          color:           isActive ? '#5375BF' : hovered ? '#5375BF' : '#585c64',
+          backgroundColor: isActive ? '#DEE9FC' : hovered ? '#F0F4FF' : 'transparent',
+          cursor:          'pointer',
+          transition:      'background-color 150ms ease, width 220ms ease, color 150ms ease',
+        }}
+      >
       {/* Icon when expand */}
       <Box style={{
         width: 17,
@@ -94,7 +95,7 @@ function NavButton({ item, isActive, collapsed, onNavigate }: NavButtonProps) {
       </Box>
     </UnstyledButton>
   )
-}
+})
 
 // Sidebar layout both when collapsed and expanded
 export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarProps) {

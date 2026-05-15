@@ -2,12 +2,7 @@
 import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { serverService, Server, ServerPayload } from '../api/serverService'
-import {
-  STATUS_COLOR,
-  STATUS_OPTIONS,
-  CRIT_COLOR,
-  badge,
-} from '../utils/ciTableHelpers'
+import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTableHelpers'
 
 
 // Server Table Column Headers, keys, and types
@@ -45,40 +40,42 @@ const COLUMNS: CIColumnDef<Server>[] = [
   { key: 'notes',             header: 'Notes',                     type: 'text',   width: 200 },
 ]
 
-// Server form - displays as default when adding a record
+// Default add form
+// Initial values shown when the user opens the inline add row.
 const emptyServerForm = (): ServerPayload => ({
-  ci_name: '', 
-  status: 'Active', 
-  ci_type: 'File Server', 
-  environment: 'Production',
-  hostname: null, 
-  operating_system: null, 
-  os_version: null, 
-  patch_level: null,
-  cpu_cores: null, 
-  ram_gb: null, 
-  storage_tb: null, 
-  virtualized: false,
-  location: null, 
-  rack_slot: null, 
-  criticality: 'Medium', 
-  business_service: null,
-  assigned_owner: null, 
-  department: 'IT', 
-  manufacturer: null, 
-  model: null,
-  serial_number: null, 
-  asset_tag: null, 
-  purchase_date: null, 
-  warranty_expiry: null,
-  eol_date: null, 
-  last_config_review: null, 
-  baseline_applied: false,
-  backup_enabled: false, 
-  monitoring_siem: false, 
-  notes: null,
+  ci_name:                '', 
+  status:                 'Active', 
+  ci_type:                'File Server', 
+  environment:            'Production',
+  hostname:               null, 
+  operating_system:       null, 
+  os_version:             null, 
+  patch_level:            null,
+  cpu_cores:              null, 
+  ram_gb:                 null, 
+  storage_tb:             null, 
+  virtualized:            false,
+  location:               null, 
+  rack_slot:              null, 
+  criticality:            'Medium', 
+  business_service:       null,
+  assigned_owner:         null, 
+  department:             'IT', 
+  manufacturer:           null, 
+  model:                  null,
+  serial_number:          null, 
+  asset_tag:              null, 
+  purchase_date:          null, 
+  warranty_expiry:        null,
+  eol_date:               null, 
+  last_config_review:     null, 
+  baseline_applied:       false,
+  backup_enabled:         false, 
+  monitoring_siem:        false, 
+  notes:                  null,
 })
 
+// Page component
 export default function Servers() {
   return (
     <CITable<Server, ServerPayload>

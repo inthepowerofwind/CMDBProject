@@ -2,12 +2,8 @@
 import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { databasesService, Databases, DatabasesPayload } from '../api/databasesService'
-import {
-  STATUS_COLOR,
-  STATUS_OPTIONS,
-  CRIT_COLOR,
-  badge,
-} from '../utils/ciTableHelpers'
+import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTableHelpers'
+
 
 // Database Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<Databases>[] = [
@@ -38,7 +34,8 @@ const COLUMNS: CIColumnDef<Databases>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
-// Database form - displays as default when adding a record
+// Default add form
+// Initial values shown when the user opens the inline add row.
 const emptyDatabaseForm = (): DatabasesPayload => ({
   database_name: '', 
   status: 'Active', 

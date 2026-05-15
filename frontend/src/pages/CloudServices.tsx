@@ -2,12 +2,8 @@
 import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { cloud_servicesService, CloudServices, CloudServicesPayload } from '../api/cloud_servicesService'
-import {
-  STATUS_COLOR,
-  STATUS_OPTIONS,
-  CRIT_COLOR,
-  badge,
-} from '../utils/ciTableHelpers'
+import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTableHelpers'
+
 
 // Cloud Services Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<CloudServices>[] = [
@@ -39,7 +35,8 @@ const COLUMNS: CIColumnDef<CloudServices>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
-// Cloud Services form - displays as default when adding a record
+// Default add form
+// Initial values shown when the user opens the inline add row.
 const emptyCloudServicesForm = (): CloudServicesPayload => ({
   service_name: '', 
   status: 'Active', 

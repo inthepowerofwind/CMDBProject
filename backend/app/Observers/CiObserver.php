@@ -190,10 +190,10 @@ class CiObserver
         'last_config_review'                => 'Config Review Update',
         'warranty_expiry'                   => 'Warranty Update',
         'eol_date'                          => 'EOL Update',
-        'ci_name'                           => 'Rename',
-        'service_name'                      => 'Rename',
-        'software_name'                     => 'Rename',
-        'database_name'                     => 'Rename',
+        'ci_name'                           => 'Renamed',
+        'service_name'                      => 'Renamed',
+        'software_name'                     => 'Renamed',
+        'database_name'                     => 'Renamed',
         'hostname'                          => 'Hostname Update',
     ];
 

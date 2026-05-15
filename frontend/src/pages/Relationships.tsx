@@ -89,7 +89,8 @@ const COLUMNS: CIColumnDef<Relationships>[] = [
     key: 'criticality',        header: 'Criticality',        type: 'select', width: 120, options: ['Critical', 'High', 'Medium', 'Low'], render: badge(CRIT_COLOR), },
 ]
 
-// Relationships form - displays as default when adding a record
+// Default add form
+// Initial values shown when the user opens the inline add row.
 const emptyRelationshipForm = (): RelationshipsPayload => ({
   source_ci_id:       '',
   source_ci_category: 'Server',

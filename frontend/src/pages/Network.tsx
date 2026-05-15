@@ -2,12 +2,8 @@
 import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { networkService, NetworkDevice, NetworkPayload } from '../api/networkService'
-import {
-  STATUS_COLOR,
-  STATUS_OPTIONS,
-  CRIT_COLOR,
-  badge,
-} from '../utils/ciTableHelpers'
+import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTableHelpers'
+
 
 // Network Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<NetworkDevice>[] = [
@@ -42,7 +38,8 @@ const COLUMNS: CIColumnDef<NetworkDevice>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
-// Network form - displays as default when adding a record
+// Default add form
+// Initial values shown when the user opens the inline add row.
 const emptyNetworkForm = (): NetworkPayload => ({
   ci_name: '', 
   status: 'Active', 

@@ -2,11 +2,8 @@
 import CITable from '../components/CITable/CITable'
 import { CIColumnDef } from '../components/CITable/CITable.types'
 import { endpointService, Endpoints, EndpointsPayload } from '../api/endpointService'
-import {
-  STATUS_COLOR,
-  STATUS_OPTIONS,
-  badge,
-} from '../utils/ciTableHelpers'
+import { STATUS_COLOR, STATUS_OPTIONS, badge } from '../utils/ciTableHelpers'
+
 
 // Endpoints Table Column Header, keys, and types
 const COLUMNS: CIColumnDef<Endpoints>[] = [
@@ -42,7 +39,8 @@ const COLUMNS: CIColumnDef<Endpoints>[] = [
   { key: 'notes',             header: 'Notes',                      type: 'text',   width: 200 },
 ]
 
-// Endpoints form - displays as default when adding a record
+// Default add form
+// Initial values shown when the user opens the inline add row.
 const emptyEndpointsForm = (): EndpointsPayload => ({
   ci_name: '', 
   status: 'Active', 
