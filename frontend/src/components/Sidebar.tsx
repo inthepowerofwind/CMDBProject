@@ -5,7 +5,7 @@ import {
   IconDatabase, IconArrowsLeftRight,
   IconClipboard, IconBook,
 } from '@tabler/icons-react'
-import { ComponentType } from 'react'
+import { ComponentType, useState } from 'react'
 import CMDBLogo from '../assets/CMDB_LogoIcon.png'
 
 interface NavItem {
@@ -20,6 +20,7 @@ interface SidebarProps {
   collapsed: boolean
 }
 
+// Navigation sidebar items
 const navItems: NavItem[] = [
   { label: 'Dashboard',      icon: IconDashboard,       path: 'dashboard'     },
   { label: 'Servers',        icon: IconServer,          path: 'servers'       },
@@ -32,6 +33,68 @@ const navItems: NavItem[] = [
   { label: 'Change Log',     icon: IconClipboard,       path: 'changelog'     },
   { label: 'Reference',      icon: IconBook,            path: 'reference'     },
 ]
+
+interface NavButtonProps {
+  item: NavItem
+  isActive: boolean
+  collapsed: boolean
+  onNavigate: (path: string) => void
+}
+
+// Sidebar display style
+function NavButton({ item, isActive, collapsed, onNavigate }: NavButtonProps) {
+  const [hovered, setHovered] = useState(false)
+  const Icon = item.icon
+
+  return (
+    <UnstyledButton
+      key={item.path}
+      onClick={() => onNavigate(item.path)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        gap: collapsed ? 0 : 10,
+        padding: collapsed ? 0 : '7px 8px',
+        borderRadius: 6,
+        width: collapsed ? 40 : '100%',
+        height: collapsed ? 34 : 'auto',
+        marginLeft: collapsed ? 'auto' : 0,
+        marginRight: collapsed ? 'auto' : 0,
+        color: isActive ? '#5375BF' : hovered ? '#5375BF' : '#585c64',
+        backgroundColor: isActive ? '#DEE9FC' : hovered ? '#F0F4FF' : 'transparent',
+        cursor: 'pointer',
+        transition: 'background-color 150ms ease, width 220ms ease, color 150ms ease',
+      }}
+    >
+      {/* Icon when expand */}
+      <Box style={{
+        width: 17,
+        height: 17,
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Icon size={17} />
+      </Box>
+
+      {/* label fades out when collapsed */}
+      <Box style={{
+        opacity: collapsed ? 0 : 1,
+        maxWidth: collapsed ? 0 : 200,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        transition: 'opacity 180ms ease, max-width 220ms ease',
+        fontSize: 13,
+      }}>
+        {item.label}
+      </Box>
+    </UnstyledButton>
+  )
+}
 
 // Sidebar layout both when collapsed and expanded
 export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarProps) {
@@ -108,50 +171,13 @@ export default function Sidebar({ activePage, onNavigate, collapsed }: SidebarPr
 
           // Sidebar nav buttons or pages layout
           const button = (
-            <UnstyledButton
-              key={item.path}
-              onClick={() => onNavigate(item.path)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                gap: collapsed ? 0 : 10,
-                padding: collapsed ? 0 : '7px 8px',
-                borderRadius: 6,
-                width: collapsed ? 40 : '100%',
-                height: collapsed ? 34 : 'auto',
-                marginLeft: collapsed ? 'auto' : 0,
-                marginRight: collapsed ? 'auto' : 0,
-                color: isActive ? '#5375BF' : '#585c64',
-                backgroundColor: isActive ? '#DEE9FC' : 'transparent',
-                cursor: 'pointer',
-                transition: 'background-color 150ms ease, width 220ms ease',
-              }}
-            >
-              {/* Icon when expand */}
-              <Box style={{
-                width: 17,
-                height: 17,
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Icon size={17} />
-              </Box>
-
-              {/* label fades out when collapsed */}
-              <Box style={{
-                opacity: collapsed ? 0 : 1,
-                maxWidth: collapsed ? 0 : 200,
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                transition: 'opacity 180ms ease, max-width 220ms ease',
-                fontSize: 13,
-              }}>
-                {item.label}
-              </Box>
-            </UnstyledButton>
+          <NavButton
+            key={item.path}
+            item={item}
+            isActive={isActive}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
           )
 
           // wrap with tooltip showing the label when sidebar is collapsed

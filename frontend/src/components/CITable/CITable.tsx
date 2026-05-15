@@ -24,6 +24,7 @@ import {
 import { EditableCell } from './EditableCell'
 import { CITableProps, CIColumnDef } from './CITable.types'
 
+// number of records per page
 const DEFAULT_PER_PAGE = 15
 
 // fields that store actual Date objects - formatted as MM/DD/YYYY on display
