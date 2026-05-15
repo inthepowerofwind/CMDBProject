@@ -1,4 +1,4 @@
-// A hybrid input cell for columns that accept either a typed date 
+// An input cell for columns that accept either a typed date 
 // (via a native date picker) or text
 
 // Used by TableView for columns listed in TEXT_DATE_FIELDS (dateHelpers.ts),
