@@ -32,6 +32,7 @@ export default function App() {
     setUser(null)
   }
 
+  // Pages
   function getPage(page: PageName) {
     switch (page) {
       case 'dashboard':     return <Dashboard onNavigate={(p) => setActivePage(p as PageName)} />
@@ -64,6 +65,7 @@ export default function App() {
         onNavigate={(p) => setActivePage(p as PageName)}
         collapsed={sidebarCollapsed}
       />
+      {/* Header display name */}
       <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <Header
           activePage={activePage}

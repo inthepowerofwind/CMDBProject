@@ -8,7 +8,7 @@ import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTabl
 // Network Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<NetworkDevice>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
-  { key: 'ci_name',           header: 'CI Name',                    type: 'text',   width: 140, placeholder: 'Required' },
+  { key: 'ci_name',           header: 'CI Name *',                    type: 'text',   width: 140, placeholder: 'Required' },
   { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'ci_type',           header: 'CI Type',                    type: 'select', width: 180, options: ['Core Switch', 'Access Switch', 'Firewall', 'Router', 'Wireless Access Point', 'Load Balancer'] },
   { key: 'environment',       header: 'Environment',                type: 'select', width: 160, options: ['Production','Staging','Testing / QA','Development','DR / Failover'] },

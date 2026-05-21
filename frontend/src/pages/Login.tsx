@@ -37,6 +37,7 @@ export default function Login({ onLogin }: LoginProps) {
     }
   }
 
+  // Login container layout
   return (
     <Box style={{
       minHeight: '100vh',

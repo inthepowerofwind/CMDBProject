@@ -7,7 +7,7 @@ import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTabl
 // Software Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<Software>[] = [
   { key: 'ci_id',               header: 'CI ID',                      readOnly: true },
-  { key: 'software_name',       header: 'Software Name',              type: 'text',    width: 140, placeholder: 'Required' },
+  { key: 'software_name',       header: 'Software Name *',              type: 'text',    width: 140, placeholder: 'Required' },
   { key: 'status',              header: 'Status',                     type: 'select',  width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'software_type',       header: 'Software Type',              type: 'select',  width: 180, options: ['Operating System', 'Productivity Suite', 'Creative Suite', 'Security / SIEM', 'Endpoint Security (EDR)', 'Firewall Firmware', 'Backup', 'Business Application'] },
   { key: 'version',             header: 'Version',                    type: 'text' },

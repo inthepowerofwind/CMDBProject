@@ -8,7 +8,7 @@ import { STATUS_COLOR, STATUS_OPTIONS, CRIT_COLOR, badge } from '../utils/ciTabl
 // Cloud Services Table Column Headers, keys, and types
 const COLUMNS: CIColumnDef<CloudServices>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
-  { key: 'service_name',      header: 'Service Name',               type: 'text',   width: 140, placeholder: 'Required' },
+  { key: 'service_name',      header: 'Service Name *',               type: 'text',   width: 140, placeholder: 'Required' },
   { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'service_type',      header: 'Service Type',               type: 'select', options: ['IaaS', 'PaaS', 'SaaS'] },
   { key: 'cloud_model',       header: 'Cloud Model',                type: 'select', width: 160, options: ['Public Cloud', 'Private Cloud'] },

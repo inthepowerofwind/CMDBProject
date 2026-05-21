@@ -38,14 +38,14 @@ const RELATIONSHIP_TYPES = [
 
 // Column definitions
 const COLUMNS: CIColumnDef<Relationships>[] = [
-  { key: 'relationship_id',    header: 'Relationship ID',    readOnly: true },
-  { key: 'source_ci_category', header: 'Source CI Category', type: 'text', width: 160, options: CI_CATEGORIES },
-  { key: 'source_ci_id',       header: 'Source CI ID',       type: 'text', width: 180 },
-  { key: 'source_ci_name',     header: 'Source CI Name',     type: 'text', width: 160, disabled: true },
-  { key: 'relationship_type',  header: 'Relationship Type',  type: 'text', width: 200, options: RELATIONSHIP_TYPES },
-  { key: 'target_ci_category', header: 'Target CI Category', type: 'text', width: 160, options: CI_CATEGORIES },
-  { key: 'target_ci_id',       header: 'Target CI ID',       type: 'text', width: 180 },
-  { key: 'target_ci_name',     header: 'Target CI Name',     type: 'text', width: 160, disabled: true },
+  { key: 'relationship_id',    header: 'Relationship ID *',    readOnly: true },
+  { key: 'source_ci_category', header: 'Source CI Category *', type: 'text', width: 160, options: CI_CATEGORIES },
+  { key: 'source_ci_id',       header: 'Source CI ID *',       type: 'text', width: 180 },
+  { key: 'source_ci_name',     header: 'Source CI Name *',     type: 'text', width: 160, disabled: true },
+  { key: 'relationship_type',  header: 'Relationship Type *',  type: 'text', width: 200, options: RELATIONSHIP_TYPES },
+  { key: 'target_ci_category', header: 'Target CI Category *', type: 'text', width: 160, options: CI_CATEGORIES },
+  { key: 'target_ci_id',       header: 'Target CI ID *',       type: 'text', width: 180 },
+  { key: 'target_ci_name',     header: 'Target CI Name *',     type: 'text', width: 160, disabled: true },
   { key: 'description',        header: 'Description',        type: 'text', width: 200 },
   {
     key: 'criticality', header: 'Criticality', type: 'select', width: 120,

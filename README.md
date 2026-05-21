@@ -9,7 +9,9 @@
   <a href="#features">Features</a> •
   <a href="#user-roles">User Roles</a> •
   <a href="#how-it-works">How It Works</a> •
+  <a href="#process-flow">Process Flow</a> •
   <a href="#installation">Installation</a> •
+  <a href="#folder-structure">Folder Structure</a> •
   <a href="#requirements">Requirements</a> •
   <a href="#support">Support</a>
 </p>
@@ -230,6 +232,77 @@ From the backend directory, you can use the built-in `composer dev` script to st
 
 ```bash
 composer run dev
+```
+
+---
+
+## Folder Structure
+
+### Backend (Laravel 12)
+
+```
+backend/
+├── app/
+│   ├── Http/                   # Controllers, Middleware, Requests
+│   ├── Models/                 # Eloquent models (Server, Endpoint, Software, etc.)
+│   ├── Observers/              # CiObserver - auto-logs all CI changes
+│   └── Providers/              # Service providers
+├── bootstrap/                  # App bootstrap and cache
+├── config/                     # Laravel configuration files
+├── database/                   # Migrations, seeders, factories
+├── public/                     # Web entry point (index.php)
+├── resources/                  # Blade views (if any), lang files
+├── routes/                     # API and web route definitions
+├── storage/                    # Logs, cache, uploaded files
+├── tests/                      # Feature and unit tests
+├── vendor/                     # Composer dependencies (auto-generated)
+├── .env                        # Environment variables (not committed)
+├── .env.example                # Environment template
+├── artisan                     # Laravel CLI entry point
+├── composer.json               # PHP dependency definitions
+└── composer.lock               # Locked dependency versions
+```
+
+### Frontend (React + Vite + TypeScript)
+
+```
+frontend/
+├── node_modules/               # npm dependencies (auto-generated)
+├── public/                     # Static assets served as-is
+└── src/
+    ├── api/                    # Axios API client and endpoint functions
+    ├── assets/                 # Images/Logo
+    ├── components/
+    │   ├── CITable/            # Shared generic CI table component
+    │   │   ├── CITable.tsx         # Main reusable table component
+    │   │   ├── CITable.types.ts    # TypeScript type definitions
+    │   │   ├── dateHelpers.ts      # Date formatting utilities
+    │   │   ├── EditableCell.tsx    # Inline editable cell component
+    │   │   ├── TableView.tsx       # Table layout and rendering
+    │   │   └── TextDateCell.tsx    # Text/date display cell
+    │   ├── Header.tsx          # Top navigation bar
+    │   └── Sidebar.tsx         # Collapsible sidebar navigation
+    ├── pages/                  # Page-level route components
+    │   ├── ChangeLog.tsx           # CI change audit log page
+    │   ├── CloudServices.tsx       # Cloud Services CI module
+    │   ├── dashboard.tsx           # Dashboard with stats and recent changes
+    │   ├── Databases.tsx           # Databases CI module
+    │   ├── Endpoints.tsx           # Endpoints CI module
+    │   ├── Login.tsx               # Authentication / login page
+    │   ├── Network.tsx             # Network Devices CI module
+    │   ├── Reference.tsx           # Reference / lookup tables page
+    │   ├── Relationships.tsx       # CI Relationship Register page
+    │   ├── Servers.tsx             # Servers CI module
+    │   └── Software.tsx            # Software CI module
+    ├── styles/                 # Global and module-level CSS
+    ├── utils/
+    │   └── ciTableHelpers.tsx  # Shared helper functions for CI tables
+    ├── App.tsx                 # Root component with routing setup
+    ├── main.tsx                # Vite entry point
+    └── vite-env.d.ts           # Vite environment type declarations
+├── .env                        # Frontend environment variables (not committed)
+├── .gitignore                  # Git ignore rules
+└── (vite.config / tsconfig)    # Build and TypeScript configuration
 ```
 
 ---

@@ -8,7 +8,7 @@ import { STATUS_COLOR, STATUS_OPTIONS, badge } from '../utils/ciTableHelpers'
 // Endpoints Table Column Header, keys, and types
 const COLUMNS: CIColumnDef<Endpoints>[] = [
   { key: 'ci_id',             header: 'CI ID',                      readOnly: true },
-  { key: 'ci_name',           header: 'CI Name',                    type: 'text',   width: 140, placeholder: 'Required' },
+  { key: 'ci_name',           header: 'CI Name *',                  type: 'text',   width: 140, placeholder: 'Required' },
   { key: 'status',            header: 'Status',                     type: 'select', width: 140, options: STATUS_OPTIONS, render: badge(STATUS_COLOR) },
   { key: 'ci_type',           header: 'CI Type',                    type: 'select', width: 140, options: ['Laptop', 'Desktop', 'Mobile Phone', 'Tablet'] },
   { key: 'environment',       header: 'Environment',                type: 'select', width: 160, options: ['Production','Staging','Testing / QA','Development','DR / Failover'] },
