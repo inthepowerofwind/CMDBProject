@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { Text, TextInput, Select } from '@mantine/core'
+import { Text, TextInput, Select, Stack } from '@mantine/core'
+
+// maximum characters allowed in a free-text cell
+// does NOT apply to select, boolean, number, or date fields
+const MAX_CELL_LENGTH = 50
+
+// show the counter only when the user is near or over the limit
+const COUNTER_SHOW_THRESHOLD = 40
 
 interface EditableCellProps {
   value:         unknown
@@ -87,31 +94,62 @@ export function EditableCell({
     )
   }
 
+  // only enforce the character limit on plain text fields
+  // numbers and dates have their own natural constraints
+  const isTextField = type === 'text'
+  const isOverLimit = isTextField && localValue.length > MAX_CELL_LENGTH
+  const showCounter = isTextField && localValue.length >= COUNTER_SHOW_THRESHOLD
+
   return (
-    <TextInput
-      size="xs"
-      type={type}
-      value={localValue}
-      disabled={disabled}
-      onChange={(e) => {
-        const raw = e.target.value
-        setLocalValue(raw)
-        // number fields send null instead of empty string when cleared
-        if (type === 'number') {
-          onChange(field, raw ? Number(raw) : null, false)
-        } else {
-          onChange(field, raw || '', false)
-        }
-      }}
-      onKeyDown={(e) => { if (e.key === 'Enter') onEnter?.() }}
-      onFocus={() => { isFocused.current = true }}
-      onBlur={(e) => {
-        isFocused.current = false
-        onBlur?.(e.target.value)
-      }}
-      style={{ minWidth: width ?? 100 }}
-      autoComplete="off"
-      placeholder={placeholder}
-    />
+    <Stack gap={2}>
+      <TextInput
+        size="xs"
+        type={type}
+        value={localValue}
+        disabled={disabled}
+        // maxLength set to limit+1 so the user can see the "over limit" state
+        // rather than being hard-stopped with no feedback
+        maxLength={isTextField ? MAX_CELL_LENGTH + 1 : undefined}
+        error={isOverLimit}
+        onChange={(e) => {
+          const raw = e.target.value
+          setLocalValue(raw)
+          // number fields send null instead of empty string when cleared
+          if (type === 'number') {
+            onChange(field, raw ? Number(raw) : null, false)
+          } else {
+            onChange(field, raw || '', false)
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            // block Enter if the text is over the limit so the user can't save bad data
+            if (isOverLimit) return
+            onEnter?.()
+          }
+        }}
+        onFocus={() => { isFocused.current = true }}
+        onBlur={(e) => {
+          isFocused.current = false
+          onBlur?.(e.target.value)
+        }}
+        style={{ minWidth: width ?? 100 }}
+        autoComplete="off"
+        placeholder={placeholder}
+      />
+
+      {/* character counter - only shown near/over the limit for text fields */}
+      {showCounter && (
+        <Text
+          size="xs"
+          ta="right"
+          c={isOverLimit ? 'red' : 'dimmed'}
+          style={{ lineHeight: 1, paddingRight: 2 }}
+        >
+          {localValue.length}/{MAX_CELL_LENGTH}
+          {isOverLimit && ' — too long'}
+        </Text>
+      )}
+    </Stack>
   )
 }

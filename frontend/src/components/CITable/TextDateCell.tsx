@@ -5,9 +5,15 @@
 // such as EOL Date and License Expiry.
 
 import { useState, useEffect, useRef } from 'react'
-import { TextInput, ActionIcon } from '@mantine/core'
+import { TextInput, ActionIcon, Text, Stack } from '@mantine/core'
 import { IconCalendar, IconX } from '@tabler/icons-react'
 import { isoToDisplay } from './dateHelpers'
+
+// maximum characters for free-text input - matches EditableCell's limit
+const MAX_CELL_LENGTH = 50
+
+// show the counter only when the user is near or over the limit
+const COUNTER_SHOW_THRESHOLD = 40
 
 // Props 
 export interface TextDateCellProps {
@@ -72,62 +78,90 @@ export function TextDateCell({
     return () => el.removeEventListener('input', onNativeInput)
   }, [field]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <TextInput
-      size="xs"
-      value={localValue}
-      disabled={disabled}
-      placeholder="mm/dd/yyyy or text"
-      onChange={(e) => {
-        const v = e.target.value
-        setLocalValue(v)
-        onChange(field, v, true)
-      }}
-      onKeyDown={(e) => { if (e.key === 'Enter') onEnter?.() }}
-      rightSectionWidth={localValue ? 44 : 24}
-      rightSection={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* Clear button - only shown when the field has a value */}
-          {localValue && !disabled && (
-            <ActionIcon
-              size={14}
-              variant="transparent"
-              color="gray"
-              onClick={handleClear}
-              onMouseDown={(e) => e.preventDefault()}
-              style={{ cursor: 'pointer', minWidth: 14 }}
-            >
-              <IconX size={10} />
-            </ActionIcon>
-          )}
+  const isOverLimit = localValue.length > MAX_CELL_LENGTH
+  const showCounter = localValue.length >= COUNTER_SHOW_THRESHOLD
 
-          {/* Calendar icon with a hidden native date input layered behind it */}
-          <div style={{
-            position: 'relative', width: 18, height: 18,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <IconCalendar size={13} style={{ color: '#868e96', pointerEvents: 'none' }} />
-            <input
-              ref={dateInputRef}
-              type="date"
-              disabled={disabled}
-              tabIndex={-1}
-              onChange={(e) => {
-                applyDate(e.target.value)
-                e.target.value = ''
-              }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0,
-                cursor: 'pointer',
-                colorScheme: 'light',
-              }}
-            />
+  return (
+    <Stack gap={2}>
+      <TextInput
+        size="xs"
+        value={localValue}
+        disabled={disabled}
+        placeholder="mm/dd/yyyy or text"
+        // maxLength set to limit+1 so the user can see the "over limit" state
+        // rather than being hard-stopped with no feedback
+        maxLength={MAX_CELL_LENGTH + 1}
+        error={isOverLimit}
+        onChange={(e) => {
+          const v = e.target.value
+          setLocalValue(v)
+          onChange(field, v, true)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            // block Enter if the text is over the limit so the user can't save bad data
+            if (isOverLimit) return
+            onEnter?.()
+          }
+        }}
+        rightSectionWidth={localValue ? 44 : 24}
+        rightSection={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* Clear button - only shown when the field has a value */}
+            {localValue && !disabled && (
+              <ActionIcon
+                size={14}
+                variant="transparent"
+                color="gray"
+                onClick={handleClear}
+                onMouseDown={(e) => e.preventDefault()}
+                style={{ cursor: 'pointer', minWidth: 14 }}
+              >
+                <IconX size={10} />
+              </ActionIcon>
+            )}
+
+            {/* Calendar icon with a hidden native date input layered behind it */}
+            <div style={{
+              position: 'relative', width: 18, height: 18,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <IconCalendar size={13} style={{ color: '#868e96', pointerEvents: 'none' }} />
+              <input
+                ref={dateInputRef}
+                type="date"
+                disabled={disabled}
+                tabIndex={-1}
+                onChange={(e) => {
+                  applyDate(e.target.value)
+                  e.target.value = ''
+                }}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  opacity: 0,
+                  cursor: 'pointer',
+                  colorScheme: 'light',
+                }}
+              />
+            </div>
           </div>
-        </div>
-      }
-      style={{ width: width ?? 180 }}
-    />
+        }
+        style={{ width: width ?? 180 }}
+      />
+
+      {/* character counter - only shown near/over the limit */}
+      {showCounter && (
+        <Text
+          size="xs"
+          ta="right"
+          c={isOverLimit ? 'red' : 'dimmed'}
+          style={{ lineHeight: 1, paddingRight: 2 }}
+        >
+          {localValue.length}/{MAX_CELL_LENGTH}
+          {isOverLimit && ' — too long'}
+        </Text>
+      )}
+    </Stack>
   )
 }
