@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Server extends Model
 {
     use SoftDeletes;
+
+   // hides the internal auto-increment id; ci_id is used as the public identifier
     protected $hidden = ['id'];
+
+   // uses ci_id as the route model binding key instead of the default id
     public function getRouteKeyName(): string { return 'ci_id'; }
+
     protected $fillable = [
         'ci_id',
         'ci_name',
@@ -43,6 +48,7 @@ class Server extends Model
         'monitoring_siem',
         'notes',
     ];
+    
     protected $casts = [
         'virtualized' => 'boolean',
         'baseline_applied' => 'boolean',

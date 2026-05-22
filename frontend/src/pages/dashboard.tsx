@@ -39,7 +39,7 @@ const CHANGE_TYPE_COLOR: Record<string, string> = {
   'License Update':        'yellow',
   'Compliance Update':     'yellow',
   'SLA Update':            'yellow',
-  'Renamed':                'blue',
+  'Renamed':               'blue',
 }
 
 // Stores the CMDB Overview table data
@@ -88,7 +88,8 @@ function StatCard({ title, value, color, iconColor, icon: Icon }: StatCardProps)
   )
 }
 
-// Recent Changes change type color; blue color as default
+// returns the badge color for a given change type
+// splits comma-separated types and matches the first recognized one, falls back to blue
 function getChangeTypeColor(changeType: string): string {
   if (CHANGE_TYPE_COLOR[changeType]) return CHANGE_TYPE_COLOR[changeType]
   const parts = changeType.split(',').map((s) => s.trim())
@@ -98,6 +99,7 @@ function getChangeTypeColor(changeType: string): string {
   return 'blue'
 }
 
+// recent changes layout display
 function ChangeRow({ log }: { log: ChangeLogEntry }) {
   return (
     <Box
@@ -143,7 +145,7 @@ function ChangeRow({ log }: { log: ChangeLogEntry }) {
         </Box>
       </Group>
 
-     {/* displays one change type to avoid overflowing; + symbol for additional change type */}
+      {/* displays one change type to avoid overflowing; + symbol for additional change types */}
       <Group gap={4} style={{ flexShrink: 0 }}>
         {(() => {
           const types = log.change_type.split(',').map((s) => s.trim())
@@ -190,6 +192,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   const [logsLoading, setLogsLoading] = useState(true)
   const [logsError, setLogsError]     = useState('')
 
+  // fetches summary counts and per-category breakdown for the stat cards and bar chart
   useEffect(() => {
     dashboardService.get()
       .then((data) => setDashData(data))
@@ -197,6 +200,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
       .finally(() => setDashLoading(false))
   }, [])
 
+  // fetches the 5 most recent change log entries for the Recent Changes section
   useEffect(() => {
     changeLogService.list({ page: 1, per_page: 5, sort_by: 'created_at', sort_dir: 'desc' })
       .then((result) => setChangeLogs(result.data))
@@ -222,6 +226,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     )
   }
 
+  // derive individual status counts from the per-status array
   const totalCIs      = dashData.total_cis
   const totalActive   = dashData.ci_per_status.find((s) => s.label === 'Active')?.total ?? 0
   const totalDecomm   = dashData.ci_per_status.find((s) => s.label === 'Decommissioned')?.total ?? 0
@@ -230,7 +235,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <Box p="xl" mt="xl">
-      {/* Total records and Status card display */}
+      {/* Total records and status card display */}
       <Grid mb="xl">
         <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
           <StatCard title="Total CIs"      value={totalCIs}      color="black" iconColor="blue"   icon={IconServer} />
@@ -245,12 +250,12 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           <StatCard title="EOL / At Risk"  value={totalEol}      color="black" iconColor="red"    icon={IconAlertTriangle} />
         </Grid.Col>
         <Grid.Col span={{ base: 6, sm: 4, lg: 'auto' }}>
-          <StatCard title="Archive"        value={totalArchived}  color="black" iconColor="yellow" icon={IconArchive} />
+          <StatCard title="Archive"        value={totalArchived} color="black" iconColor="yellow" icon={IconArchive} />
         </Grid.Col>
       </Grid>
 
       <Grid mt="lg">
-        {/* CI Category Summary */}
+        {/* CI category summary bar chart */}
         <Grid.Col span={7}>
           <Card shadow="sm" radius="md" withBorder h="100%">
             <Text fw={600} mb={4} c="#1a2b4a">CI Category Summary</Text>
@@ -268,8 +273,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                 </Group>
               ))}
             </Group>
-
-            {/* Responsive bar chart layout */}
+            
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={dashData.ci_per_category} margin={{ left: -20, bottom: 5 }}>
                 <CartesianGrid vertical={false} stroke="rgba(0,0,0,0.06)" strokeDasharray="4 4" />
@@ -291,8 +295,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </ResponsiveContainer>
           </Card>
         </Grid.Col>
-        
-        {/* CMDB Overview */}
+
+        {/* CMDB overview and workbook navigation tables */}
         <Grid.Col span={5}>
           <Card mb="lg" shadow="sm" radius="md" withBorder h="230">
             <Text fw={600} mb="md" c="#1a2b4a">CMDB Overview</Text>
@@ -301,7 +305,6 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </Table.ScrollContainer>
           </Card>
 
-          {/* Workbook Navigation */}
           <Card shadow="sm" radius="md" withBorder h="230">
             <Text fw={600} mb="md" c="#1a2b4a">Workbook Navigation</Text>
             <Table.ScrollContainer minWidth={500} maxHeight={300}>
@@ -310,7 +313,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           </Card>
         </Grid.Col>
 
-       {/* Recent Changes display */}
+        {/* Recent changes display */}
         <Grid.Col>
           <Card shadow="sm" radius="md" withBorder mt="lg">
             <Group justify="space-between" mb="md">
@@ -327,6 +330,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               </Anchor>
             </Group>
 
+            {/* loading, error, and data states for the recent changes list */}
             {logsLoading && (
               <Box style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
                 <Loader color="#5375BF" size="sm" />

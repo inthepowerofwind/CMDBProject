@@ -8,9 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CmdbDatabase extends Model
 {
     use SoftDeletes;
+
     protected $table = 'databases';
+
+   // hides the internal auto-increment id; ci_id is used as the public identifier
     protected $hidden = ['id'];
+
+   // uses ci_id as the route model binding key instead of the default id
     public function getRouteKeyName(): string { return 'ci_id'; }
+
     protected $fillable = [
         'ci_id',
         'database_name',
@@ -38,6 +44,7 @@ class CmdbDatabase extends Model
         'last_review',
         'notes',
     ];
+
     protected $casts = [
         'size_gb' => 'integer',
         'backup_enabled' => 'boolean',

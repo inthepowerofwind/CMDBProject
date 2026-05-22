@@ -7,26 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class CiObserver
 {
-
+    // ensures the observer fires after the database transaction commits
     public $afterCommit = true;
 
+    // fields excluded from change log summaries (internal/system fields)
     private array $excludedFields = [
         'id', 'created_at', 'updated_at', 'deleted_at',
     ];
 
+    // maps database field names to human-readable labels for the change log
     private array $fieldLabels = [
         //server
         'cpu_cores'                         => 'CPU Cores',
         'storage_tb'                        => 'Storage (TB)',
         'virtualized'                       => 'Virtualized',
- 
+
         //network
         'firmware_version'                  => 'Firmware Version',
         'redundancy_ha'                     => 'Redundancy / HA',
         'mac_address'                       => 'MAC Address',
         'vlan_segment'                      => 'VLAN / Segment',
         'ports_interfaces'                  => 'Ports / Interfaces',
- 
+
         //endpoint
         'assigned_user'                     => 'Assigned User',
         'employee_id'                       => 'Employee ID',
@@ -38,7 +40,7 @@ class CiObserver
         'edr_agent'                         => 'EDR Agent',
         'antivirus'                         => 'Antivirus',
         'last_login'                        => 'Last Login',
- 
+
         //software
         'software_name'                     => 'Software Name',
         'software_type'                     => 'Software Type',
@@ -57,7 +59,7 @@ class CiObserver
         'procurement_date'                  => 'Procurement Date',
         'license_expiry'                    => 'License Expiry',
         'last_review'                       => 'Last Review',
- 
+
         //cloud service
         'business_owner'                    => 'Business Owner',
         'it_owner'                          => 'IT Owner',
@@ -78,7 +80,7 @@ class CiObserver
         'contract_expiry'                   => 'Contract Expiry',
         'shared_responsibility_documented'  => 'Shared Responsibility Documented',
         'last_security_review'              => 'Last Security Review',
- 
+
         //database
         'database_name'                     => 'Database Name',
         'db_type'                           => 'DB Type',
@@ -92,7 +94,7 @@ class CiObserver
         'monitoring'                        => 'Monitoring',
         'db_owner'                          => 'DB Owner',
         'business_application'              => 'Business Application',
- 
+
         //relationships
         'relationship_id'                   => 'Relationship ID',
         'source_ci_category'                => 'Source CI Category',
@@ -103,23 +105,23 @@ class CiObserver
         'target_ci_name'                    => 'Target CI Name',
         'relationship_type'                 => 'Relationship Type',
         'description'                       => 'Description',
- 
+
         //server, network, endpoint
         'ci_id'                             => 'CI ID',
         'ci_name'                           => 'CI Name',
         'ci_type'                           => 'CI Type',
- 
+
         //server, network, endpoint, software, cloud service, database
         'status'                            => 'Status',
         'notes'                             => 'Notes',
- 
+
         //server, network, endpoint, software, database
         'environment'                       => 'Environment',
         'eol_date'                          => 'EOL Date',
- 
+
         //server, network, software, database, relationship
         'criticality'                       => 'Criticality',
- 
+
         //server, network, endpoint
         'department'                        => 'Department',
         'manufacturer'                      => 'Manufacturer',
@@ -128,24 +130,24 @@ class CiObserver
         'asset_tag'                         => 'Asset Tag',
         'purchase_date'                     => 'Purchase Date',
         'warranty_expiry'                   => 'Warranty Expiry',
- 
+
         //server, network
         'business_service'                  => 'Business Service',
         'last_config_review'                => 'Last Config Review',
         'assigned_owner'                    => 'Assigned Owner',
- 
+
         //server, endpoint
         'hostname'                          => 'Hostname',
         'operating_system'                  => 'Operating System',
         'os_version'                        => 'OS Version',
         'ram_gb'                            => 'RAM (GB)',
- 
+
         //network, endpoint, database
         'ip_address'                        => 'IP Address',
- 
+
         //server, network, endpoint, database
         'patch_level'                       => 'Patch Level',
- 
+
         //server, network
         'location'                          => 'Location / Data Center',
         'rack_slot'                         => 'Rack Slot',
@@ -153,16 +155,16 @@ class CiObserver
         'baseline_applied'                  => 'Baseline Applied',
         'monitoring_siem'                   => 'SIEM Monitoring',
         'backup_enabled'                    => 'Backup Enabled',
- 
+
         //software, cloud service, database
         'data_classification'               => 'Data Classification',
- 
+
         //cloud service, database
         'encryption_at_rest'                => 'Encryption at Rest',
         'encryption_in_transit'             => 'Encryption in Transit',
     ];
 
-    // change log types and hints
+    // maps specific field names to their change type label in the change log
     private array $changeTypeHints = [
         'patch_level'                       => 'Patch Update',
         'firmware_version'                  => 'Firmware Update',
@@ -197,6 +199,8 @@ class CiObserver
         'hostname'                          => 'Hostname Update',
     ];
 
+    // formats a raw field value to a readable string for the change log
+    // converts booleans to Yes/No, dates to MM/DD/YYYY, and null to 'null'
     private function formatValue(mixed $value): string
     {
         if (is_null($value))                                    return 'null';
@@ -210,12 +214,14 @@ class CiObserver
         return $str;
     }
 
+    // returns the human-readable label for a field, falling back to a ucwords conversion
     private function label(string $field): string
     {
         return $this->fieldLabels[$field]
             ?? ucwords(str_replace('_', ' ', $field));
     }
 
+    // builds a key-value summary of fields for Created, Deleted, and Restored logs
     private function buildSummary(array $fields): array
     {
         $summary = [];
@@ -226,6 +232,7 @@ class CiObserver
         return $summary;
     }
 
+    // builds separate previous and next summaries for Updated logs, using only changed fields
     private function buildChangedSummaries(array $prev, array $next): array
     {
         $prevSummary = [];
@@ -239,6 +246,8 @@ class CiObserver
         return [$prevSummary, $nextSummary];
     }
 
+    // determines the change type label by matching changed fields against changeTypeHints
+    // returns 'Updated' if no specific hint matches
     private function resolveChangeType(array $changedFields): string
     {
         $matched = [];
@@ -250,11 +259,13 @@ class CiObserver
         return !empty($matched) ? implode(', ', $matched) : 'Updated';
     }
 
+    // converts a snake_case table name to a readable format for the description
     private function formatTableName(string $table): string
     {
         return str_replace('Ci ', '', ucwords(str_replace('_', ' ', $table)));
     }
 
+    // builds a human-readable description string for the change log entry
     private function buildDescription(string $type, string $table, array $changedFields = []): string
     {
         $table = $this->formatTableName($table);
@@ -271,8 +282,11 @@ class CiObserver
         return "Updated record on {$table}";
     }
 
+    // creates a change log entry in the database for any CI model event
+    // uses a transaction with a lock to generate a sequential CHG-LOG-### ID safely
     private function log(Model $model, string $type, array $prev = [], array $next = []): void
     {
+        // resolves the CI ID from the new data, old data, or the model itself
         $ciId = $next['ci_id']
                 ?? $next['relationship_id']
                 ?? $prev['ci_id']
@@ -281,6 +295,7 @@ class CiObserver
                 ?? $model->relationship_id
                 ?? (string) $model->id;
 
+        // resolves the CI name across all module naming conventions
         $ciName = $next['ci_name']
                 ?? $next['service_name']
                 ?? $next['software_name']
@@ -319,6 +334,7 @@ class CiObserver
         try {
             \DB::transaction(function () use ($ciId, $ciName, $table, $changeType, $description, $prevSummary, $nextSummary) {
 
+                // locks the latest row to prevent duplicate IDs under concurrent requests
                 $last = CiChangeLog::withTrashed()
                     ->where('change_log_id', 'like', 'CHG-LOG-%')
                     ->lockForUpdate()
@@ -326,9 +342,7 @@ class CiObserver
                     ->value('change_log_id');
 
                 $number = $last ? (int) substr($last, 8) : 0;
-
-                $newId = 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
-
+                $newId  = 'CHG-LOG-' . str_pad($number + 1, 3, '0', STR_PAD_LEFT);
 
                 CiChangeLog::create([
                     'change_log_id'      => $newId,
@@ -351,15 +365,18 @@ class CiObserver
         }
     }
 
+    // fires after a CI record is created
     public function created(Model $m): void
     {
-
+        
         $this->log($m, 'Created', [], $m->toArray());
     }
 
+    // fires after a CI record is updated
+    // skips the event when deleted_at is cleared (that is handled by restored instead)
     public function updated(Model $m): void
     {
-        // (deleted_at changing from a value to null = restore)
+
         $changes = $m->getChanges();
         if (array_key_exists('deleted_at', $changes) && is_null($changes['deleted_at'])) {
             return;
@@ -368,11 +385,13 @@ class CiObserver
         $this->log($m, 'Updated', $m->getOriginal(), $m->getChanges());
     }
 
+    // fires after a CI record is soft-deleted
     public function deleted(Model $m): void
     {
         $this->log($m, 'Deleted', $m->toArray());
     }
 
+    // fires after a soft-deleted CI record is restored
     public function restored(Model $m): void
     {
         $this->log($m, 'Restored', [], $m->toArray());

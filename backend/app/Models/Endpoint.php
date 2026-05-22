@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Endpoint extends Model
 {
     use SoftDeletes;
+
+    // hides the internal auto-increment id; ci_id is used as the public identifier
     protected $hidden = ['id'];
+
+   // usesci_id as the route model binding key instead of the default id
     public function getRouteKeyName(): string { return 'ci_id'; }
+
     protected $fillable = [
         'ci_id',
         'ci_name',
@@ -42,6 +47,7 @@ class Endpoint extends Model
         'eol_date',
         'notes',
     ];
+
     protected $casts = [
         'ram_gb' => 'integer',
         'storage_gb' => 'integer',

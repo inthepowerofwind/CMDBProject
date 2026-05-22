@@ -51,28 +51,39 @@ export interface PaginatedDatabase {
   total:        number
 }
 
-// database service
-
+// database service for CRUD and archive/restore operations
 export const databasesService = {
+
+  // fetches a paginated list of databases with optional search, filter, and sort
   async list(params?: DatabasesListParams): Promise<PaginatedDatabase> {
     const { data } = await api.get<PaginatedDatabase>('/databases', { params })
     return data
   },
+
+  // fetches a single database record by CI ID
   async get(ciId: string): Promise<Databases> {
     const { data } = await api.get<Databases>(`/databases/${ciId}`)
     return data
   },
+
+  // creates a new database record
   async create(payload: DatabasesPayload): Promise<Databases> {
     const { data } = await api.post<Databases>('/databases', payload)
     return data
   },
+
+  // updates an existing database record by CI ID
   async update(ciId: string, payload: Partial<DatabasesPayload>): Promise<Databases> {
     const { data } = await api.put<Databases>(`/databases/${ciId}`, payload)
     return data
   },
+
+  // soft-deletes a database record (moves it to the archive)
   async delete(ciId: string): Promise<void> {
     await api.delete(`/databases/${ciId}`)
   },
+
+  // restores a soft-deleted database record back to the main table
   async restore(ciId: string): Promise<Databases> {
     const { data } = await api.post<Databases>(`/databases/${ciId}/restore`)
     return data

@@ -56,28 +56,39 @@ export interface PaginatedEndpoints {
   total:        number
 }
 
-// endpoint service
-
+// endpoint service for CRUD and archive/restore operations
 export const endpointService = {
+
+  // fetches a paginated list of endpoints with optional search, filter, and sort
   async list(params?: EndpointsListParams): Promise<PaginatedEndpoints> {
     const { data } = await api.get<PaginatedEndpoints>('/endpoints', { params })
     return data
   },
+
+  // fetches a single endpoint record by CI ID
   async get(ciId: string): Promise<Endpoints> {
     const { data } = await api.get<Endpoints>(`/endpoints/${ciId}`)
     return data
   },
+
+  // creates a new endpoint record
   async create(payload: EndpointsPayload): Promise<Endpoints> {
     const { data } = await api.post<Endpoints>('/endpoints', payload)
     return data
   },
+
+  // updates an existing endpoint record by CI ID
   async update(ciId: string, payload: Partial<EndpointsPayload>): Promise<Endpoints> {
     const { data } = await api.put<Endpoints>(`/endpoints/${ciId}`, payload)
     return data
   },
+
+  // soft-deletes an endpoint record (moves it to the archive)
   async delete(ciId: string): Promise<void> {
     await api.delete(`/endpoints/${ciId}`)
   },
+
+  // restores a soft-deleted endpoint record back to the main table
   async restore(ciId: string): Promise<Endpoints> {
     const { data } = await api.post<Endpoints>(`/endpoints/${ciId}/restore`)
     return data

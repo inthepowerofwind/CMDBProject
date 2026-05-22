@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CiChangeLog extends Model
 {
     use SoftDeletes;
+
+   // hides the internal auto-increment id; change_log_id is used as the public identifier
     protected $hidden = ['id'];
+
+    // uses change_log_id as the route model binding key instead of the default id
     public function getRouteKeyName(): string { return 'change_log_id'; }
+
     protected $fillable = [
         'change_log_id',
         'ci_id',

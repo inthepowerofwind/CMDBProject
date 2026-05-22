@@ -55,28 +55,37 @@ export interface PaginatedNetwork {
   total:        number
 }
 
-// network service
-
+// network service for CRUD and archive/restore operations
 export const networkService = {
   async list(params?: NetworkListParams): Promise<PaginatedNetwork> {
     const { data } = await api.get<PaginatedNetwork>('/network-devices', { params })
     return data
   },
+
+  // fetches a single network record by CI ID
   async get(ciId: string): Promise<NetworkDevice> {
     const { data } = await api.get<NetworkDevice>(`/network-devices/${ciId}`)
     return data
   },
+
+  // creates a new network record
   async create(payload: NetworkPayload): Promise<NetworkDevice> {
     const { data } = await api.post<NetworkDevice>('/network-devices', payload)
     return data
   },
+
+  // updates an existing network record by CI ID
   async update(ciId: string, payload: Partial<NetworkPayload>): Promise<NetworkDevice> {
     const { data } = await api.put<NetworkDevice>(`/network-devices/${ciId}`, payload)
     return data
   },
+
+  // soft-deletes a network record (moves it to the archive)
   async delete(ciId: string): Promise<void> {
     await api.delete(`/network-devices/${ciId}`)
   },
+
+  // restores a soft-deleted network record back to the main table
   async restore(ciId: string): Promise<NetworkDevice> {
     const { data } = await api.post<NetworkDevice>(`/network-devices/${ciId}/restore`)
     return data

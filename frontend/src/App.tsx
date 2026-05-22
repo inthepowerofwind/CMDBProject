@@ -21,18 +21,20 @@ type PageName =
   | 'databases' | 'relationships' | 'changelog' | 'reference'
 
 export default function App() {
+  // restores the logged-in user from storage on page load
   const [user, setUser] = useState<AuthUser | null>(
     () => authService.getStoredUser()
   )
-  const [activePage, setActivePage] = useState<PageName>('dashboard')
+  const [activePage, setActivePage]         = useState<PageName>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
 
+  // calls the auth service to log out then clears the user from state
   const handleLogout = async () => {
     try { await authService.logout() } catch { }
     setUser(null)
   }
 
-  // Pages
+  // returns the page component matching the active route
   function getPage(page: PageName) {
     switch (page) {
       case 'dashboard':     return <Dashboard onNavigate={(p) => setActivePage(p as PageName)} />
@@ -54,6 +56,7 @@ export default function App() {
     }
   }
 
+  // show the login page if no user is authenticated
   if (!user) {
     return <Login onLogin={setUser} />
   }
@@ -65,7 +68,7 @@ export default function App() {
         onNavigate={(p) => setActivePage(p as PageName)}
         collapsed={sidebarCollapsed}
       />
-      {/* Header display name */}
+      
       <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <Header
           activePage={activePage}
@@ -73,8 +76,9 @@ export default function App() {
           user={user}
           onUserUpdate={(updated) => setUser(updated)}
           onLogout={handleLogout}
-          
+
         />
+        {/* renders the active page below the header */}
         <Box style={{ flex: 1, overflowY: 'auto' }}>
           {getPage(activePage)}
         </Box>

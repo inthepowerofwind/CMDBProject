@@ -8,8 +8,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class NetworkDevice extends Model
 {
     use SoftDeletes;
+
+    // hides the internal auto-increment id; ci_id is used as the public identifier
     protected $hidden = ['id'];
+
+   // uses ci_id as the route model binding key instead of the default id
     public function getRouteKeyName(): string { return 'ci_id'; }
+
+
     protected $fillable = [
         'ci_id',
         'ci_name',

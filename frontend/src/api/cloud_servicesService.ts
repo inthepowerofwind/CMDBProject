@@ -52,28 +52,39 @@ export interface PaginatedCloudServices {
   total:        number
 }
 
-// cloud services service
-
+// cloud services service for CRUD and archive/restore operations
 export const cloud_servicesService = {
+
+  // fetches a paginated list of cloud services with optional search, filter, and sort
   async list(params?: CloudServicesListParams): Promise<PaginatedCloudServices> {
     const { data } = await api.get<PaginatedCloudServices>('/cloud-services', { params })
     return data
   },
+
+  // fetches a single cloud service record by CI ID
   async get(ciId: string): Promise<CloudServices> {
     const { data } = await api.get<CloudServices>(`/cloud-services/${ciId}`)
     return data
   },
+
+  // creates a new cloud service record
   async create(payload: CloudServicesPayload): Promise<CloudServices> {
     const { data } = await api.post<CloudServices>('/cloud-services', payload)
     return data
   },
+
+  // updates an existing cloud service record by CI ID
   async update(ciId: string, payload: Partial<CloudServicesPayload>): Promise<CloudServices> {
     const { data } = await api.put<CloudServices>(`/cloud-services/${ciId}`, payload)
     return data
   },
+
+  // soft-deletes a cloud service record (moves it to the archive)
   async delete(ciId: string): Promise<void> {
     await api.delete(`/cloud-services/${ciId}`)
   },
+
+  // restores a soft-deleted cloud service record back to the main table
   async restore(ciId: string): Promise<CloudServices> {
     const { data } = await api.post<CloudServices>(`/cloud-services/${ciId}/restore`)
     return data

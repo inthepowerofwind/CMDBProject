@@ -9,12 +9,13 @@ interface LoginProps {
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const [email, setEmail]     = useState<string>('')
+  const [email, setEmail]       = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [error, setError]     = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError]       = useState<string>('')
+  const [loading, setLoading]   = useState<boolean>(false)
 
-  // login validation
+  // validates fields then calls the auth service to log in
+  // sets the error message if validation fails or the request is rejected
   async function handleSubmit() {
     setError('')
     if (!email || !password) {
@@ -26,6 +27,7 @@ export default function Login({ onLogin }: LoginProps) {
       const { user } = await authService.login({ email, password })
       onLogin(user)
     } catch (err: any) {
+      // reads the most specific error message from the response, falls back to a generic one
       const msg =
         err?.response?.data?.message ??
         err?.response?.data?.errors?.email?.[0] ??
@@ -48,6 +50,7 @@ export default function Login({ onLogin }: LoginProps) {
     }}>
       <Card shadow="xl" radius="lg" p="xl" style={{ width: 420, backgroundColor: '#F8FAFC' }}>
 
+        {/* Logo and system title */}
         <Box ta="center" mb="xl">
           <Box style={{
             display: 'flex',
@@ -67,15 +70,17 @@ export default function Login({ onLogin }: LoginProps) {
             />
           </Box>
           <Text fw={700} size="xl" c="#111F3D">Configuration Management Database</Text>
-          {/* <Text size="xs" c="dimmed" mt={4}>IT Asset Registry — ISO 27001 | ITIL 4</Text> */}
+
         </Box>
 
+        {/* Error alert - only shown when login fails */}
         {error && (
           <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light" mb="md" radius="md">
             {error}
           </Alert>
         )}
 
+        {/* Email and password fields - both trigger submit on Enter */}
         <TextInput
           label="Email"
           placeholder="Enter email"

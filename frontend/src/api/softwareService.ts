@@ -51,29 +51,38 @@ export interface PaginatedSoftware {
   total:        number
 }
 
-// software service
-
+// software service for CRUD and archive/restore operations
 export const softwareService = {
   async list(params?: SoftwareListParams): Promise<PaginatedSoftware> {
     const { data } = await api.get<PaginatedSoftware>('/software', { params })
     return data
   },
+
+  // fetches a single software record by CI ID
   async get(ciId: string): Promise<Software> {
     const { data } = await api.get<Software>(`/software/${ciId}`)
     return data
   },
+
+  // creates a new software record
   async create(payload: SoftwarePayload): Promise<Software> {
     console.log('Sending payload:', JSON.stringify(payload, null, 2))
     const { data } = await api.post<Software>('/software', payload)
     return data
   },
+
+  // updates an existing software record by CI ID
   async update(ciId: string, payload: Partial<SoftwarePayload>): Promise<Software> {
     const { data } = await api.put<Software>(`/software/${ciId}`, payload)
     return data
   },
+
+  // soft-deletes a software record (moves it to the archive)
   async delete(ciId: string): Promise<void> {
     await api.delete(`/software/${ciId}`)
   },
+
+  // restores a soft-deleted software record back to the main table
   async restore(ciId: string): Promise<Software> {
     const { data } = await api.post<Software>(`/software/${ciId}/restore`)
     return data

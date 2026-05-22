@@ -58,40 +58,41 @@ export interface PaginatedServers {
   total: number
 }
 
-// server service
-
+// server service for CRUD and archive/restore operations
 export const serverService = {
   async list(params?: ServerListParams): Promise<PaginatedServers> {
     const { data } = await api.get<PaginatedServers>('/servers', { params })
     return data
   },
- 
+
+  // fetches a single server record by CI ID
   async get(ciId: string): Promise<Server> {
     const { data } = await api.get<Server>(`/servers/${ciId}`)
     return data
   },
- 
+
+  // creates a new server record
   async create(payload: ServerPayload): Promise<Server> {
     const { data } = await api.post<Server>('/servers', payload)
     return data
   },
  
+  // updates an existing server record by CI ID
   async update(ciId: string, payload: Partial<ServerPayload>): Promise<Server> {
     const { data } = await api.put<Server>(`/servers/${ciId}`, payload)
     return data
   },
  
+  // soft-deletes a server record (moves it to the archive)
   async delete(ciId: string): Promise<void> {
     await api.delete(`/servers/${ciId}`)
   },
  
+  // restores a soft-deleted software record back to the main table
   async restore(ciId: string): Promise<Server> {
     const { data } = await api.post<Server>(`/servers/${ciId}/restore`)
     return data
   },
- 
-  async forceDelete(ciId: string): Promise<void> {
-    await api.delete(`/servers/${ciId}/force`)
-  },
+  
 }
  

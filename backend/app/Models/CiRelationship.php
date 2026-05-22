@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CiRelationship extends Model
 {
    use SoftDeletes;
-   //protected $table = 'ci_relationships';
+
+   // hides the internal auto-increment id; relationships_id is used as the public identifier
    protected $hidden = ['id'];
 
+   // uses relationship_id as the route model binding key instead of the default id
    public function getRouteKeyName(): string { return 'relationship_id'; }
    protected $fillable = [
      'relationship_id',

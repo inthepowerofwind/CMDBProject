@@ -44,20 +44,22 @@ export interface PaginatedChangeLogs {
   total:        number
 }
 
-// change log service
-
+// change log service for fetching and creating change log entries
 export const changeLogService = {
 
+  // fetches a paginated list of change logs with optional search, filter, and sort
   async list(params?: ChangeLogListParams): Promise<PaginatedChangeLogs> {
     const { data } = await api.get<PaginatedChangeLogs>('/change-logs', { params })
     return data
   },
 
+  // fetches a single change log entry by its ID
   async get(changeLogId: string): Promise<ChangeLog> {
     const { data } = await api.get<ChangeLog>(`/change-logs/${changeLogId}`)
     return data
   },
 
+  // creates a new change log entry (called automatically after CI create/update/delete)
   async create(payload: ChangeLogPayload): Promise<ChangeLog> {
     const { data } = await api.post<ChangeLog>('/change-logs', payload)
     return data

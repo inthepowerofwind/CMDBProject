@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Software extends Model
 {
     use SoftDeletes;
+
+   // hides the internal auto-increment id; ci_id is used as the public identifier
     protected $hidden = ['id'];
+
+   // uses ci_id as the route model binding key instead of the default id
     public function getRouteKeyName(): string { return 'ci_id'; }
+
     protected $fillable = [
 
         'ci_id',
@@ -37,6 +42,7 @@ class Software extends Model
         'last_review',
         'notes',
     ];
+    
     protected $casts = [
         'auto_update' => 'boolean',
         'asl_approved' => 'boolean',

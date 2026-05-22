@@ -21,6 +21,7 @@ interface HeaderProps {
   onUserUpdate: (updatedUser: AuthUser) => void
 }
 
+// Page titles - shows in the header of each page
 const pageTitles: Record<string, string> = {
   dashboard:     'Dashboard',
   servers:       'Servers',
